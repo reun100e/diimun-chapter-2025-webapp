@@ -2,11 +2,11 @@ import React from 'react'
 import { motion } from 'framer-motion'
 import { COMMITTEES, ASSETS } from '../utils/constants'
 import { smoothScrollTo } from '../animations/parallax'
-import { Users2, Award } from 'lucide-react'
+import { Users2, Award, Zap } from 'lucide-react'
 
 const EventHighlights = () => {
   return (
-    <section id="highlights" className="section-padding bg-gradient-to-br from-gray-50 to-midnight-50">
+    <section id="highlights" className="pt-12 pb-20 md:pt-16 md:pb-28 lg:pt-20 lg:pb-36 bg-gradient-to-br from-gray-50 to-midnight-50">
       <div className="container-custom">
         {/* Section Header */}
         <motion.div
@@ -44,19 +44,19 @@ const EventHighlights = () => {
                     <img 
                       src={ASSETS.whoLogo} 
                       alt="WHO Background" 
-                      className="w-full h-full object-cover filter blur-sm"
+                      className="w-full h-full object-cover filter"
                     />
                   ) : (
                     <img 
                       src={ASSETS.greatAssemblyImage} 
                       alt="Great Homoeopathic Assembly Background" 
-                      className="w-full h-full object-cover filter blur-sm"
+                      className="w-full h-full object-cover filter"
                     />
                   )}
                 </div>
 
                 {/* Gradient Overlay */}
-                <div className={`absolute inset-0 bg-gradient-to-br ${
+                <div className={`absolute inset-0 bg-gradient-to-br opacity ${
                   committee.type === 'Exclusive Committee' 
                     ? 'from-cognac-900/80 via-cognac-800/70 to-cognac-900/80 group-hover:from-cognac-900/60 group-hover:via-cognac-800/50 group-hover:to-cognac-900/60' 
                     : 'from-midnight-900/80 via-midnight-800/70 to-midnight-900/80 group-hover:from-midnight-900/60 group-hover:via-midnight-800/50 group-hover:to-midnight-900/60'
@@ -120,6 +120,31 @@ const EventHighlights = () => {
             ))}
           </div>
         </div>
+
+        {/* Call to Action for Why Join */}
+        <motion.div
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, delay: 0.4 }}
+          viewport={{ once: true }}
+          className="text-center mt-16"
+        >
+          <h3 className="text-2xl md:text-3xl font-bold gradient-text mb-6">
+            Ready to Experience the Benefits?
+          </h3>
+          <p className="text-lg text-gray-600 mb-8 max-w-2xl mx-auto">
+            Now that you've chosen your committee, discover the unique advantages and experiences that await you in DIIMUN.
+          </p>
+          <motion.button
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+            onClick={() => smoothScrollTo('#why-join', 100)}
+            className="inline-flex items-center gap-3 bg-gradient-to-r from-midnight-600 to-cognac-600 text-white font-semibold py-4 px-8 rounded-2xl hover:from-midnight-700 hover:to-cognac-700 transition-all duration-300 shadow-lg hover:shadow-xl"
+          >
+            <Zap className="w-5 h-5" />
+            <span>Discover Why Join</span>
+          </motion.button>
+        </motion.div>
 
       </div>
     </section>

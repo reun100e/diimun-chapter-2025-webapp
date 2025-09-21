@@ -1,141 +1,195 @@
 import React, { useState, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
 import { supabase } from '../supabaseClient';
 import { 
-    User, Phone, Mail, GraduationCap, Calendar, CreditCard, Upload, 
-    CheckCircle, AlertCircle, Loader, ChevronRight, ChevronLeft, 
-    Eye, EyeOff, MapPin, Award, Star, Sparkles
+    User, Phone, Mail, GraduationCap, Upload, 
+    CheckCircle, AlertCircle, Loader, Copy, Check, 
+    Star, Info, ChevronDown, ChevronUp
 } from 'lucide-react';
+import { smoothScrollTo } from '../animations/parallax';
 
 const RegistrationForm = () => {
-    // Multi-step form state
-    const [currentStep, setCurrentStep] = useState(1);
-    const [isSubmitting, setIsSubmitting] = useState(false);
-    const [success, setSuccess] = useState(false);
-    
-    // Form data state
+    // Form state
     const [formData, setFormData] = useState({
         name: '',
         whatsapp: '',
         email: '',
         college: '',
         year: '',
-        regType: 'MUN'
+        regType: 'MUN + Conference' // Default to best value
     });
     
-    // File handling
+    // File upload state
     const [paymentPhoto, setPaymentPhoto] = useState(null);
     const [photoPreview, setPhotoPreview] = useState(null);
-    const [dragActive, setDragActive] = useState(false);
     
-    // Real-time validation state
-    const [validation, setValidation] = useState({
-        name: { isValid: false, message: '', touched: false },
-        whatsapp: { isValid: false, message: '', touched: false },
-        email: { isValid: false, message: '', touched: false },
-        college: { isValid: false, message: '', touched: false },
-        year: { isValid: false, message: '', touched: false }
-    });
-    
+    // UI state
+    const [isSubmitting, setIsSubmitting] = useState(false);
+    const [errors, setErrors] = useState({});
+    const [success, setSuccess] = useState(false);
     const [globalError, setGlobalError] = useState('');
+    const [copiedUPI, setCopiedUPI] = useState(false);
+    const [yearDropdownOpen, setYearDropdownOpen] = useState(false);
 
-    // Validation rules
-    const validateField = (name, value) => {
-        switch (name) {
-            case 'name':
-                const nameValid = value.length >= 2 && /^[a-zA-Z\s]+$/.test(value);
-                return {
-                    isValid: nameValid,
-                    message: !nameValid && value.length > 0 
-                        ? 'Name must be at least 2 characters and contain only letters' 
-                        : ''
-                };
-            
-            case 'email':
-                const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-                const emailValid = emailRegex.test(value);
-                return {
-                    isValid: emailValid,
-                    message: !emailValid && value.length > 0 
-                        ? 'Please enter a valid email address' 
-                        : ''
-                };
-            
-            case 'whatsapp':
-                const phoneRegex = /^[\+]?[0-9]{10,15}$/;
-                const phoneValid = phoneRegex.test(value.replace(/[\s\-\(\)]/g, ''));
-                return {
-                    isValid: phoneValid,
-                    message: !phoneValid && value.length > 0 
-                        ? 'Please enter a valid phone number' 
-                        : ''
-                };
-            
-            case 'college':
-                const collegeValid = value.length >= 3;
-                return {
-                    isValid: collegeValid,
-                    message: !collegeValid && value.length > 0 
-                        ? 'College name must be at least 3 characters' 
-                        : ''
-                };
-            
-            case 'year':
-                return {
-                    isValid: value !== '',
-                    message: !value ? 'Please select your year of study' : ''
-                };
-            
-            default:
-                return { isValid: true, message: '' };
+    // Payment details
+    const upiId = 'aghoshbprasad100@okaxis';
+
+    // Year options for dropdown
+    const yearOptions = [
+        { value: '', label: 'Select your year', disabled: true },
+        { value: '1st Year', label: '1st Year' },
+        { value: '2nd Year', label: '2nd Year' },
+        { value: '3rd Year', label: '3rd Year' },
+        { value: 'Final Year', label: 'Final Year' },
+        { value: 'Intern', label: 'Intern' },
+        { value: 'Postgraduate', label: 'Postgraduate' }
+    ];
+
+    // Scroll to registration section when success state changes
+    useEffect(() => {
+        if (success) {
+            // Scroll to the registration section, not the very top of the page
+            const registerSection = document.getElementById('register');
+            if (registerSection) {
+                registerSection.scrollIntoView({
+                    behavior: 'smooth',
+                    block: 'start'
+                });
+            } else {
+                // Fallback: scroll to top if register section not found
+                window.scrollTo({
+                    top: 0,
+                    behavior: 'smooth'
+                });
+            }
         }
+    }, [success]);
+
+    // Close dropdown when clicking outside
+    useEffect(() => {
+        const handleClickOutside = (event) => {
+            if (yearDropdownOpen && !event.target.closest('.custom-year-dropdown')) {
+                setYearDropdownOpen(false);
+            }
+        };
+
+        document.addEventListener('mousedown', handleClickOutside);
+        return () => document.removeEventListener('mousedown', handleClickOutside);
+    }, [yearDropdownOpen]);
+
+    // Copy UPI ID and open UPI app
+    const handleUPIPayment = async () => {
+        // First, copy the UPI ID
+        try {
+            await navigator.clipboard.writeText(upiId);
+            setCopiedUPI(true);
+            setTimeout(() => setCopiedUPI(false), 3000);
+        } catch (err) {
+            const textArea = document.createElement('textarea');
+            textArea.value = upiId;
+            document.body.appendChild(textArea);
+            textArea.select();
+            document.execCommand('copy');
+            document.body.removeChild(textArea);
+            setCopiedUPI(true);
+            setTimeout(() => setCopiedUPI(false), 3000);
+        }
+
+        // Then, try to open UPI app with pre-filled details
+        const amount = formData.regType === 'MUN Only' ? '500' : '800';
+        const transactionNote = `DIIMUN 2025 Registration - ${formData.name || 'Participant'}`;
+        const upiUrl = `upi://pay?pa=${upiId}&pn=${encodeURIComponent('Aghosh B Prasad')}&am=${amount}&cu=INR&tn=${encodeURIComponent(transactionNote)}`;
+        
+        // Small delay to ensure copy feedback is visible
+        setTimeout(() => {
+            try {
+                window.location.href = upiUrl;
+            } catch (error) {
+                console.log('UPI app not available, UPI ID has been copied to clipboard');
+            }
+        }, 500);
     };
 
-    // Real-time validation effect
-    useEffect(() => {
-        Object.keys(formData).forEach(field => {
-            if (validation[field]?.touched) {
-                const result = validateField(field, formData[field]);
-                setValidation(prev => ({
-                    ...prev,
-                    [field]: { ...prev[field], ...result }
-                }));
-            }
-        });
-    }, [formData]);
-
-    // Handle input changes with real-time validation
-    const handleInputChange = (e) => {
-        const { name, value } = e.target;
-        setFormData(prev => ({ ...prev, [name]: value }));
+    // Custom year dropdown handler
+    const handleYearSelect = (value) => {
+        setFormData(prev => ({ ...prev, year: value }));
+        setYearDropdownOpen(false);
         
-        // Mark field as touched and validate
-        setValidation(prev => ({
-            ...prev,
-            [name]: { 
-                ...prev[name], 
-                touched: true, 
-                ...validateField(name, value) 
-            }
-        }));
-        
+        if (errors.year) {
+            setErrors(prev => ({ ...prev, year: '' }));
+        }
         setGlobalError('');
     };
 
-    // Handle file upload with drag & drop
-    const handleFileChange = (file) => {
+    // Input change handler
+    const handleChange = (e) => {
+        const { name, value } = e.target;
+        setFormData(prev => ({ ...prev, [name]: value }));
+        
+        if (errors[name]) {
+            setErrors(prev => ({ ...prev, [name]: '' }));
+        }
+        setGlobalError('');
+        
+        // If package selection changed, scroll to form
+        if (name === 'regType') {
+            setTimeout(() => {
+                smoothScrollTo('#form-details', 100);
+            }, 300);
+        }
+    };
+
+    // Validation on blur
+    const handleBlur = (e) => {
+        const { name, value } = e.target;
+        const error = validateField(name, value);
+        if (error) {
+            setErrors(prev => ({ ...prev, [name]: error }));
+        }
+    };
+
+    // Validation function
+    const validateField = (name, value) => {
+        switch (name) {
+            case 'name':
+                if (!value.trim()) return 'Name is required';
+                if (value.length < 2) return 'Name must be at least 2 characters';
+                return '';
+                
+            case 'email':
+                if (!value.trim()) return 'Email is required';
+                if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)) return 'Please enter a valid email';
+                return '';
+                
+            case 'whatsapp':
+                if (!value.trim()) return 'WhatsApp number is required';
+                if (!/^[\+]?[0-9]{10,15}$/.test(value.replace(/[\s\-\(\)]/g, ''))) return 'Please enter a valid phone number';
+                return '';
+                
+            case 'college':
+                if (!value.trim()) return 'College name is required';
+                return '';
+                
+            case 'year':
+                if (!value) return 'Please select your year of study';
+                return '';
+                
+            default:
+                return '';
+        }
+    };
+
+    // File upload handler
+    const handleFileChange = (e) => {
+        const file = e.target.files[0];
         if (!file) return;
         
-        // Validate file type and size
         const validTypes = ['image/jpeg', 'image/jpg', 'image/png'];
-        const maxSize = 10 * 1024 * 1024; // 10MB
-        
         if (!validTypes.includes(file.type)) {
             setGlobalError('Please upload a valid image file (JPG, PNG)');
             return;
         }
         
-        if (file.size > maxSize) {
+        if (file.size > 10 * 1024 * 1024) {
             setGlobalError('File size must be less than 10MB');
             return;
         }
@@ -143,66 +197,38 @@ const RegistrationForm = () => {
         setPaymentPhoto(file);
         setGlobalError('');
         
-        // Create preview
         const reader = new FileReader();
         reader.onload = (e) => setPhotoPreview(e.target.result);
         reader.readAsDataURL(file);
     };
 
-    // Drag and drop handlers
-    const handleDragOver = (e) => {
-        e.preventDefault();
-        setDragActive(true);
-    };
-
-    const handleDragLeave = (e) => {
-        e.preventDefault();
-        setDragActive(false);
-    };
-
-    const handleDrop = (e) => {
-        e.preventDefault();
-        setDragActive(false);
-        const file = e.dataTransfer.files[0];
-        handleFileChange(file);
-    };
-
-    // Step navigation
-    const canProceedToStep = (step) => {
-        switch (step) {
-            case 2:
-                return validation.name.isValid && validation.email.isValid && validation.whatsapp.isValid;
-            case 3:
-                return validation.college.isValid && validation.year.isValid;
-            case 4:
-                return formData.regType;
-            default:
-                return true;
+    // Form validation
+    const validateForm = () => {
+        const newErrors = {};
+        Object.keys(formData).forEach(field => {
+            const error = validateField(field, formData[field]);
+            if (error) newErrors[field] = error;
+        });
+        
+        if (!paymentPhoto) {
+            setGlobalError('Please upload your payment screenshot');
+            return false;
         }
-    };
-
-    const nextStep = () => {
-        if (canProceedToStep(currentStep + 1)) {
-            setCurrentStep(prev => Math.min(prev + 1, 4));
-        }
-    };
-
-    const prevStep = () => {
-        setCurrentStep(prev => Math.max(prev - 1, 1));
+        
+        setErrors(newErrors);
+        return Object.keys(newErrors).length === 0;
     };
 
     // Form submission
-    const handleSubmit = async () => {
-        if (!paymentPhoto) {
-            setGlobalError('Please upload your payment screenshot');
-            return;
-        }
-
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+        
+        if (!validateForm()) return;
+        
         setIsSubmitting(true);
         setGlobalError('');
 
         try {
-            // Upload photo
             const fileName = `${Date.now()}_${paymentPhoto.name}`;
             const { error: uploadError } = await supabase.storage
                 .from('payment-screenshots')
@@ -210,12 +236,10 @@ const RegistrationForm = () => {
 
             if (uploadError) throw uploadError;
 
-            // Get public URL
             const { data: urlData } = supabase.storage
                 .from('payment-screenshots')
                 .getPublicUrl(fileName);
 
-            // Insert registration data
             const { error: insertError } = await supabase
                 .from('registrations')
                 .insert([{
@@ -241,543 +265,470 @@ const RegistrationForm = () => {
     // Success screen
     if (success) {
         return (
-            <div className="min-h-screen bg-gradient-to-br from-green-50 via-emerald-50 to-teal-50 flex items-center justify-center p-6">
-                <motion.div
-                    initial={{ opacity: 0, scale: 0.8, y: 20 }}
-                    animate={{ opacity: 1, scale: 1, y: 0 }}
-                    transition={{ duration: 0.6, ease: "easeOut" }}
-                    className="bg-white rounded-3xl shadow-2xl p-8 md:p-12 text-center max-w-2xl mx-auto relative overflow-hidden"
-                >
-                    {/* Success animation background */}
-                    <div className="absolute inset-0 bg-gradient-to-br from-green-400/5 to-emerald-400/5"></div>
-                    
-                    <motion.div
-                        initial={{ scale: 0 }}
-                        animate={{ scale: 1 }}
-                        transition={{ delay: 0.3, type: "spring", stiffness: 200 }}
-                        className="relative z-10"
-                    >
-                        <div className="w-24 h-24 mx-auto mb-8 bg-gradient-to-r from-green-500 to-emerald-500 rounded-full flex items-center justify-center shadow-lg">
-                            <CheckCircle className="w-12 h-12 text-white" />
+            <div className="min-h-screen bg-gradient-to-br from-green-50 to-emerald-50 flex items-center justify-center p-4">
+                <div className="bg-white rounded-3xl shadow-2xl p-8 text-center max-w-lg mx-auto">
+                    <div className="w-20 h-20 mx-auto mb-6 bg-gradient-to-r from-green-500 to-emerald-500 rounded-full flex items-center justify-center">
+                        <CheckCircle className="w-10 h-10 text-white" />
+                    </div>
+                    <h2 className="text-3xl font-bold text-gray-800 mb-4">Registration Successful!</h2>
+                    <p className="text-lg text-gray-600 mb-6">
+                        Thank you <strong>{formData.name}</strong> for registering for DIIMUN 2025!
+                    </p>
+                    <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-2xl p-6 mb-8 text-left">
+                        <p className="text-blue-800 font-bold mb-3">What happens next?</p>
+                        <div className="space-y-2 text-blue-700">
+                            <p>• Payment verification (24-48 hours)</p>
+                            <p>• Confirmation email with event details</p>
+                            <p>• WhatsApp updates on your number</p>
                         </div>
-                        
-                        <motion.div
-                            initial={{ opacity: 0, y: 20 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            transition={{ delay: 0.5 }}
-                        >
-                            <h2 className="text-3xl md:text-4xl font-bold text-gray-800 mb-4">
-                                Registration Successful!
-                            </h2>
-                            <p className="text-lg text-gray-600 mb-6 leading-relaxed">
-                                Thank you <strong>{formData.name}</strong> for registering for DIIMUN 2025!
-                            </p>
-                            <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-2xl p-6 mb-8">
-                                <p className="text-blue-800 font-medium mb-2">What happens next?</p>
-                                <ul className="text-blue-700 text-left space-y-2">
-                                    <li className="flex items-center gap-2">
-                                        <CheckCircle className="w-4 h-4 text-green-600" />
-                                        Payment verification (24-48 hours)
-                                    </li>
-                                    <li className="flex items-center gap-2">
-                                        <Mail className="w-4 h-4 text-blue-600" />
-                                        Confirmation email with event details
-                                    </li>
-                                    <li className="flex items-center gap-2">
-                                        <Phone className="w-4 h-4 text-green-600" />
-                                        WhatsApp updates on your registered number
-                                    </li>
-                                </ul>
-                            </div>
-                            <motion.button
-                                whileHover={{ scale: 1.05 }}
-                                whileTap={{ scale: 0.95 }}
-                                onClick={() => window.location.reload()}
-                                className="bg-gradient-to-r from-midnight-600 to-cognac-600 text-white px-8 py-3 rounded-xl font-semibold shadow-lg hover:shadow-xl transition-all duration-300"
-                            >
-                                Register Another Participant
-                            </motion.button>
-                        </motion.div>
-                    </motion.div>
-                </motion.div>
+                    </div>
+                    <button
+                        onClick={() => window.location.reload()}
+                        className="bg-gradient-to-r from-emerald-600 to-teal-600 text-white px-8 py-3 rounded-xl font-bold hover:from-emerald-700 hover:to-teal-700 transition-all duration-300 shadow-lg"
+                    >
+                        Register Another Participant
+                    </button>
+                </div>
             </div>
         );
     }
 
-    // Step content components
-    const StepIndicator = () => (
-        <div className="flex items-center justify-center mb-8">
-            {[1, 2, 3, 4].map((step) => (
-                <React.Fragment key={step}>
-                    <motion.div
-                        animate={{
-                            backgroundColor: currentStep >= step ? '#1e293b' : '#e2e8f0',
-                            scale: currentStep === step ? 1.1 : 1
-                        }}
-                        className="w-10 h-10 rounded-full flex items-center justify-center text-white font-bold shadow-md"
-                    >
-                        {currentStep > step ? <CheckCircle className="w-5 h-5" /> : step}
-                    </motion.div>
-                    {step < 4 && (
-                        <div className={`w-16 h-1 mx-2 rounded-full ${
-                            currentStep > step ? 'bg-midnight-600' : 'bg-gray-200'
-                        }`} />
-                    )}
-                </React.Fragment>
-            ))}
-        </div>
-    );
+    return (
+        <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 py-4 md:py-8 px-4">
+            <div className="max-w-4xl mx-auto">
+                {/* Header */}
+                <div className="text-center mb-8">
+                    <h1 className="text-3xl md:text-4xl font-bold bg-gradient-to-r from-midnight-800 to-cognac-600 bg-clip-text text-transparent mb-2">
+                        Register for DIIMUN 2025
+                    </h1>
+                    <p className="text-gray-600">Join the premier Model United Nations experience</p>
+                </div>
 
-    const InputField = ({ name, label, type = "text", icon: Icon, placeholder, options, ...props }) => {
-        const field = validation[name];
-        const hasError = field?.touched && !field?.isValid && field?.message;
-        const isValid = field?.touched && field?.isValid;
-
-        return (
-            <div className="space-y-2">
-                <label className="block text-sm font-semibold text-gray-700 flex items-center gap-2">
-                    {Icon && <Icon className="w-4 h-4" />}
-                    {label}
-                </label>
-                
-                {type === 'select' ? (
-                    <motion.select
-                        name={name}
-                        value={formData[name]}
-                        onChange={handleInputChange}
-                        className={`w-full px-4 py-3 border-2 rounded-xl transition-all duration-300 bg-white ${
-                            hasError 
-                                ? 'border-red-300 focus:border-red-500 focus:ring-red-200' 
-                                : isValid
-                                ? 'border-green-300 focus:border-green-500 focus:ring-green-200'
-                                : 'border-gray-200 focus:border-midnight-500 focus:ring-midnight-200'
-                        } focus:outline-none focus:ring-2`}
-                        {...props}
-                    >
-                        <option value="">{placeholder}</option>
-                        {options?.map(option => (
-                            <option key={option.value} value={option.value}>
-                                {option.label}
-                            </option>
-                        ))}
-                    </motion.select>
-                ) : (
-                    <motion.input
-                        name={name}
-                        type={type}
-                        value={formData[name]}
-                        onChange={handleInputChange}
-                        placeholder={placeholder}
-                        className={`w-full px-4 py-3 border-2 rounded-xl transition-all duration-300 ${
-                            hasError 
-                                ? 'border-red-300 focus:border-red-500 focus:ring-red-200' 
-                                : isValid
-                                ? 'border-green-300 focus:border-green-500 focus:ring-green-200'
-                                : 'border-gray-200 focus:border-midnight-500 focus:ring-midnight-200'
-                        } focus:outline-none focus:ring-2`}
-                        {...props}
-                    />
-                )}
-                
-                <AnimatePresence>
-                    {hasError && (
-                        <motion.div
-                            initial={{ opacity: 0, y: -10 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            exit={{ opacity: 0, y: -10 }}
-                            className="flex items-center gap-2 text-red-600 text-sm"
-                        >
-                            <AlertCircle className="w-4 h-4" />
-                            {field.message}
-                        </motion.div>
-                    )}
-                    {isValid && (
-                        <motion.div
-                            initial={{ opacity: 0, y: -10 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            exit={{ opacity: 0, y: -10 }}
-                            className="flex items-center gap-2 text-green-600 text-sm"
-                        >
-                            <CheckCircle className="w-4 h-4" />
-                            Looks good!
-                        </motion.div>
-                    )}
-                </AnimatePresence>
-            </div>
-        );
-    };
-
-    const renderStepContent = () => {
-        switch (currentStep) {
-            case 1:
-                return (
-                    <motion.div
-                        initial={{ opacity: 0, x: 20 }}
-                        animate={{ opacity: 1, x: 0 }}
-                        exit={{ opacity: 0, x: -20 }}
-                        className="space-y-6"
-                    >
-                        <div className="text-center mb-8">
-                            <h3 className="text-2xl font-bold text-gray-800 mb-2">Personal Information</h3>
-                            <p className="text-gray-600">Let's start with your basic details</p>
-                        </div>
+                <form onSubmit={handleSubmit} className="bg-white rounded-2xl md:rounded-3xl shadow-2xl overflow-hidden">
+                    <div className="p-4 md:p-6 lg:p-8">
                         
-                        <InputField
-                            name="name"
-                            label="Full Name"
-                            icon={User}
-                            placeholder="Enter your full name"
-                            required
-                        />
-                        
-                        <InputField
-                            name="email"
-                            label="Email Address"
-                            type="email"
-                            icon={Mail}
-                            placeholder="your.email@gmail.com"
-                            required
-                        />
-                        
-                        <InputField
-                            name="whatsapp"
-                            label="WhatsApp Number"
-                            type="tel"
-                            icon={Phone}
-                            placeholder="+91 94423 08824"
-                            required
-                        />
-                    </motion.div>
-                );
-
-            case 2:
-                return (
-                    <motion.div
-                        initial={{ opacity: 0, x: 20 }}
-                        animate={{ opacity: 1, x: 0 }}
-                        exit={{ opacity: 0, x: -20 }}
-                        className="space-y-6"
-                    >
-                        <div className="text-center mb-8">
-                            <h3 className="text-2xl font-bold text-gray-800 mb-2">Academic Details</h3>
-                            <p className="text-gray-600">Tell us about your academic background</p>
-                        </div>
-                        
-                        <InputField
-                            name="college"
-                            label="College/Institution"
-                            icon={GraduationCap}
-                            placeholder="Your college or institution name"
-                            required
-                        />
-                        
-                        <InputField
-                            name="year"
-                            label="Year of Study"
-                            type="select"
-                            icon={Calendar}
-                            placeholder="Select your year"
-                            options={[
-                                { value: '1st Year', label: '1st Year' },
-                                { value: '2nd Year', label: '2nd Year' },
-                                { value: '3rd Year', label: '3rd Year' },
-                                { value: '4th Year', label: '4th Year' },
-                                { value: '5th Year', label: '5th Year' },
-                                { value: 'Final Year', label: 'Final Year' },
-                                { value: 'Postgraduate', label: 'Postgraduate' }
-                            ]}
-                            required
-                        />
-                    </motion.div>
-                );
-
-            case 3:
-                return (
-                    <motion.div
-                        initial={{ opacity: 0, x: 20 }}
-                        animate={{ opacity: 1, x: 0 }}
-                        exit={{ opacity: 0, x: -20 }}
-                        className="space-y-6"
-                    >
-                        <div className="text-center mb-8">
-                            <h3 className="text-2xl font-bold text-gray-800 mb-2">Choose Your Package</h3>
-                            <p className="text-gray-600">Select the registration type that suits you</p>
-                        </div>
-                        
-                        <div className="grid md:grid-cols-2 gap-6">
-                            {[
-                                {
-                                    type: 'MUN',
-                                    title: 'MUN Only',
-                                    price: '₹500',
-                                    features: ['Model United Nations Sessions', 'Certificate of Participation', 'Networking Opportunities'],
-                                    popular: false
-                                },
-                                {
-                                    type: 'MUN + Conference',
-                                    title: 'MUN + Conference',
-                                    price: '₹800',
-                                    features: ['Everything in MUN Only', 'Medical Conference Access', 'Workshop Sessions', 'Premium Certificate'],
-                                    popular: true
-                                }
-                            ].map((option) => (
-                                <motion.div
-                                    key={option.type}
-                                    whileHover={{ scale: 1.02 }}
-                                    whileTap={{ scale: 0.98 }}
-                                    onClick={() => setFormData(prev => ({ ...prev, regType: option.type }))}
-                                    className={`relative cursor-pointer rounded-2xl border-2 p-6 transition-all duration-300 ${
-                                        formData.regType === option.type
-                                            ? 'border-midnight-500 bg-midnight-50 shadow-lg'
-                                            : 'border-gray-200 bg-white hover:border-cognac-300 hover:shadow-md'
-                                    }`}
-                                >
-                                    {option.popular && (
-                                        <div className="absolute -top-3 left-1/2 transform -translate-x-1/2">
-                                            <div className="bg-gradient-to-r from-gold-500 to-yellow-500 text-white px-4 py-1 rounded-full text-sm font-bold flex items-center gap-1">
-                                                <Star className="w-3 h-3" />
-                                                Most Popular
-                                            </div>
-                                        </div>
-                                    )}
-                                    
+                        {/* Step 1: Choose Package */}
+                        <div className="mb-8">
+                            <h3 className="text-xl font-bold text-gray-800 mb-6 text-center">
+                                Choose Your Registration Package
+                            </h3>
+                            
+                            <div className="grid md:grid-cols-2 gap-4 mb-6">
+                                <label className={`cursor-pointer rounded-2xl border-2 p-6 transition-all duration-200 ${
+                                    formData.regType === 'MUN Only'
+                                        ? 'border-blue-500 bg-blue-50 shadow-lg'
+                                        : 'border-gray-200 hover:border-blue-300 hover:bg-gray-50'
+                                }`}>
+                                    <input
+                                        type="radio"
+                                        name="regType"
+                                        value="MUN Only"
+                                        checked={formData.regType === 'MUN Only'}
+                                        onChange={handleChange}
+                                        className="sr-only"
+                                    />
                                     <div className="text-center">
-                                        <h4 className="text-xl font-bold text-gray-800 mb-2">{option.title}</h4>
-                                        <div className="text-3xl font-bold text-cognac-600 mb-4">{option.price}</div>
-                                        <ul className="space-y-2 text-sm text-gray-600">
-                                            {option.features.map((feature, idx) => (
-                                                <li key={idx} className="flex items-center gap-2">
-                                                    <CheckCircle className="w-4 h-4 text-green-500" />
-                                                    {feature}
-                                                </li>
-                                            ))}
+                                        <h4 className="font-bold text-xl text-gray-800 mb-2">MUN Only</h4>
+                                        <p className="text-sm text-gray-600 mb-3">by DNA</p>
+                                        <div className="text-3xl font-bold text-blue-600 mb-4">₹500</div>
+                                        <ul className="text-sm text-gray-600 space-y-1 text-left">
+                                            <li>• Expereicnce Model United Nations</li>
+                                            <li>• Certificate from DNA</li>
+                                            <li>• Free communication workshop</li>
                                         </ul>
                                     </div>
-                                    
-                                    {formData.regType === option.type && (
-                                        <motion.div
-                                            initial={{ scale: 0 }}
-                                            animate={{ scale: 1 }}
-                                            className="absolute top-4 right-4 w-6 h-6 bg-midnight-500 rounded-full flex items-center justify-center"
-                                        >
-                                            <CheckCircle className="w-4 h-4 text-white" />
-                                        </motion.div>
-                                    )}
-                                </motion.div>
-                            ))}
-                        </div>
-                    </motion.div>
-                );
+                                </label>
 
-            case 4:
-                return (
-                    <motion.div
-                        initial={{ opacity: 0, x: 20 }}
-                        animate={{ opacity: 1, x: 0 }}
-                        exit={{ opacity: 0, x: -20 }}
-                        className="space-y-6"
-                    >
-                        <div className="text-center mb-8">
-                            <h3 className="text-2xl font-bold text-gray-800 mb-2">Payment & Upload</h3>
-                            <p className="text-gray-600">Complete your registration with payment proof</p>
+                                <label className={`cursor-pointer rounded-2xl border-2 p-6 transition-all duration-200 relative ${
+                                    formData.regType === 'MUN + Conference'
+                                        ? 'border-green-500 bg-green-50 shadow-lg'
+                                        : 'border-gray-200 hover:border-green-300 hover:bg-gray-50'
+                                }`}>
+                                    <div className="absolute -top-3 -right-3 bg-gradient-to-r from-yellow-400 to-orange-400 text-white px-3 py-1 rounded-full text-xs font-bold shadow-lg flex items-center gap-1">
+                                        <Star className="w-3 h-3" />
+                                        Best Value
+                                    </div>
+                                    <input
+                                        type="radio"
+                                        name="regType"
+                                        value="MUN + Conference"
+                                        checked={formData.regType === 'MUN + Conference'}
+                                        onChange={handleChange}
+                                        className="sr-only"
+                                    />
+                                    <div className="text-center">
+                                        <h4 className="font-bold text-xl text-gray-800 mb-2">MUN + National Conference</h4>
+                                        <p className="text-sm text-gray-600 mb-3">by DNA + Esperanza</p>
+                                        <div className="text-3xl font-bold text-green-600 mb-2">₹800</div>
+                                        <p className="text-xs text-green-700 font-semibold mb-4">Save ₹400! (Usually ₹1200)</p>
+                                        <ul className="text-sm text-gray-600 space-y-1 text-left">
+                                            <li>• Everything in MUN Only</li>
+                                            <li>• Esperanza National Conference access</li>
+                                            <li>• Premium networking opportunities</li>
+                                        </ul>
+                                    </div>
+                                </label>
+                            </div>
+
+                            {/* Conference-only info */}
+                            {/* <div className="bg-amber-50 border border-amber-200 rounded-xl p-4">
+                                <div className="flex items-start gap-3">
+                                    <Info className="w-5 h-5 text-amber-600 flex-shrink-0 mt-0.5" />
+                                    <div className="text-sm">
+                                        <p className="text-amber-800 font-semibold mb-1">National Conference Only?</p>
+                                        <p className="text-amber-700">
+                                            For National Conference only registration, contact{' '}
+                                            <a href="tel:+919498653452" className="font-semibold text-amber-800 hover:underline">
+                                                +91 9498653452
+                                            </a>
+                                        </p>
+                                    </div>
+                                </div>
+                            </div> */}
                         </div>
-                        
-                        {/* Payment Instructions */}
-                        <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-2xl p-6 border border-blue-200">
-                            <h4 className="font-bold text-blue-800 mb-4 flex items-center gap-2">
-                                <CreditCard className="w-5 h-5" />
-                                Payment Instructions
-                            </h4>
-                            <div className="space-y-3 text-blue-700">
-                                <p><strong>Amount:</strong> {formData.regType === 'MUN' ? '₹500' : '₹800'}</p>
-                                <p><strong>UPI ID:</strong> <code className="bg-blue-100 px-2 py-1 rounded">payment@diimun.org</code></p>
-                                <p><strong>Note:</strong> Please include your name in the payment description</p>
+
+                        {/* Step 2: Personal & Academic Information */}
+                        <div id="form-details" className="grid md:grid-cols-2 gap-6 mb-2">
+                            {/* Personal Information */}
+                            <div>
+                                <h3 className="text-lg font-bold text-gray-800 mb-4 flex items-center gap-2">
+                                    <User className="w-5 h-5 text-blue-600" />
+                                    Personal Details
+                                </h3>
+                                <div className="space-y-4">
+                                    <div>
+                                        <label htmlFor="name" className="block text-sm font-semibold text-gray-700 mb-1">
+                                            Full Name *
+                                        </label>
+                                        <input
+                                            type="text"
+                                            id="name"
+                                            name="name"
+                                            value={formData.name}
+                                            onChange={handleChange}
+                                            onBlur={handleBlur}
+                                            placeholder="Enter your full name"
+                                            className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all duration-200 text-base font-medium text-gray-800 ${
+                                                errors.name ? 'border-red-300 bg-red-50' : 'border-gray-300 hover:border-gray-400'
+                                            }`}
+                                            autoComplete="name"
+                                            required
+                                        />
+                                        {errors.name && (
+                                            <p className="mt-1 text-sm text-red-600 flex items-center gap-1">
+                                                <AlertCircle className="w-3 h-3" />
+                                                {errors.name}
+                                            </p>
+                                        )}
+                                    </div>
+
+                                    <div>
+                                        <label htmlFor="email" className="block text-sm font-semibold text-gray-700 mb-1">
+                                            Email Address *
+                                        </label>
+                                        <input
+                                            type="email"
+                                            id="email"
+                                            name="email"
+                                            value={formData.email}
+                                            onChange={handleChange}
+                                            onBlur={handleBlur}
+                                            placeholder="your.email@gmail.com"
+                                            className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all duration-200 text-base font-medium text-gray-800 ${
+                                                errors.email ? 'border-red-300 bg-red-50' : 'border-gray-300 hover:border-gray-400'
+                                            }`}
+                                            autoComplete="email"
+                                            required
+                                        />
+                                        {errors.email && (
+                                            <p className="mt-1 text-sm text-red-600 flex items-center gap-1">
+                                                <AlertCircle className="w-3 h-3" />
+                                                {errors.email}
+                                            </p>
+                                        )}
+                                    </div>
+
+                                    <div>
+                                        <label htmlFor="whatsapp" className="block text-sm font-semibold text-gray-700 mb-1">
+                                            WhatsApp Number *
+                                        </label>
+                                        <input
+                                            type="tel"
+                                            id="whatsapp"
+                                            name="whatsapp"
+                                            value={formData.whatsapp}
+                                            onChange={handleChange}
+                                            onBlur={handleBlur}
+                                            placeholder="+91 9400076226"
+                                            className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all duration-200 text-base font-medium text-gray-800 ${
+                                                errors.whatsapp ? 'border-red-300 bg-red-50' : 'border-gray-300 hover:border-gray-400'
+                                            }`}
+                                            autoComplete="tel"
+                                            required
+                                        />
+                                        {errors.whatsapp && (
+                                            <p className="mt-1 text-sm text-red-600 flex items-center gap-1">
+                                                <AlertCircle className="w-3 h-3" />
+                                                {errors.whatsapp}
+                                            </p>
+                                        )}
+                                    </div>
+                                </div>
+                            </div>
+
+                            {/* Academic Information */}
+                            <div>
+                                <h3 className="text-lg font-bold text-gray-800 mb-4 flex items-center gap-2">
+                                    <GraduationCap className="w-5 h-5 text-blue-600" />
+                                    Academic Details
+                                </h3>
+                                <div className="space-y-4">
+                                    <div>
+                                        <label htmlFor="college" className="block text-sm font-semibold text-gray-700 mb-1">
+                                            College/Institution *
+                                        </label>
+                                        <input
+                                            type="text"
+                                            id="college"
+                                            name="college"
+                                            value={formData.college}
+                                            onChange={handleChange}
+                                            onBlur={handleBlur}
+                                            placeholder="Your college or institution name"
+                                            className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all duration-200 text-base font-medium text-gray-800 ${
+                                                errors.college ? 'border-red-300 bg-red-50' : 'border-gray-300 hover:border-gray-400'
+                                            }`}
+                                            autoComplete="organization"
+                                            required
+                                        />
+                                        {errors.college && (
+                                            <p className="mt-1 text-sm text-red-600 flex items-center gap-1">
+                                                <AlertCircle className="w-3 h-3" />
+                                                {errors.college}
+                                            </p>
+                                        )}
+                                    </div>
+
+                                    <div className="relative custom-year-dropdown">
+                                        <label htmlFor="year" className="block text-sm font-semibold text-gray-700 mb-1">
+                                            Year of Study *
+                                        </label>
+                                        
+                                        {/* Custom Dropdown Button */}
+                                        <button
+                                            type="button"
+                                            onClick={() => setYearDropdownOpen(!yearDropdownOpen)}
+                                            className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all duration-200 text-left flex items-center justify-between text-base font-medium ${
+                                                errors.year 
+                                                    ? 'border-red-300 bg-red-50' 
+                                                    : yearDropdownOpen 
+                                                        ? 'border-blue-500 ring-2 ring-blue-500 bg-blue-50' 
+                                                        : 'border-gray-300 hover:border-gray-400 bg-white'
+                                            }`}
+                                        >
+                                            <span className={formData.year ? 'text-gray-800' : 'text-gray-500'}>
+                                                {formData.year || 'Select your year'}
+                                            </span>
+                                            {yearDropdownOpen ? (
+                                                <ChevronUp className="w-5 h-5 text-gray-500" />
+                                            ) : (
+                                                <ChevronDown className="w-5 h-5 text-gray-500" />
+                                            )}
+                                        </button>
+
+                                        {/* Custom Dropdown Menu */}
+                                        {yearDropdownOpen && (
+                                            <div className="absolute top-full left-0 right-0 mt-1 bg-white border border-gray-200 rounded-xl shadow-2xl z-50 max-h-64 overflow-y-auto">
+                                                {yearOptions.map((option, index) => (
+                                                    <button
+                                                        key={option.value}
+                                                        type="button"
+                                                        onClick={() => !option.disabled && handleYearSelect(option.value)}
+                                                        disabled={option.disabled}
+                                                        className={`w-full px-4 py-3 text-left transition-all duration-150 flex items-center justify-between text-base font-medium ${
+                                                            option.disabled
+                                                                ? 'text-gray-400 cursor-not-allowed bg-gray-50'
+                                                                : formData.year === option.value
+                                                                    ? 'bg-blue-50 text-blue-700 font-semibold border-l-4 border-blue-500'
+                                                                    : 'text-gray-700 hover:bg-blue-50 hover:text-blue-600'
+                                                        } ${
+                                                            index === 0 ? 'rounded-t-xl' : ''
+                                                        } ${
+                                                            index === yearOptions.length - 1 ? 'rounded-b-xl' : 'border-b border-gray-100'
+                                                        }`}
+                                                    >
+                                                        <span>{option.label}</span>
+                                                        {formData.year === option.value && !option.disabled && (
+                                                            <CheckCircle className="w-4 h-4 text-blue-600" />
+                                                        )}
+                                                    </button>
+                                                ))}
+                                            </div>
+                                        )}
+
+                                        {/* Hidden input for form validation */}
+                                        <input
+                                            type="hidden"
+                                            name="year"
+                                            value={formData.year}
+                                            required
+                                        />
+                                        
+                                        {errors.year && (
+                                            <p className="mt-1 text-sm text-red-600 flex items-center gap-1">
+                                                <AlertCircle className="w-3 h-3" />
+                                                {errors.year}
+                                            </p>
+                                        )}
+                                    </div>
+                                </div>
                             </div>
                         </div>
-                        
-                        {/* File Upload */}
-                        <div className="space-y-4">
-                            <label className="block text-sm font-semibold text-gray-700 flex items-center gap-2">
-                                <Upload className="w-4 h-4" />
-                                Upload Payment Screenshot
-                            </label>
+
+                        {/* Step 3: Payment - Compact */}
+                        <div className="border-t border-gray-100 pt-8">
+                            <h3 className="text-lg font-bold text-gray-800 mb-4 flex items-center gap-2">
+                                <CheckCircle className="w-5 h-5 text-blue-600" />
+                                Complete Your Payment
+                            </h3>
                             
-                            <div
-                                onDragOver={handleDragOver}
-                                onDragLeave={handleDragLeave}
-                                onDrop={handleDrop}
-                                className={`border-2 border-dashed rounded-2xl p-8 text-center transition-all duration-300 ${
-                                    dragActive 
-                                        ? 'border-midnight-400 bg-midnight-50' 
-                                        : 'border-gray-300 hover:border-cognac-400 hover:bg-cognac-50'
-                                }`}
-                            >
-                                <input
-                                    type="file"
-                                    id="paymentPhoto"
-                                    accept="image/png,image/jpeg,image/jpg"
-                                    onChange={(e) => handleFileChange(e.target.files[0])}
-                                    className="hidden"
-                                />
-                                
+                            {/* Compact Payment Card */}
+                            <div className="bg-blue-50 border-2 border-blue-500 rounded-2xl p-4 md:p-6 mb-6">
+                                <div className="text-center">
+                                    <div className="text-2xl md:text-3xl font-bold mb-2 text-gray-800">₹{formData.regType === 'MUN Only' ? '500' : '800'}</div>
+                                    <p className="text-gray-600 mb-4 text-sm md:text-base">{formData.regType}</p>
+                                    
+                                    {/* UPI Details - More Compact */}
+                                    <div className="bg-white border border-blue-200 rounded-xl p-3 md:p-4 mb-4">
+                                        <p className="text-gray-600 text-xs md:text-sm mb-1">Pay to UPI ID</p>
+                                        <p className="font-mono font-bold text-sm md:text-lg break-all text-gray-800">{upiId}</p>
+                                    </div>
+                                    
+                                    {/* Single Action Button - Responsive */}
+                                    <button
+                                        type="button"
+                                        onClick={handleUPIPayment}
+                                        className={`w-full py-3 md:py-4 px-4 md:px-6 rounded-xl font-bold text-base md:text-lg transition-all duration-300 flex items-center justify-center gap-3 shadow-lg ${
+                                            copiedUPI 
+                                                ? 'bg-green-500 text-white' 
+                                                : 'bg-blue-600 text-white hover:bg-blue-700 active:scale-95'
+                                        }`}
+                                    >
+                                        {copiedUPI ? (
+                                            <>
+                                                <Check className="w-4 h-4 md:w-5 md:h-5" />
+                                                <span className="text-sm md:text-base">Payment App Opening...</span>
+                                            </>
+                                        ) : (
+                                            <>
+                                                <Copy className="w-4 h-4 md:w-5 md:h-5" />
+                                                <span className="text-sm md:text-base">Pay ₹{formData.regType === 'MUN Only' ? '500' : '800'} Now</span>
+                                            </>
+                                        )}
+                                    </button>
+                                    
+                                    <p className="text-gray-600 text-xs md:text-sm mt-3">
+                                        Questions? Call <a href="tel:+919400076226" className="font-semibold text-blue-600 hover:underline">+91 9400076226</a>
+                                    </p>
+                                </div>
+                            </div>
+
+                            {/* File Upload */}
+                            <div>
+
+                            <h3 className="text-lg font-bold text-gray-800 mb-4 flex items-center gap-2">
+                                <Upload className="w-5 h-5 text-blue-600" />
+                                Upload Payment Screenshot
+                            </h3>                                
                                 {photoPreview ? (
                                     <div className="space-y-4">
-                                        <img
-                                            src={photoPreview}
-                                            alt="Payment screenshot"
-                                            className="max-w-xs mx-auto rounded-lg border shadow-md"
-                                        />
-                                        <div className="flex items-center justify-center gap-4">
-                                            <button
-                                                type="button"
-                                                onClick={() => document.getElementById('paymentPhoto').click()}
-                                                className="text-cognac-600 hover:text-cognac-700 font-medium"
-                                            >
-                                                Change Image
-                                            </button>
+                                        <div className="relative max-w-sm mx-auto">
+                                            <img
+                                                src={photoPreview}
+                                                alt="Payment screenshot"
+                                                className="w-full rounded-xl border-2 border-green-200 shadow-lg"
+                                            />
+                                            <div className="absolute top-3 right-3 bg-green-500 text-white p-2 rounded-full">
+                                                <CheckCircle className="w-4 h-4" />
+                                            </div>
+                                        </div>
+                                        <div className="flex justify-center">
                                             <button
                                                 type="button"
                                                 onClick={() => {
                                                     setPaymentPhoto(null);
                                                     setPhotoPreview(null);
                                                 }}
-                                                className="text-red-600 hover:text-red-700 font-medium"
+                                                className="bg-red-100 text-red-700 px-4 py-2 rounded-lg font-medium hover:bg-red-200 transition-colors duration-200"
                                             >
                                                 Remove
                                             </button>
                                         </div>
                                     </div>
                                 ) : (
-                                    <label htmlFor="paymentPhoto" className="cursor-pointer block">
-                                        <div className="space-y-4">
-                                            <div className="w-16 h-16 mx-auto bg-gradient-to-br from-cognac-100 to-gold-100 rounded-2xl flex items-center justify-center">
-                                                <Upload className="w-8 h-8 text-cognac-600" />
+                                    <div className="border-2 border-dashed border-gray-300 rounded-2xl p-8 text-center hover:border-blue-400 hover:bg-blue-50 transition-all duration-200">
+                                        <input
+                                            type="file"
+                                            id="paymentPhoto"
+                                            accept="image/png,image/jpeg,image/jpg"
+                                            onChange={handleFileChange}
+                                            className="hidden"
+                                            required
+                                        />
+                                        <label htmlFor="paymentPhoto" className="cursor-pointer">
+                                            <div className="space-y-4">
+                                                <div className="w-16 h-16 mx-auto bg-gradient-to-r from-blue-100 to-indigo-100 rounded-2xl flex items-center justify-center">
+                                                    <Upload className="w-8 h-8 text-blue-600" />
+                                                </div>
+                                                <div>
+                                                    <p className="font-semibold text-gray-800 text-lg">Upload Payment Screenshot</p>
+                                                    <p className="text-sm text-gray-600 mt-1">PNG, JPG up to 10MB</p>
+                                                </div>
                                             </div>
-                                            <div>
-                                                <p className="text-lg font-semibold text-gray-700">
-                                                    Drop your payment screenshot here
-                                                </p>
-                                                <p className="text-gray-500">or click to browse</p>
-                                                <p className="text-sm text-gray-400 mt-2">PNG, JPG up to 10MB</p>
-                                            </div>
-                                        </div>
-                                    </label>
+                                        </label>
+                                    </div>
                                 )}
                             </div>
                         </div>
-                    </motion.div>
-                );
 
-            default:
-                return null;
-        }
-    };
-
-    return (
-        <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 py-12 px-4">
-            <div className="max-w-2xl mx-auto">
-                {/* Header */}
-                <motion.div
-                    initial={{ opacity: 0, y: -20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    className="text-center mb-12"
-                >
-                    <h2 className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-midnight-800 to-cognac-600 bg-clip-text text-transparent mb-4">
-                        Join DIIMUN 2025
-                    </h2>
-                    <p className="text-xl text-gray-600">
-                        Your journey to excellence starts here
-                    </p>
-                </motion.div>
-
-                {/* Form Container */}
-                <motion.div
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    className="bg-white rounded-3xl shadow-2xl overflow-hidden"
-                >
-                    <div className="p-8 md:p-12">
-                        <StepIndicator />
-                        
-                        <AnimatePresence mode="wait">
-                            {renderStepContent()}
-                        </AnimatePresence>
-                        
                         {/* Global Error */}
-                        <AnimatePresence>
-                            {globalError && (
-                                <motion.div
-                                    initial={{ opacity: 0, y: 20 }}
-                                    animate={{ opacity: 1, y: 0 }}
-                                    exit={{ opacity: 0, y: -20 }}
-                                    className="mt-6 bg-red-50 border border-red-200 rounded-xl p-4 flex items-center gap-3"
-                                >
-                                    <AlertCircle className="w-5 h-5 text-red-500 flex-shrink-0" />
-                                    <p className="text-red-700">{globalError}</p>
-                                </motion.div>
-                            )}
-                        </AnimatePresence>
-                        
-                        {/* Navigation Buttons */}
-                        <div className="flex justify-between items-center mt-8">
-                            <motion.button
-                                whileHover={{ scale: 1.02 }}
-                                whileTap={{ scale: 0.98 }}
-                                onClick={prevStep}
-                                disabled={currentStep === 1}
-                                className={`flex items-center gap-2 px-6 py-3 rounded-xl font-semibold transition-all duration-300 ${
-                                    currentStep === 1
-                                        ? 'text-gray-400 cursor-not-allowed'
-                                        : 'text-gray-600 hover:text-gray-800 hover:bg-gray-100'
+                        {globalError && (
+                            <div className="mb-6 bg-red-50 border border-red-200 rounded-xl p-4 flex items-center gap-3">
+                                <AlertCircle className="w-5 h-5 text-red-500" />
+                                <p className="text-red-700 font-medium">{globalError}</p>
+                            </div>
+                        )}
+
+                        {/* Submit Button */}
+                        <div className="border-t border-gray-100 pt-6">
+                            <button
+                                type="submit"
+                                disabled={isSubmitting}
+                                className={`w-full py-4 px-6 rounded-2xl font-bold text-lg transition-all duration-300 flex items-center justify-center gap-3 ${
+                                    isSubmitting
+                                        ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                                        : 'bg-gradient-to-r from-emerald-600 via-teal-600 to-cyan-600 text-white hover:from-emerald-700 hover:via-teal-700 hover:to-cyan-700 shadow-xl hover:shadow-2xl transform hover:scale-[1.02]'
                                 }`}
                             >
-                                <ChevronLeft className="w-5 h-5" />
-                                Previous
-                            </motion.button>
+                                {isSubmitting ? (
+                                    <>
+                                        <Loader className="w-5 h-5 animate-spin" />
+                                        Submitting Registration...
+                                    </>
+                                ) : (
+                                    <>
+                                        <CheckCircle className="w-5 h-5" />
+                                        Complete Registration
+                                    </>
+                                )}
+                            </button>
                             
-                            {currentStep < 4 ? (
-                                <motion.button
-                                    whileHover={canProceedToStep(currentStep + 1) ? { scale: 1.02 } : {}}
-                                    whileTap={canProceedToStep(currentStep + 1) ? { scale: 0.98 } : {}}
-                                    onClick={nextStep}
-                                    disabled={!canProceedToStep(currentStep + 1)}
-                                    className={`flex items-center gap-2 px-8 py-3 rounded-xl font-semibold transition-all duration-300 ${
-                                        canProceedToStep(currentStep + 1)
-                                            ? 'bg-gradient-to-r from-midnight-600 to-cognac-600 text-white shadow-lg hover:shadow-xl'
-                                            : 'bg-gray-200 text-gray-400 cursor-not-allowed'
-                                    }`}
-                                >
-                                    Next
-                                    <ChevronRight className="w-5 h-5" />
-                                </motion.button>
-                            ) : (
-                                <motion.button
-                                    whileHover={!isSubmitting ? { scale: 1.02 } : {}}
-                                    whileTap={!isSubmitting ? { scale: 0.98 } : {}}
-                                    onClick={handleSubmit}
-                                    disabled={isSubmitting || !paymentPhoto}
-                                    className={`flex items-center gap-2 px-8 py-3 rounded-xl font-semibold transition-all duration-300 ${
-                                        isSubmitting || !paymentPhoto
-                                            ? 'bg-gray-200 text-gray-400 cursor-not-allowed'
-                                            : 'bg-gradient-to-r from-green-600 to-emerald-600 text-white shadow-lg hover:shadow-xl'
-                                    }`}
-                                >
-                                    {isSubmitting ? (
-                                        <>
-                                            <Loader className="w-5 h-5 animate-spin" />
-                                            Submitting...
-                                        </>
-                                    ) : (
-                                        <>
-                                            Complete Registration
-                                            <Sparkles className="w-5 h-5" />
-                                        </>
-                                    )}
-                                </motion.button>
-                            )}
+                            <p className="text-center text-sm text-gray-500 mt-4">
+                                By registering, you agree to our terms and conditions for DIIMUN 2025
+                            </p>
                         </div>
                     </div>
-                </motion.div>
+                </form>
             </div>
         </div>
     );

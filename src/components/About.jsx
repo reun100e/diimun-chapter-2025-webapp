@@ -1,20 +1,8 @@
 import React from 'react'
 import { motion } from 'framer-motion'
-import { STALWARTS, EVENT_INFO, BENEFITS } from '../utils/constants'
-import { Users, Zap, MessageSquare, GraduationCap, BookOpen, Handshake } from 'lucide-react'
+import { STALWARTS, EVENT_INFO } from '../utils/constants'
 
 const About = () => {
-  const keyBenefits = BENEFITS.slice(0, 4) // Take first 4 benefits
-
-  // Icon mapping for benefits
-  const iconMap = {
-    Users,
-    Zap,
-    MessageSquare,
-    GraduationCap,
-    BookOpen,
-    Handshake
-  }
 
   return (
     <section id="about" className="section-padding bg-white">
@@ -54,41 +42,10 @@ const About = () => {
           </div>
         </motion.div>
 
-        {/* Key Benefits Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-16">
-          {keyBenefits.map((benefit, index) => (
-            <motion.div
-              key={benefit.title}
-              initial={{ opacity: 0, y: 50 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: index * 0.1 }}
-              viewport={{ once: true }}
-              whileHover={{ y: -5, scale: 1.02 }}
-              className="card p-6 text-center group cursor-pointer"
-            >
-              <motion.div
-                whileHover={{ scale: 1.1, rotate: 5 }}
-                className="mb-4 inline-flex items-center justify-center w-12 h-12 rounded-2xl bg-gradient-to-br from-midnight-600 to-cognac-600 text-white shadow-medium"
-              >
-                {(() => {
-                  const IconComponent = iconMap[benefit.icon]
-                  return IconComponent ? <IconComponent className="w-6 h-6" /> : <Users className="w-6 h-6" />
-                })()}
-              </motion.div>
-              <h3 className="text-lg font-bold text-midnight-800 mb-3 group-hover:text-midnight-900 transition-colors duration-300">
-                {benefit.title}
-              </h3>
-              <p className="text-sm text-gray-600 leading-relaxed group-hover:text-gray-700 transition-colors duration-300">
-                {benefit.description}
-              </p>
-            </motion.div>
-          ))}
-        </div>
-
       </div>
 
       {/* Featured Stalwarts - Auto-scrolling carousel - Full width */}
-      <div className="bg-gradient-to-r from-cognac-50 via-white to-cognac-50 py-16 full-width-section">
+      <div className="bg-gradient-to-r from-cognac-50 via-white to-cognac-50 pt-16 pb-8 full-width-section">
         <div className="container-custom">
           <motion.div
             initial={{ opacity: 0, y: 30 }}

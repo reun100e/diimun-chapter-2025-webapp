@@ -34,7 +34,7 @@ const Hero = () => {
         <img 
           src={ASSETS.dnaLogo} 
           alt="DNA Logo Background" 
-          className="w-full h-full object-contain filter blur-sm"
+          className="w-full h-full object-contain filter blur-xs"
         />
       </motion.div>
       
@@ -99,9 +99,9 @@ const Hero = () => {
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.2 }}
-            className="text-accent text-gold-300 mb-6 tracking-wider"
+            className="text-accent text-gold-300 mb-6 tracking-wider pt-4"
           >
-            Doctors Nexus Amity (DNA) in Collaboration with ESPERANZA 4.0 Proudly Presents
+            Doctors Nexus Amity (DNA) in collaboration with GHMCT presents an Expranza exclusive
           </motion.p>
 
           {/* Main Heading */}
@@ -137,12 +137,12 @@ const Hero = () => {
             <p className="text-lg md:text-xl lg:text-2xl text-pearl-200 font-light mb-8 max-w-4xl mx-auto leading-relaxed">
               {EVENT_INFO.tagline}
             </p>
-            <div className="flex flex-col sm:flex-row items-center justify-center gap-4 text-base md:text-lg">
+            <div className="flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-4 text-sm sm:text-base md:text-lg">
               <motion.div 
                 whileHover={{ scale: 1.05 }}
-                className="card-glass px-6 py-4 flex items-center gap-4 backdrop-blur-md"
+                className="card-glass px-4 py-3 sm:px-6 sm:py-4 flex items-center gap-2 sm:gap-4 backdrop-blur-md"
               >
-                <Calendar className="w-6 h-6 text-gold-300" />
+                <Calendar className="w-5 h-5 sm:w-6 sm:h-6 text-gold-300" />
                 <span className="font-semibold text-gold-200">{EVENT_INFO.date}</span>
               </motion.div>
               <motion.a
@@ -150,9 +150,9 @@ const Hero = () => {
                 target="_blank"
                 rel="noopener noreferrer"
                 whileHover={{ scale: 1.05 }}
-                className="card-glass px-6 py-4 flex items-center gap-4 backdrop-blur-md cursor-pointer hover:bg-white/20 transition-all duration-300"
+                className="card-glass px-4 py-3 sm:px-6 sm:py-4 flex items-center gap-2 sm:gap-4 backdrop-blur-md cursor-pointer hover:bg-white/20 transition-all duration-300"
               >
-                <MapPin className="w-6 h-6 text-copper-300" />
+                <MapPin className="w-5 h-5 sm:w-6 sm:h-6 text-copper-300" />
                 <span className="font-semibold text-copper-200">GHMC Trivandrum</span>
               </motion.a>
             </div>
@@ -181,13 +181,13 @@ const Hero = () => {
             <motion.button
               whileHover={{ scale: 1.05, y: -3 }}
               whileTap={{ scale: 0.95 }}
-              onClick={scrollToAbout}
+              onClick={() => smoothScrollTo('#highlights', 100)}
               className="group relative overflow-hidden border-2 border-white/30 text-pearl-100 hover:text-white font-semibold py-4 px-10 rounded-2xl transition-all duration-500 transform hover:scale-105 shadow-lg hover:shadow-white/10 text-lg min-w-[280px] backdrop-blur-sm"
             >
               <div className="absolute inset-0 bg-gradient-to-r from-white/0 via-white/10 to-white/20 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
               <span className="relative z-10 flex items-center justify-center gap-3">
                 <BookOpen className="w-6 h-6 group-hover:rotate-12 transition-transform duration-300" />
-                <span>Learn More</span>
+                <span>Choose Committee</span>
               </span>
             </motion.button>
 

@@ -50,9 +50,12 @@ const Navigation = () => {
                 className="w-full h-full object-contain"
               />
             </div>
-            <div className="hidden sm:block">
-              <h1 className="text-2xl font-bold gradient-text font-display">DIIMUN</h1>
-              <p className="text-accent text-slate-500">Powered by DNA</p>
+            <div className="flex flex-col">
+              <h1 className="text-sx font-bold text-accent">
+                <span className="block">Doctors Integrated</span>
+                <span className="block">International MUN</span>
+              </h1>
+              <p className="text-slate-500 text-xs">powered by DNA</p>
             </div>
           </motion.div>
 
@@ -83,7 +86,6 @@ const Navigation = () => {
               <span className="relative z-10">Register Now</span>
             </motion.button>
           </div>
-
           {/* Mobile Menu Button */}
           <motion.button
             whileTap={{ scale: 0.95 }}

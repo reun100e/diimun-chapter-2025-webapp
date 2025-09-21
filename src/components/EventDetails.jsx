@@ -49,7 +49,7 @@ const EventDetails = () => {
                 />
               </motion.div>
             </div>
-            <p className="text-lg text-slate-700 max-w-2xl mx-auto">
+            <p className="pt-2 text-lg text-slate-700 max-w-2xl mx-auto">
               Doctors Nexus Amity (DNA) is committed to advancing homoeopathic education and fostering meaningful discourse within the community.
             </p>
           </div>

@@ -83,6 +83,7 @@ export const NAV_LINKS = [
   { href: '#hero', label: 'Home' },
   { href: '#about', label: 'About' },
   { href: '#highlights', label: 'Committees' },
+  { href: '#why-join', label: 'Why Join' },
   { href: '#details', label: 'Details' },
   { href: '#faq', label: 'FAQ' },
 ]
@@ -93,31 +94,43 @@ export const BENEFITS = [
     icon: 'Users',
     title: 'First-Person Role Playing',
     description: 'Step into the shoes of great homoeopathic stalwarts and experience debates from their unique perspectives.',
+    image: '/images/First-Person Role Playing.png',
+    gradient: 'from-blue-600 to-purple-700'
   },
   {
     icon: 'Zap',
     title: 'Shape the Event Flow',
     description: 'You get to choose and control the flow of the entire event through your active participation and decisions.',
+    image: '/images/Shape the Event Flow.png',
+    gradient: 'from-emerald-600 to-teal-700'
   },
   {
     icon: 'MessageSquare',
     title: 'Voice Your Opinions',
     description: 'Finally, a platform where homoeopathy gets the highlight it deserves and your voice can make a difference.',
+    image: '/images/Voice Your Opinions.png',
+    gradient: 'from-orange-600 to-red-700'
   },
   {
     icon: 'BookOpen',
     title: 'Unearth Hidden Philosophies',
     description: 'Discover and debate the philosophies of stalwarts and masters that have been left unexplored.',
+    image: '/images/Unearth Hidden Philosophies.png',
+    gradient: 'from-indigo-600 to-blue-700'
   },
   {
     icon: 'Handshake',
     title: 'Team-Based Learning',
     description: 'Collaborate with a partner in this comprehensive elocution cum debate competition.',
+    image: '/images/Team-Based Learning.png',
+    gradient: 'from-pink-600 to-rose-700'
   },
   {
     icon: 'GraduationCap',
     title: 'Free Communication Workshop',
     description: '3-day online workshop on "Art of Communication" plus competition explanation sessions - completely FREE.',
+    image: '/images/Free Communication Workshop.png',
+    gradient: 'from-yellow-600 to-orange-700'
   },
 ]
 

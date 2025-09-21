@@ -112,7 +112,7 @@
   }
 
   .gradient-text-elegant {
-    @apply bg-gradient-to-r from-cognac-900 via-cognac-600 to-gold-600 bg-clip-text text-transparent;
+    @apply bg-gradient-to-r from-cognac-700 via-cognac-600 to-gold-600 bg-clip-text text-transparent;
     background-size: 300% 300%;
     animation: gradient 6s ease infinite;
   }
@@ -348,3 +348,92 @@
   .gradient-button:hover::before {
     left: 100%;
   }
+
+  /* Enhanced Image Styles for Benefits Cards */
+  .benefit-card-image {
+    transition: transform 0.7s cubic-bezier(0.4, 0, 0.2, 1), filter 0.5s ease;
+    filter: brightness(1) saturate(1.1);
+  }
+
+  .benefit-card-image:hover {
+    transform: scale(1.1) rotate(2deg);
+    filter: brightness(1.1) saturate(1.2);
+  }
+
+  /* Enhanced Gradient Overlays */
+  .gradient-overlay-dynamic {
+    background: linear-gradient(
+      135deg,
+      rgba(0, 0, 0, 0.3) 0%,
+      rgba(0, 0, 0, 0.1) 50%,
+      rgba(0, 0, 0, 0.4) 100%
+    );
+    transition: background 0.5s ease;
+  }
+
+  .gradient-overlay-dynamic:hover {
+    background: linear-gradient(
+      135deg,
+      rgba(0, 0, 0, 0.2) 0%,
+      rgba(0, 0, 0, 0.05) 50%,
+      rgba(0, 0, 0, 0.3) 100%
+    );
+  }
+
+  /* Image Loading Optimization */
+  .lazy-image {
+    transition: opacity 0.3s ease;
+    opacity: 0;
+  }
+
+  .lazy-image.loaded {
+    opacity: 1;
+  }
+
+  /* Modern Box Shadows */
+  .shadow-benefit-card {
+    box-shadow: 
+      0 10px 30px rgba(0, 0, 0, 0.1),
+      0 1px 8px rgba(0, 0, 0, 0.2);
+  }
+
+  .shadow-benefit-card:hover {
+    box-shadow: 
+      0 20px 60px rgba(0, 0, 0, 0.15),
+      0 5px 20px rgba(0, 0, 0, 0.1);
+  }
+
+  /* Responsive Image Aspect Ratios */
+  .aspect-benefit {
+    aspect-ratio: 4/3;
+  }
+
+  @media (max-width: 768px) {
+    .aspect-benefit {
+      aspect-ratio: 16/9;
+    }
+  }
+
+  /* Enhanced Animations for Benefits */
+  @keyframes slideInFromBottom {
+    0% {
+      transform: translateY(50px);
+      opacity: 0;
+    }
+    100% {
+      transform: translateY(0);
+      opacity: 1;
+    }
+  }
+
+  .animate-slide-in {
+    animation: slideInFromBottom 0.6s ease-out forwards;
+  }
+
+  /* Staggered Animation Delays */
+  .animate-delay-100 { animation-delay: 0.1s; }
+  .animate-delay-200 { animation-delay: 0.2s; }
+  .animate-delay-300 { animation-delay: 0.3s; }
+  .animate-delay-400 { animation-delay: 0.4s; }
+  .animate-delay-500 { animation-delay: 0.5s; }
+  .animate-delay-600 { animation-delay: 0.6s; }

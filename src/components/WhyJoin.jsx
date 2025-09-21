@@ -50,7 +50,7 @@ const WhyJoin = () => {
           <div className="w-24 h-1 bg-gradient-to-r from-midnight-600 to-cognac-600 mx-auto rounded-full mt-6"></div>
         </motion.div>
 
-        {/* Benefits Grid */}
+        {/* Benefits Grid - Enhanced with Images */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-16">
           {BENEFITS.map((benefit, index) => (
             <motion.div
@@ -60,32 +60,53 @@ const WhyJoin = () => {
               transition={{ duration: 0.6, delay: index * 0.1 }}
               viewport={{ once: true }}
               whileHover={{ y: -10, scale: 1.02 }}
-              className="card p-8 text-center group cursor-pointer"
+              className="group cursor-pointer relative overflow-hidden rounded-3xl shadow-benefit-card transition-all duration-500"
             >
-              {/* Icon */}
-              <motion.div
-                whileHover={{ scale: 1.2, rotate: 10 }}
-                transition={{ type: 'spring', stiffness: 300 }}
-                className="mb-6 inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-gradient-to-br from-midnight-600 to-cognac-600 text-white shadow-medium"
-              >
-                {(() => {
-                  const IconComponent = iconMap[benefit.icon]
-                  return IconComponent ? <IconComponent className="w-8 h-8" /> : <Users className="w-8 h-8" />
-                })()}
-              </motion.div>
-              
-              {/* Title */}
-              <h3 className="text-xl font-bold text-midnight-800 mb-4 group-hover:text-midnight-900 transition-colors duration-300">
-                {benefit.title}
-              </h3>
-              
-              {/* Description */}
-              <p className="text-gray-600 leading-relaxed group-hover:text-gray-700 transition-colors duration-300">
-                {benefit.description}
-              </p>
+              {/* Background Image */}
+              <div className="absolute inset-0">
+                <img 
+                  src={benefit.image} 
+                  alt={benefit.title}
+                  className="w-full h-full object-cover benefit-card-image"
+                />
+                {/* Gradient Overlay */}
+                <div className={`absolute inset-0 bg-gradient-to-br ${benefit.gradient} opacity-85 group-hover:opacity-55 transition-opacity duration-500`}></div>
+                {/* Dark overlay for text readability */}
+                <div className="absolute inset-0 bg-black/20 group-hover:bg-black/10 transition-colors duration-500"></div>
+              </div>
 
-              {/* Hover Effect Background */}
-              <div className="absolute inset-0 bg-gradient-to-br from-midnight-50/0 to-cognac-50/0 group-hover:from-midnight-50/50 group-hover:to-cognac-50/50 rounded-2xl transition-all duration-300 -z-10"></div>
+              {/* Content */}
+              <div className="relative z-10 p-8 text-white min-h-[320px] flex flex-col justify-between">
+                {/* Icon */}
+                <motion.div
+                  whileHover={{ scale: 1.2, rotate: 10 }}
+                  transition={{ type: 'spring', stiffness: 300 }}
+                  className="mb-6 inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-white/20 backdrop-blur-sm text-white shadow-lg group-hover:bg-white/30 group-hover:shadow-xl transition-all duration-300"
+                >
+                  {(() => {
+                    const IconComponent = iconMap[benefit.icon]
+                    return IconComponent ? <IconComponent className="w-8 h-8" /> : <Users className="w-8 h-8" />
+                  })()}
+                </motion.div>
+                
+                <div>
+                  {/* Title */}
+                  <h3 className="text-xl font-bold mb-4 group-hover:text-white transition-colors duration-300 leading-tight">
+                    {benefit.title}
+                  </h3>
+                  
+                  {/* Description */}
+                  <p className="text-white/90 leading-relaxed group-hover:text-white transition-colors duration-300">
+                    {benefit.description}
+                  </p>
+                </div>
+
+                {/* Decorative Element */}
+                <div className="absolute top-4 right-4 w-20 h-20 border border-white/20 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-500 animate-pulse"></div>
+                
+                {/* Shine Effect */}
+                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000 ease-out"></div>
+              </div>
             </motion.div>
           ))}
         </div>
@@ -122,13 +143,14 @@ const WhyJoin = () => {
                 Enhance your communication skills with our comprehensive training program that dives deep into effective communication strategies - completely free for all participants!
               </p>
               
-              <motion.button
+              <motion.a
+                href="tel:+919442308824"
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
-                className="bg-white text-midnight-800 font-bold py-3 px-8 rounded-full hover:bg-cognac-50 transition-colors duration-300"
+                className="inline-block bg-white text-midnight-800 font-bold py-3 px-8 rounded-full hover:bg-cognac-50 transition-colors duration-300"
               >
                 Learn More About Training
-              </motion.button>
+              </motion.a>
             </div>
           </div>
         </motion.div>
@@ -151,10 +173,10 @@ const WhyJoin = () => {
             <motion.button
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
-              onClick={() => smoothScrollTo('#highlights', 100)}
+              onClick={() => smoothScrollTo('#details', 100)}
               className="btn-primary"
             >
-              Explore Event Highlights
+              Event Details
             </motion.button>
             <motion.button
               whileHover={{ scale: 1.05 }}

@@ -7,6 +7,7 @@ import 'aos/dist/aos.css'
 import Navigation from './components/Navigation'
 import Hero from './components/Hero'
 import About from './components/About'
+import WhyJoin from './components/WhyJoin'
 import EventHighlights from './components/EventHighlights'
 import EventDetails from './components/EventDetails'
 import RegistrationForm from './components/RegistrationForm'
@@ -31,6 +32,7 @@ function App() {
         <Hero />
         <About />
         <EventHighlights />
+        <WhyJoin />
         <EventDetails />
         <section id="register">
           <RegistrationForm />
