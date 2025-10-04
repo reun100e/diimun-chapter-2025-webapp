@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { supabase } from '../supabaseClient';
+import useDebounce from '../hooks/useDebounce';
 import { 
     User, Phone, Mail, GraduationCap, Upload, 
     CheckCircle, AlertCircle, Loader, Copy, Check, 
@@ -18,6 +19,9 @@ const RegistrationForm = () => {
         hasRegisteredEsperanza: '' // New field for Esperanza registration status
     });
     
+    // Debounce the form data. The effect will only run 1.5s after the user stops typing.
+    const debouncedFormData = useDebounce(formData, 1500);
+    
     // File upload state
     const [munPaymentPhoto, setMunPaymentPhoto] = useState(null);
     const [munPhotoPreview, setMunPhotoPreview] = useState(null);
@@ -31,6 +35,7 @@ const RegistrationForm = () => {
     const [globalError, setGlobalError] = useState('');
     const [copiedUPI, setCopiedUPI] = useState(false);
     const [yearDropdownOpen, setYearDropdownOpen] = useState(false);
+    const [isSaving, setIsSaving] = useState(false);
 
     // Payment details
     const upiId = 'aghoshbprasad100@okaxis';
@@ -65,6 +70,41 @@ const RegistrationForm = () => {
             }
         }
     }, [success]);
+
+    // This effect runs when the debounced data changes, saving partial entries
+    useEffect(() => {
+        const savePartialData = async () => {
+            // Only save if we have an email to use as a unique ID
+            if (debouncedFormData.email) {
+                setIsSaving(true);
+                try {
+                    const { error } = await supabase
+                        .from('registrations')
+                        // 'upsert' will INSERT a new row if email doesn't exist,
+                        // or UPDATE the existing row if it does.
+                        .upsert({
+                            name: debouncedFormData.name,
+                            whatsapp_number: debouncedFormData.whatsapp,
+                            email: debouncedFormData.email,
+                            college: debouncedFormData.college,
+                            year: debouncedFormData.year,
+                            has_registered_esperanza: debouncedFormData.hasRegisteredEsperanza,
+                            status: 'Partial' // Explicitly set status to Partial
+                        }, { onConflict: 'email' });
+
+                    if (error) {
+                        console.error('Error auto-saving partial data:', error);
+                    }
+                } catch (error) {
+                    console.error('Error in savePartialData:', error);
+                } finally {
+                    setIsSaving(false);
+                }
+            }
+        };
+
+        savePartialData();
+    }, [debouncedFormData]);
 
     // Close dropdown when clicking outside
     useEffect(() => {
@@ -289,9 +329,10 @@ const RegistrationForm = () => {
                 esperanzaUrlData = esperanzaUrl;
             }
 
-            const { error: insertError } = await supabase
+            // UPDATE the final record with the photo URLs and 'Completed' status
+            const { error: updateError } = await supabase
                 .from('registrations')
-                .insert([{
+                .update({
                     name: formData.name,
                     whatsapp_number: formData.whatsapp,
                     email: formData.email,
@@ -301,9 +342,11 @@ const RegistrationForm = () => {
                     mun_payment_photo_url: munUrlData.publicUrl,
                     esperanza_payment_photo_url: esperanzaUrlData?.publicUrl || null,
                     registration_amount: formData.hasRegisteredEsperanza === 'yes' ? 649 : 899,
-                }]);
+                    status: 'Completed' // Mark as completed on final submission
+                })
+                .eq('email', formData.email); // Find the row by email to update
 
-            if (insertError) throw insertError;
+            if (updateError) throw updateError;
 
             setSuccess(true);
         } catch (error) {
@@ -843,6 +886,14 @@ const RegistrationForm = () => {
                             <div className="mb-6 bg-red-50 border border-red-200 rounded-xl p-4 flex items-center gap-3">
                                 <AlertCircle className="w-5 h-5 text-red-500" />
                                 <p className="text-red-700 font-medium">{globalError}</p>
+                            </div>
+                        )}
+
+                        {/* Auto-save indicator */}
+                        {isSaving && (
+                            <div className="mb-4 bg-blue-50 border border-blue-200 rounded-xl p-3 flex items-center gap-3">
+                                <Loader className="w-4 h-4 text-blue-600 animate-spin" />
+                                <p className="text-blue-700 text-sm font-medium">Auto-saving your progress...</p>
                             </div>
                         )}
 
