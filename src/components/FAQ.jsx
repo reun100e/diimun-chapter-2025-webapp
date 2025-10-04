@@ -23,12 +23,20 @@ const FAQ = () => {
             answer: "Yes! The 3-day online workshop on 'Art of Communication' is completely free for all registered participants. It includes MUN training, debate techniques, and public speaking skills."
         },
         {
+            question: "What are the topics for the MUN?",
+            answer: "The topics for each committee will be announced later."
+        },
+        {
             question: "What should I bring on the event day?",
             answer: "Bring your confirmation email, a valid ID, notebook, pen, and formal attire. Lunch and refreshments will be provided. Detailed guidelines will be sent after registration confirmation."
         },
         {
             question: "Can I participate if I'm not from a medical college?",
             answer: "DIIMUN is specifically designed for homoeopathy students and professionals. While we focus on medical education, passionate individuals from related fields may contact us for special consideration."
+        },
+        {
+            question: "Can i get refund if i cancel my registration?",
+            answer: "No, refunds are not available after payment confirmation. However, you can transfer your registration to a friend or family member if you're unable to attend."
         }
     ];
 

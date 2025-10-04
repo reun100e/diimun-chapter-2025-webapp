@@ -11,6 +11,7 @@
   html {
     scroll-behavior: smooth;
     font-feature-settings: 'cv02', 'cv03', 'cv04', 'cv11';
+    overflow-x: hidden;
   }
   
   body {
@@ -22,6 +23,7 @@
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     text-rendering: optimizeLegibility;
+    overflow-x: hidden;
   }
 
   /* Enhanced Typography Hierarchy */
@@ -263,20 +265,20 @@
 .animate-scroll {
   animation: scroll 40s linear infinite;
   width: max-content;
+  max-width: none;
 }
 
 .animate-scroll:hover {
   animation-play-state: paused;
 }
 
-/* Full width section utility */
+/* Full width section utility - Fixed to prevent horizontal overflow */
 .full-width-section {
-  width: 100vw;
+  width: 100%;
   position: relative;
-  left: 50%;
-  right: 50%;
-  margin-left: -50vw;
-  margin-right: -50vw;
+  margin-left: calc(-50vw + 50%);
+  margin-right: calc(-50vw + 50%);
+  max-width: 100vw;
 }
 
   /* Modern Form Styles */

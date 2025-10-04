@@ -64,35 +64,84 @@ export const initScrollAnimations = () => {
 export const smoothScrollTo = (targetId, offset = 80) => {
   const target = document.getElementById(targetId.replace('#', ''))
   if (target) {
+    // Get the current scroll position
+    const currentScrollY = window.pageYOffset || document.documentElement.scrollTop
+    
+    // Calculate target position with proper offset
     const targetPosition = target.offsetTop - offset
+    
+    // Ensure we don't scroll to negative positions
+    const finalPosition = Math.max(0, targetPosition)
     
     // Check if browser supports smooth scrolling
     if ('scrollBehavior' in document.documentElement.style) {
       window.scrollTo({
-        top: targetPosition,
+        top: finalPosition,
         behavior: 'smooth'
       })
     } else {
       // Fallback for browsers that don't support smooth scrolling
-      const startPosition = window.pageYOffset
-      const distance = targetPosition - startPosition
+      const startPosition = currentScrollY
+      const distance = finalPosition - startPosition
       const duration = 800
       let start = null
 
       const step = (timestamp) => {
         if (!start) start = timestamp
-        const progress = timestamp - start
-        const ease = easeInOutCubic(progress / duration)
+        const progress = Math.min((timestamp - start) / duration, 1)
+        const ease = easeInOutCubic(progress)
         
         window.scrollTo(0, startPosition + distance * ease)
         
-        if (progress < duration) {
+        if (progress < 1) {
           window.requestAnimationFrame(step)
         }
       }
       
       window.requestAnimationFrame(step)
     }
+  }
+}
+
+// Alternative scroll function with better mobile support
+export const scrollToElement = (elementId, offset = 80) => {
+  const element = document.getElementById(elementId.replace('#', ''))
+  if (!element) return
+
+  // Get element position relative to viewport
+  const elementRect = element.getBoundingClientRect()
+  const elementTop = elementRect.top + window.pageYOffset
+  const offsetPosition = elementTop - offset
+
+  // Use native smooth scroll if available
+  if ('scrollBehavior' in document.documentElement.style) {
+    window.scrollTo({
+      top: Math.max(0, offsetPosition),
+      behavior: 'smooth'
+    })
+  } else {
+    // Manual smooth scroll fallback
+    const startPosition = window.pageYOffset
+    const distance = Math.max(0, offsetPosition) - startPosition
+    const duration = 1000
+    let start = null
+
+    const animation = (currentTime) => {
+      if (start === null) start = currentTime
+      const timeElapsed = currentTime - start
+      const progress = Math.min(timeElapsed / duration, 1)
+      
+      // Use easeOutCubic for smoother animation
+      const ease = 1 - Math.pow(1 - progress, 3)
+      
+      window.scrollTo(0, startPosition + distance * ease)
+      
+      if (progress < 1) {
+        requestAnimationFrame(animation)
+      }
+    }
+    
+    requestAnimationFrame(animation)
   }
 }
 

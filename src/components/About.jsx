@@ -45,7 +45,7 @@ const About = () => {
       </div>
 
       {/* Featured Stalwarts - Auto-scrolling carousel - Full width */}
-      <div className="bg-gradient-to-r from-cognac-50 via-white to-cognac-50 pt-16 pb-8 full-width-section">
+      <div className="bg-gradient-to-r from-cognac-50 via-white to-cognac-50 pt-16 pb-8 -mx-6 sm:-mx-8 lg:-mx-12">
         <div className="container-custom">
           <motion.div
             initial={{ opacity: 0, y: 30 }}
@@ -60,8 +60,8 @@ const About = () => {
           </motion.div>
         </div>
         
-        {/* Auto-scrolling container - Full viewport width */}
-        <div className="relative overflow-hidden">
+        {/* Auto-scrolling container - Full viewport width with proper overflow handling */}
+        <div className="relative overflow-hidden w-full">
           <div className="flex animate-scroll gap-10 py-4 px-6 sm:px-8 lg:px-12">
               {/* First set of stalwarts */}
               {STALWARTS.map((stalwart, index) => (

@@ -15,12 +15,14 @@ const RegistrationForm = () => {
         email: '',
         college: '',
         year: '',
-        regType: 'MUN + Conference' // Default to best value
+        hasRegisteredEsperanza: '' // New field for Esperanza registration status
     });
     
     // File upload state
-    const [paymentPhoto, setPaymentPhoto] = useState(null);
-    const [photoPreview, setPhotoPreview] = useState(null);
+    const [munPaymentPhoto, setMunPaymentPhoto] = useState(null);
+    const [munPhotoPreview, setMunPhotoPreview] = useState(null);
+    const [esperanzaPaymentPhoto, setEsperanzaPaymentPhoto] = useState(null);
+    const [esperanzaPhotoPreview, setEsperanzaPhotoPreview] = useState(null);
     
     // UI state
     const [isSubmitting, setIsSubmitting] = useState(false);
@@ -95,7 +97,7 @@ const RegistrationForm = () => {
         }
 
         // Then, try to open UPI app with pre-filled details
-        const amount = formData.regType === 'MUN Only' ? '500' : '800';
+        const amount = formData.hasRegisteredEsperanza === 'yes' ? '649' : '899';
         const transactionNote = `DIIMUN 2025 Registration - ${formData.name || 'Participant'}`;
         const upiUrl = `upi://pay?pa=${upiId}&pn=${encodeURIComponent('Aghosh B Prasad')}&am=${amount}&cu=INR&tn=${encodeURIComponent(transactionNote)}`;
         
@@ -129,13 +131,6 @@ const RegistrationForm = () => {
             setErrors(prev => ({ ...prev, [name]: '' }));
         }
         setGlobalError('');
-        
-        // If package selection changed, scroll to form
-        if (name === 'regType') {
-            setTimeout(() => {
-                smoothScrollTo('#form-details', 100);
-            }, 300);
-        }
     };
 
     // Validation on blur
@@ -173,13 +168,17 @@ const RegistrationForm = () => {
                 if (!value) return 'Please select your year of study';
                 return '';
                 
+            case 'hasRegisteredEsperanza':
+                if (!value) return 'Please select your Esperanza registration status';
+                return '';
+                
             default:
                 return '';
         }
     };
 
-    // File upload handler
-    const handleFileChange = (e) => {
+    // File upload handler for MUN payment
+    const handleMunFileChange = (e) => {
         const file = e.target.files[0];
         if (!file) return;
         
@@ -194,11 +193,35 @@ const RegistrationForm = () => {
             return;
         }
         
-        setPaymentPhoto(file);
+        setMunPaymentPhoto(file);
         setGlobalError('');
         
         const reader = new FileReader();
-        reader.onload = (e) => setPhotoPreview(e.target.result);
+        reader.onload = (e) => setMunPhotoPreview(e.target.result);
+        reader.readAsDataURL(file);
+    };
+
+    // File upload handler for Esperanza payment
+    const handleEsperanzaFileChange = (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+        
+        const validTypes = ['image/jpeg', 'image/jpg', 'image/png'];
+        if (!validTypes.includes(file.type)) {
+            setGlobalError('Please upload a valid image file (JPG, PNG)');
+            return;
+        }
+        
+        if (file.size > 10 * 1024 * 1024) {
+            setGlobalError('File size must be less than 10MB');
+            return;
+        }
+        
+        setEsperanzaPaymentPhoto(file);
+        setGlobalError('');
+        
+        const reader = new FileReader();
+        reader.onload = (e) => setEsperanzaPhotoPreview(e.target.result);
         reader.readAsDataURL(file);
     };
 
@@ -210,8 +233,15 @@ const RegistrationForm = () => {
             if (error) newErrors[field] = error;
         });
         
-        if (!paymentPhoto) {
-            setGlobalError('Please upload your payment screenshot');
+        // Validate MUN payment screenshot (always required)
+        if (!munPaymentPhoto) {
+            setGlobalError('Please upload your MUN payment screenshot');
+            return false;
+        }
+        
+        // Validate Esperanza payment screenshot (required only if user has registered for Esperanza)
+        if (formData.hasRegisteredEsperanza === 'yes' && !esperanzaPaymentPhoto) {
+            setGlobalError('Please upload your Esperanza payment screenshot for verification');
             return false;
         }
         
@@ -229,16 +259,35 @@ const RegistrationForm = () => {
         setGlobalError('');
 
         try {
-            const fileName = `${Date.now()}_${paymentPhoto.name}`;
-            const { error: uploadError } = await supabase.storage
+            // Upload MUN payment screenshot
+            const munFileName = `mun_${Date.now()}_${munPaymentPhoto.name}`;
+            const { error: munUploadError } = await supabase.storage
                 .from('payment-screenshots')
-                .upload(fileName, paymentPhoto);
+                .upload(munFileName, munPaymentPhoto);
 
-            if (uploadError) throw uploadError;
+            if (munUploadError) throw munUploadError;
 
-            const { data: urlData } = supabase.storage
+            const { data: munUrlData } = supabase.storage
                 .from('payment-screenshots')
-                .getPublicUrl(fileName);
+                .getPublicUrl(munFileName);
+
+            let esperanzaUrlData = null;
+            
+            // Upload Esperanza payment screenshot if provided
+            if (esperanzaPaymentPhoto) {
+                const esperanzaFileName = `esperanza_${Date.now()}_${esperanzaPaymentPhoto.name}`;
+                const { error: esperanzaUploadError } = await supabase.storage
+                    .from('payment-screenshots')
+                    .upload(esperanzaFileName, esperanzaPaymentPhoto);
+
+                if (esperanzaUploadError) throw esperanzaUploadError;
+
+                const { data: esperanzaUrl } = supabase.storage
+                    .from('payment-screenshots')
+                    .getPublicUrl(esperanzaFileName);
+                    
+                esperanzaUrlData = esperanzaUrl;
+            }
 
             const { error: insertError } = await supabase
                 .from('registrations')
@@ -248,8 +297,10 @@ const RegistrationForm = () => {
                     email: formData.email,
                     college: formData.college,
                     year: formData.year,
-                    registration_type: formData.regType,
-                    payment_photo_url: urlData.publicUrl,
+                    has_registered_esperanza: formData.hasRegisteredEsperanza,
+                    mun_payment_photo_url: munUrlData.publicUrl,
+                    esperanza_payment_photo_url: esperanzaUrlData?.publicUrl || null,
+                    registration_amount: formData.hasRegisteredEsperanza === 'yes' ? 649 : 899,
                 }]);
 
             if (insertError) throw insertError;
@@ -307,84 +358,106 @@ const RegistrationForm = () => {
                 <form onSubmit={handleSubmit} className="bg-white rounded-2xl md:rounded-3xl shadow-2xl overflow-hidden">
                     <div className="p-4 md:p-6 lg:p-8">
                         
-                        {/* Step 1: Choose Package */}
-                        <div className="mb-8">
-                            <h3 className="text-xl font-bold text-gray-800 mb-6 text-center">
-                                Choose Your Registration Package
-                            </h3>
+                        {/* Step 1: Registration Type Selection */}
+                        <div className="mb-6">
+                            <div className="text-center mb-6">
+                                <h3 className="text-xl font-bold text-gray-800 mb-1">Choose Your Registration</h3>
+                                <p className="text-sm text-gray-600">Select the option that applies to you</p>
+                            </div>
                             
-                            <div className="grid md:grid-cols-2 gap-4 mb-6">
-                                <label className={`cursor-pointer rounded-2xl border-2 p-6 transition-all duration-200 ${
-                                    formData.regType === 'MUN Only'
+                            {/* Registration Options - Compact Grid */}
+                            <div className="space-y-3">
+                                {/* Primary Option - MUN Only */}
+                                <label className={`cursor-pointer block rounded-xl border-2 p-4 transition-all duration-200 ${
+                                    formData.hasRegisteredEsperanza === 'no'
                                         ? 'border-blue-500 bg-blue-50 shadow-lg'
                                         : 'border-gray-200 hover:border-blue-300 hover:bg-gray-50'
                                 }`}>
                                     <input
                                         type="radio"
-                                        name="regType"
-                                        value="MUN Only"
-                                        checked={formData.regType === 'MUN Only'}
+                                        name="hasRegisteredEsperanza"
+                                        value="no"
+                                        checked={formData.hasRegisteredEsperanza === 'no'}
                                         onChange={handleChange}
                                         className="sr-only"
                                     />
-                                    <div className="text-center">
-                                        <h4 className="font-bold text-xl text-gray-800 mb-2">MUN Only</h4>
-                                        <p className="text-sm text-gray-600 mb-3">by DNA</p>
-                                        <div className="text-3xl font-bold text-blue-600 mb-4">₹500</div>
-                                        <ul className="text-sm text-gray-600 space-y-1 text-left">
-                                            <li>• Expereicnce Model United Nations</li>
-                                            <li>• Certificate from DNA</li>
-                                            <li>• Free communication workshop</li>
-                                        </ul>
+                                    <div className="flex items-center justify-between">
+                                        <div className="flex items-center gap-3">
+                                            <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center flex-shrink-0">
+                                                <GraduationCap className="w-5 h-5 text-blue-600" />
+                                            </div>
+                                            <div>
+                                                <h4 className="font-bold text-gray-800">DIIMUN 2025 Registration</h4>
+                                                <p className="text-sm text-gray-600">The one-stop shop for complete MUN experience</p>
+                                            </div>
+                                        </div>
+                                        <div className="text-right">
+                                            <div className="text-2xl font-bold text-blue-600">₹899</div>
+                                        </div>
                                     </div>
                                 </label>
 
-                                <label className={`cursor-pointer rounded-2xl border-2 p-6 transition-all duration-200 relative ${
-                                    formData.regType === 'MUN + Conference'
+                                {/* Secondary Option - Esperanza Special Offer */}
+                                <label className={`cursor-pointer block rounded-xl border-2 p-4 transition-all duration-200 ${
+                                    formData.hasRegisteredEsperanza === 'yes'
                                         ? 'border-green-500 bg-green-50 shadow-lg'
                                         : 'border-gray-200 hover:border-green-300 hover:bg-gray-50'
                                 }`}>
-                                    <div className="absolute -top-3 -right-3 bg-gradient-to-r from-yellow-400 to-orange-400 text-white px-3 py-1 rounded-full text-xs font-bold shadow-lg flex items-center gap-1">
-                                        <Star className="w-3 h-3" />
-                                        Best Value
-                                    </div>
                                     <input
                                         type="radio"
-                                        name="regType"
-                                        value="MUN + Conference"
-                                        checked={formData.regType === 'MUN + Conference'}
+                                        name="hasRegisteredEsperanza"
+                                        value="yes"
+                                        checked={formData.hasRegisteredEsperanza === 'yes'}
                                         onChange={handleChange}
                                         className="sr-only"
                                     />
-                                    <div className="text-center">
-                                        <h4 className="font-bold text-xl text-gray-800 mb-2">MUN + National Conference</h4>
-                                        <p className="text-sm text-gray-600 mb-3">by DNA + Esperanza</p>
-                                        <div className="text-3xl font-bold text-green-600 mb-2">₹800</div>
-                                        <p className="text-xs text-green-700 font-semibold mb-4">Save ₹400! (Usually ₹1200)</p>
-                                        <ul className="text-sm text-gray-600 space-y-1 text-left">
-                                            <li>• Everything in MUN Only</li>
-                                            <li>• Esperanza National Conference access</li>
-                                            <li>• Premium networking opportunities</li>
-                                        </ul>
+                                    <div className="flex items-center justify-between">
+                                        <div className="flex items-center gap-3">
+                                            <div className="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center flex-shrink-0">
+                                                <Star className="w-5 h-5 text-green-600" />
+                                            </div>
+                                            <div>
+                                                <h4 className="font-bold text-gray-800">Esperanza Special Offer</h4>
+                                                <p className="text-sm text-gray-600">For participants who have already registered for Esperanza</p>
+                                            </div>
+                                        </div>
+                                        <div className="text-right">
+                                            <div className="text-2xl font-bold text-green-600">₹649</div>
+                                            <p className="text-xs text-green-700 font-semibold">Save ₹250</p>
+                                        </div>
                                     </div>
                                 </label>
                             </div>
 
-                            {/* Conference-only info */}
-                            {/* <div className="bg-amber-50 border border-amber-200 rounded-xl p-4">
-                                <div className="flex items-start gap-3">
-                                    <Info className="w-5 h-5 text-amber-600 flex-shrink-0 mt-0.5" />
-                                    <div className="text-sm">
-                                        <p className="text-amber-800 font-semibold mb-1">National Conference Only?</p>
-                                        <p className="text-amber-700">
-                                            For National Conference only registration, contact{' '}
-                                            <a href="tel:+919498653452" className="font-semibold text-amber-800 hover:underline">
-                                                +91 9498653452
-                                            </a>
-                                        </p>
+                            {/* Esperanza Registration Link - Compact */}
+                            <div className="text-center mt-4">
+                                <a 
+                                    href="https://forms.gle/NNjAuwyPpEpvFyFd6" 
+                                    target="_blank" 
+                                    rel="noopener noreferrer"
+                                    className="inline-flex items-center gap-1 text-blue-600 hover:text-blue-700 font-medium text-sm transition-colors duration-200"
+                                >
+                                    Register for Esperanza
+                                    <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                                    </svg>
+                                </a>
+                            </div>
+
+                            {/* Info box - Only show when Esperanza option is selected */}
+                            {formData.hasRegisteredEsperanza === 'yes' && (
+                                <div className="mt-4 bg-green-50 border border-green-200 rounded-lg p-3">
+                                    <div className="flex items-start gap-2">
+                                        <Info className="w-4 h-4 text-green-600 flex-shrink-0 mt-0.5" />
+                                        <div className="text-sm">
+                                            <p className="text-green-800 font-semibold mb-1">Payment Verification Required</p>
+                                            <p className="text-green-700">
+                                                Upload both MUN and Esperanza payment screenshots.
+                                            </p>
+                                        </div>
                                     </div>
                                 </div>
-                            </div> */}
+                            )}
                         </div>
 
                         {/* Step 2: Personal & Academic Information */}
@@ -585,30 +658,36 @@ const RegistrationForm = () => {
                             </div>
                         </div>
 
-                        {/* Step 3: Payment - Compact */}
-                        <div className="border-t border-gray-100 pt-8">
-                            <h3 className="text-lg font-bold text-gray-800 mb-4 flex items-center gap-2">
-                                <CheckCircle className="w-5 h-5 text-blue-600" />
-                                Complete Your Payment
-                            </h3>
+                        {/* Step 3: Payment */}
+                        <div className="border-t border-gray-100 pt-6">
+                            <div className="text-center mb-6">
+                                <h3 className="text-xl font-bold text-gray-800 mb-1">Complete Your Payment</h3>
+                                <p className="text-sm text-gray-600">Secure payment via UPI</p>
+                            </div>
                             
-                            {/* Compact Payment Card */}
-                            <div className="bg-blue-50 border-2 border-blue-500 rounded-2xl p-4 md:p-6 mb-6">
+                            {/* Payment Card - Compact */}
+                            <div className="bg-gradient-to-br from-blue-50 to-indigo-50 border-2 border-blue-200 rounded-2xl p-4 md:p-6 mb-6">
                                 <div className="text-center">
-                                    <div className="text-2xl md:text-3xl font-bold mb-2 text-gray-800">₹{formData.regType === 'MUN Only' ? '500' : '800'}</div>
-                                    <p className="text-gray-600 mb-4 text-sm md:text-base">{formData.regType}</p>
-                                    
-                                    {/* UPI Details - More Compact */}
-                                    <div className="bg-white border border-blue-200 rounded-xl p-3 md:p-4 mb-4">
-                                        <p className="text-gray-600 text-xs md:text-sm mb-1">Pay to UPI ID</p>
-                                        <p className="font-mono font-bold text-sm md:text-lg break-all text-gray-800">{upiId}</p>
+                                    <div className="inline-flex items-center justify-center w-12 h-12 bg-blue-100 rounded-full mb-3">
+                                        <CheckCircle className="w-6 h-6 text-blue-600" />
                                     </div>
                                     
-                                    {/* Single Action Button - Responsive */}
+                                    <div className="text-3xl font-bold text-gray-800 mb-2">₹{formData.hasRegisteredEsperanza === 'yes' ? '649' : '899'}</div>
+                                    <p className="text-sm text-gray-600 mb-4">
+                                        {formData.hasRegisteredEsperanza === 'yes' ? 'MUN Registration (Esperanza Special Offer)' : 'DIIMUN 2025 Registration'}
+                                    </p>
+                                    
+                                    {/* UPI Details - Compact */}
+                                    <div className="bg-white border border-blue-200 rounded-xl p-3 mb-4">
+                                        <p className="text-gray-600 text-xs mb-1">Pay to UPI ID</p>
+                                        <p className="font-mono font-bold text-sm break-all text-gray-800">{upiId}</p>
+                                    </div>
+                                    
+                                    {/* Payment Button - Compact */}
                                     <button
                                         type="button"
                                         onClick={handleUPIPayment}
-                                        className={`w-full py-3 md:py-4 px-4 md:px-6 rounded-xl font-bold text-base md:text-lg transition-all duration-300 flex items-center justify-center gap-3 shadow-lg ${
+                                        className={`w-full py-3 px-4 rounded-xl font-bold text-base transition-all duration-300 flex items-center justify-center gap-2 shadow-lg ${
                                             copiedUPI 
                                                 ? 'bg-green-500 text-white' 
                                                 : 'bg-blue-600 text-white hover:bg-blue-700 active:scale-95'
@@ -616,76 +695,144 @@ const RegistrationForm = () => {
                                     >
                                         {copiedUPI ? (
                                             <>
-                                                <Check className="w-4 h-4 md:w-5 md:h-5" />
-                                                <span className="text-sm md:text-base">Payment App Opening...</span>
+                                                <Check className="w-4 h-4" />
+                                                <span>Payment App Opening...</span>
                                             </>
                                         ) : (
                                             <>
-                                                <Copy className="w-4 h-4 md:w-5 md:h-5" />
-                                                <span className="text-sm md:text-base">Pay ₹{formData.regType === 'MUN Only' ? '500' : '800'} Now</span>
+                                                <Copy className="w-4 h-4" />
+                                                <span>Pay ₹{formData.hasRegisteredEsperanza === 'yes' ? '649' : '899'} Now</span>
                                             </>
                                         )}
                                     </button>
                                     
-                                    <p className="text-gray-600 text-xs md:text-sm mt-3">
+                                    <p className="text-gray-600 text-xs mt-3">
                                         Questions? Call <a href="tel:+919400076226" className="font-semibold text-blue-600 hover:underline">+91 9400076226</a>
                                     </p>
                                 </div>
                             </div>
 
-                            {/* File Upload */}
-                            <div>
+                            {/* File Upload Section - Compact */}
+                            <div className="space-y-4">
+                                <div className="text-center">
+                                    <h3 className="text-lg font-bold text-gray-800 mb-1">Upload Payment Screenshot</h3>
+                                    <p className="text-sm text-gray-600">Upload your payment confirmation</p>
+                                </div>
 
-                            <h3 className="text-lg font-bold text-gray-800 mb-4 flex items-center gap-2">
-                                <Upload className="w-5 h-5 text-blue-600" />
-                                Upload Payment Screenshot
-                            </h3>                                
-                                {photoPreview ? (
-                                    <div className="space-y-4">
-                                        <div className="relative max-w-sm mx-auto">
-                                            <img
-                                                src={photoPreview}
-                                                alt="Payment screenshot"
-                                                className="w-full rounded-xl border-2 border-green-200 shadow-lg"
+                                {/* MUN Payment Upload */}
+                                <div>
+                                    <h4 className="text-base font-semibold text-gray-800 mb-3 flex items-center gap-2">
+                                        <Upload className="w-4 h-4 text-blue-600" />
+                                        MUN Payment Screenshot *
+                                    </h4>                                
+                                    {munPhotoPreview ? (
+                                        <div className="space-y-3">
+                                            <div className="relative max-w-xs mx-auto">
+                                                <img
+                                                    src={munPhotoPreview}
+                                                    alt="MUN Payment screenshot"
+                                                    className="w-full rounded-xl border-2 border-green-200 shadow-lg"
+                                                />
+                                                <div className="absolute top-2 right-2 bg-green-500 text-white p-1.5 rounded-full">
+                                                    <CheckCircle className="w-3 h-3" />
+                                                </div>
+                                            </div>
+                                            <div className="flex justify-center">
+                                                <button
+                                                    type="button"
+                                                    onClick={() => {
+                                                        setMunPaymentPhoto(null);
+                                                        setMunPhotoPreview(null);
+                                                    }}
+                                                    className="bg-red-100 text-red-700 px-3 py-1.5 rounded-lg font-medium hover:bg-red-200 transition-colors duration-200 text-sm"
+                                                >
+                                                    Remove
+                                                </button>
+                                            </div>
+                                        </div>
+                                    ) : (
+                                        <div className="border-2 border-dashed border-gray-300 rounded-xl p-6 text-center hover:border-blue-400 hover:bg-blue-50 transition-all duration-200">
+                                            <input
+                                                type="file"
+                                                id="munPaymentPhoto"
+                                                accept="image/png,image/jpeg,image/jpg"
+                                                onChange={handleMunFileChange}
+                                                className="hidden"
+                                                required
                                             />
-                                            <div className="absolute top-3 right-3 bg-green-500 text-white p-2 rounded-full">
-                                                <CheckCircle className="w-4 h-4" />
-                                            </div>
-                                        </div>
-                                        <div className="flex justify-center">
-                                            <button
-                                                type="button"
-                                                onClick={() => {
-                                                    setPaymentPhoto(null);
-                                                    setPhotoPreview(null);
-                                                }}
-                                                className="bg-red-100 text-red-700 px-4 py-2 rounded-lg font-medium hover:bg-red-200 transition-colors duration-200"
-                                            >
-                                                Remove
-                                            </button>
-                                        </div>
-                                    </div>
-                                ) : (
-                                    <div className="border-2 border-dashed border-gray-300 rounded-2xl p-8 text-center hover:border-blue-400 hover:bg-blue-50 transition-all duration-200">
-                                        <input
-                                            type="file"
-                                            id="paymentPhoto"
-                                            accept="image/png,image/jpeg,image/jpg"
-                                            onChange={handleFileChange}
-                                            className="hidden"
-                                            required
-                                        />
-                                        <label htmlFor="paymentPhoto" className="cursor-pointer">
-                                            <div className="space-y-4">
-                                                <div className="w-16 h-16 mx-auto bg-gradient-to-r from-blue-100 to-indigo-100 rounded-2xl flex items-center justify-center">
-                                                    <Upload className="w-8 h-8 text-blue-600" />
+                                            <label htmlFor="munPaymentPhoto" className="cursor-pointer">
+                                                <div className="space-y-3">
+                                                    <div className="w-12 h-12 mx-auto bg-gradient-to-r from-blue-100 to-indigo-100 rounded-xl flex items-center justify-center">
+                                                        <Upload className="w-6 h-6 text-blue-600" />
+                                                    </div>
+                                                    <div>
+                                                        <p className="font-semibold text-gray-800">Upload MUN Payment Screenshot</p>
+                                                        <p className="text-xs text-gray-600 mt-1">PNG, JPG up to 10MB</p>
+                                                    </div>
                                                 </div>
-                                                <div>
-                                                    <p className="font-semibold text-gray-800 text-lg">Upload Payment Screenshot</p>
-                                                    <p className="text-sm text-gray-600 mt-1">PNG, JPG up to 10MB</p>
+                                            </label>
+                                        </div>
+                                    )}
+                                </div>
+
+                                {/* Esperanza Payment Upload - Only show if user has registered for Esperanza */}
+                                {formData.hasRegisteredEsperanza === 'yes' && (
+                                    <div>
+                                        <h4 className="text-base font-semibold text-gray-800 mb-3 flex items-center gap-2">
+                                            <Upload className="w-4 h-4 text-green-600" />
+                                            Esperanza Payment Screenshot *
+                                        </h4>
+                                        <p className="text-xs text-gray-600 mb-3">
+                                            Please upload your Esperanza National Conference payment screenshot for verification.
+                                        </p>                                
+                                        {esperanzaPhotoPreview ? (
+                                            <div className="space-y-3">
+                                                <div className="relative max-w-xs mx-auto">
+                                                    <img
+                                                        src={esperanzaPhotoPreview}
+                                                        alt="Esperanza Payment screenshot"
+                                                        className="w-full rounded-xl border-2 border-green-200 shadow-lg"
+                                                    />
+                                                    <div className="absolute top-2 right-2 bg-green-500 text-white p-1.5 rounded-full">
+                                                        <CheckCircle className="w-3 h-3" />
+                                                    </div>
+                                                </div>
+                                                <div className="flex justify-center">
+                                                    <button
+                                                        type="button"
+                                                        onClick={() => {
+                                                            setEsperanzaPaymentPhoto(null);
+                                                            setEsperanzaPhotoPreview(null);
+                                                        }}
+                                                        className="bg-red-100 text-red-700 px-3 py-1.5 rounded-lg font-medium hover:bg-red-200 transition-colors duration-200 text-sm"
+                                                    >
+                                                        Remove
+                                                    </button>
                                                 </div>
                                             </div>
-                                        </label>
+                                        ) : (
+                                            <div className="border-2 border-dashed border-gray-300 rounded-xl p-6 text-center hover:border-green-400 hover:bg-green-50 transition-all duration-200">
+                                                <input
+                                                    type="file"
+                                                    id="esperanzaPaymentPhoto"
+                                                    accept="image/png,image/jpeg,image/jpg"
+                                                    onChange={handleEsperanzaFileChange}
+                                                    className="hidden"
+                                                    required
+                                                />
+                                                <label htmlFor="esperanzaPaymentPhoto" className="cursor-pointer">
+                                                    <div className="space-y-3">
+                                                        <div className="w-12 h-12 mx-auto bg-gradient-to-r from-green-100 to-emerald-100 rounded-xl flex items-center justify-center">
+                                                            <Upload className="w-6 h-6 text-green-600" />
+                                                        </div>
+                                                        <div>
+                                                            <p className="font-semibold text-gray-800">Upload Esperanza Payment Screenshot</p>
+                                                            <p className="text-xs text-gray-600 mt-1">PNG, JPG up to 10MB</p>
+                                                        </div>
+                                                    </div>
+                                                </label>
+                                            </div>
+                                        )}
                                     </div>
                                 )}
                             </div>
@@ -701,31 +848,33 @@ const RegistrationForm = () => {
 
                         {/* Submit Button */}
                         <div className="border-t border-gray-100 pt-6">
-                            <button
-                                type="submit"
-                                disabled={isSubmitting}
-                                className={`w-full py-4 px-6 rounded-2xl font-bold text-lg transition-all duration-300 flex items-center justify-center gap-3 ${
-                                    isSubmitting
-                                        ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
-                                        : 'bg-gradient-to-r from-emerald-600 via-teal-600 to-cyan-600 text-white hover:from-emerald-700 hover:via-teal-700 hover:to-cyan-700 shadow-xl hover:shadow-2xl transform hover:scale-[1.02]'
-                                }`}
-                            >
-                                {isSubmitting ? (
-                                    <>
-                                        <Loader className="w-5 h-5 animate-spin" />
-                                        Submitting Registration...
-                                    </>
-                                ) : (
-                                    <>
-                                        <CheckCircle className="w-5 h-5" />
-                                        Complete Registration
-                                    </>
-                                )}
-                            </button>
-                            
-                            <p className="text-center text-sm text-gray-500 mt-4">
-                                By registering, you agree to our terms and conditions for DIIMUN 2025
-                            </p>
+                            <div className="text-center">
+                                <button
+                                    type="submit"
+                                    disabled={isSubmitting}
+                                    className={`w-full py-3 px-6 rounded-xl font-bold text-base transition-all duration-300 flex items-center justify-center gap-2 ${
+                                        isSubmitting
+                                            ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                                            : 'bg-gradient-to-r from-emerald-600 via-teal-600 to-cyan-600 text-white hover:from-emerald-700 hover:via-teal-700 hover:to-cyan-700 shadow-lg hover:shadow-xl transform hover:scale-[1.01]'
+                                    }`}
+                                >
+                                    {isSubmitting ? (
+                                        <>
+                                            <Loader className="w-4 h-4 animate-spin" />
+                                            Submitting Registration...
+                                        </>
+                                    ) : (
+                                        <>
+                                            <CheckCircle className="w-4 h-4" />
+                                            Complete Registration
+                                        </>
+                                    )}
+                                </button>
+                                
+                                <p className="text-center text-xs text-gray-500 mt-3">
+                                    By registering, you agree to our terms and conditions for DIIMUN 2025
+                                </p>
+                            </div>
                         </div>
                     </div>
                 </form>

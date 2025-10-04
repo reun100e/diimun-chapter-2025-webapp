@@ -26,9 +26,9 @@ function App() {
   }, [])
 
   return (
-    <div className="min-h-screen bg-pearl-50">
+    <div className="min-h-screen bg-pearl-50 overflow-x-hidden">
       <Navigation />
-      <main>
+      <main className="overflow-x-hidden">
         <Hero />
         <About />
         <EventHighlights />

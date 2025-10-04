@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { NAV_LINKS, ASSETS } from '../utils/constants'
-import { smoothScrollTo } from '../animations/parallax'
+import { smoothScrollTo, scrollToElement } from '../animations/parallax'
 
 const Navigation = () => {
   const [isScrolled, setIsScrolled] = useState(false)
@@ -13,13 +13,40 @@ const Navigation = () => {
       setIsScrolled(window.scrollY > 50)
     }
 
+    const handleResize = () => {
+      // Close mobile menu on resize to prevent layout issues
+      if (window.innerWidth >= 768) {
+        setIsMobileMenuOpen(false)
+      }
+    }
+
     window.addEventListener('scroll', handleScroll)
-    return () => window.removeEventListener('scroll', handleScroll)
+    window.addEventListener('resize', handleResize)
+    
+    return () => {
+      window.removeEventListener('scroll', handleScroll)
+      window.removeEventListener('resize', handleResize)
+    }
   }, [])
 
   const scrollToSection = (href) => {
-    smoothScrollTo(href, 100)
+    // Close mobile menu first
     setIsMobileMenuOpen(false)
+    
+    // Add a small delay to ensure mobile menu closes before scrolling
+    setTimeout(() => {
+      // Use different offset for mobile vs desktop
+      const isMobile = window.innerWidth < 768
+      const offset = isMobile ? 60 : 100
+      
+      // Try the new scrollToElement function first, fallback to smoothScrollTo
+      try {
+        scrollToElement(href, offset)
+      } catch (error) {
+        console.warn('scrollToElement failed, using fallback:', error)
+        smoothScrollTo(href, offset)
+      }
+    }, 150)
   }
 
   return (
