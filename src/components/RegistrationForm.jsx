@@ -66,7 +66,7 @@ const RegistrationForm = () => {
         { value: 'Staff (Asst./Assoc./Prof.)', label: 'Staff (Asst./Assoc./Prof.)' }
     ];
 
-    // iOS Detection - Run once when component mounts
+    // iOS Detection - Run once when component mounts (for instruction text only)
     useEffect(() => {
         const userAgent = navigator.userAgent || navigator.vendor || window.opera;
         // Check for iPhone, iPad, or iPod
@@ -1151,65 +1151,54 @@ const RegistrationForm = () => {
                                                 {formData.hasRegisteredEsperanza === 'yes' ? 'DIIMUN 2025 Registration (Esperanza Special Offer)' : 'DIIMUN 2025 Registration'}
                                             </p>
 
-                                            {/* ====== CONDITIONAL PAYMENT UI ====== */}
-                                            {isIOS ? (
-                                                // --- UI for iPhone / iOS Users ---
+                                            {/* ====== UNIVERSAL PAYMENT UI ====== */}
+                                            <div className="space-y-6">
+                                                {/* QR Code Section */}
                                                 <div className="space-y-4">
-                                                    {/* <p className="text-gray-700 font-semibold">For iPhone users:</p> */}
                                                     <div className="flex justify-center">
                                                         <img src="/upi-qrcode.jpg" alt="UPI QR Code" className="w-48 h-48 rounded-lg border-4 border-white shadow-lg" />
                                                     </div>
-                                                    <p className="text-sm text-gray-600">
-                                                        <strong>Tap and hold</strong> the QR code to pay, or scan it with your camera.
-                                                    </p>
-                                                    <div className="bg-white border-2 border-blue-200 rounded-xl p-4">
-                                                        <p className="text-gray-600 text-sm mb-2">Or copy UPI ID manually:</p>
-                                                        <p className="font-mono font-bold text-base break-all text-gray-800">{upiId}</p>
-                                                    </div>
-                                                    <button
-                                                        type="button"
-                                                        onClick={copyUPI}
-                                                        className={`w-full py-3 px-6 rounded-xl font-bold text-lg transition-all duration-300 flex items-center justify-center gap-3 shadow-lg ${
-                                                            copiedUPI 
-                                                                ? 'bg-green-500 text-white' 
-                                                                : 'bg-gray-600 text-white hover:bg-gray-700 active:scale-95'
-                                                        }`}
-                                                    >
-                                                        {copiedUPI ? <Check className="w-5 h-5" /> : <Copy className="w-5 h-5" />}
-                                                        {copiedUPI ? 'UPI ID Copied!' : 'Copy UPI ID'}
-                                                    </button>
+                                                    {isIOS ? (
+                                                        <p className="text-sm text-gray-600 text-center">
+                                                            Tap and hold the QR code to pay, or scan it with your camera.
+                                                        </p>
+                                                    ) : (
+                                                        <p className="text-sm text-gray-600 text-center">
+                                                            Scan the QR code with your payment app or use the button below.
+                                                        </p>
+                                                    )}
                                                 </div>
-                                            ) : (
-                                                // --- UI for Android & Desktop Users ---
-                                                <div>
-                                                    <div className="bg-white border-2 border-blue-200 rounded-xl p-4 mb-6">
-                                                        <p className="text-gray-600 text-sm mb-2">Pay to UPI ID</p>
-                                                        <p className="font-mono font-bold text-base break-all text-gray-800">{upiId}</p>
-                                                    </div>
-                                                    <button
-                                                        type="button"
-                                                        onClick={handleUPIPayment}
-                                                        className={`w-full py-4 px-6 rounded-xl font-bold text-lg transition-all duration-300 flex items-center justify-center gap-3 shadow-lg hover:shadow-xl ${
-                                                            copiedUPI 
-                                                                ? 'bg-green-500 text-white' 
-                                                                : 'bg-blue-600 text-white hover:bg-blue-700 active:scale-95'
-                                                        }`}
-                                                    >
-                                                        {copiedUPI ? (
-                                                            <>
-                                                                <Check className="w-5 h-5" />
-                                                                <span>Payment App Opening...</span>
-                                                            </>
-                                                        ) : (
-                                                            <>
-                                                                <Copy className="w-5 h-5" />
-                                                                <span>Pay ₹{formData.hasRegisteredEsperanza === 'yes' ? '347' : '499'} Now</span>
-                                                            </>
-                                                        )}
-                                                    </button>
+
+                                                {/* UPI ID Display */}
+                                                <div className="bg-white border-2 border-blue-200 rounded-xl p-4">
+                                                    <p className="text-gray-600 text-sm mb-2">Pay to UPI ID</p>
+                                                    <p className="font-mono font-bold text-base break-all text-gray-800">{upiId}</p>
                                                 </div>
-                                            )}
-                                            {/* ====== END CONDITIONAL UI ====== */}
+
+                                                {/* Pay Now Button */}
+                                                <button
+                                                    type="button"
+                                                    onClick={handleUPIPayment}
+                                                    className={`w-full py-4 px-6 rounded-xl font-bold text-lg transition-all duration-300 flex items-center justify-center gap-3 shadow-lg hover:shadow-xl ${
+                                                        copiedUPI 
+                                                            ? 'bg-green-500 text-white' 
+                                                            : 'bg-blue-600 text-white hover:bg-blue-700 active:scale-95'
+                                                    }`}
+                                                >
+                                                    {copiedUPI ? (
+                                                        <>
+                                                            <Check className="w-5 h-5" />
+                                                            <span>Payment App Opening...</span>
+                                                        </>
+                                                    ) : (
+                                                        <>
+                                                            <Copy className="w-5 h-5" />
+                                                            <span>Pay ₹{formData.hasRegisteredEsperanza === 'yes' ? '347' : '499'} Now</span>
+                                                        </>
+                                                    )}
+                                                </button>
+                                            </div>
+                                            {/* ====== END UNIVERSAL UI ====== */}
 
                                             <p className="text-gray-600 text-sm mt-4">
                                                 Questions? Call <a href="tel:+919400076226" className="font-semibold text-blue-600 hover:underline">+91 9400076226</a>
