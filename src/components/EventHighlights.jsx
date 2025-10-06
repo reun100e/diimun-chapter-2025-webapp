@@ -94,7 +94,7 @@ const EventHighlights = () => {
                       <Users2 className="w-5 h-5" />
                       Eligibility
                     </h4>
-                    <p className="text-gray-200 mb-4">{committee.eligibility}</p>
+                    <p className="text-gray-200 mb-4">Open to all medical students and professionals</p>
                     {committee.note && (
                       <p className="text-sm text-cognac-300 font-medium italic mb-6">
                         Note: {committee.note}

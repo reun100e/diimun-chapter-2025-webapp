@@ -141,14 +141,14 @@ export const COMMITTEES = [
     description: 'Take leadership in shaping global healthcare policy by representing nations in debates on homoeopathy in the modern world. Explore its applications, challenges, potential, and limitations while developing your leadership skills to contribute to the best possible healthcare outcomes worldwide.',
     icon: 'Globe',
     type: 'General Committee',
-    eligibility: 'Open to all homoeopathy students and professionals'
+    eligibility: 'Open to all medical students and professionals'
   },
   {
     title: 'The Great Homoeopathic Assembly (DNA Exclusive)',
     description: 'Embody the great homoeopathic masters and engage in debates on critical issues within homoeopathy. Explore unspoken philosophies, challenge exaggerated claims, and uncover lesser-known truths. Address future concerns while evolving from critical thinker to master practitioner, deepening your understanding of homoeopathic principles.',
     icon: 'Users',
     type: 'Exclusive Committee',
-    eligibility: 'Preferred for Final Year (4th BHMS), Interns and Postgraduates of all disciplines',
+    eligibility: 'Open to all medical students and professionals',
     note: 'Limited teams on first-come-first-serve basis'
   }
 ]

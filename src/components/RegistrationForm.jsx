@@ -8,6 +8,7 @@ import {
     Star, Info, ChevronDown, ChevronUp, Users, Shield, Mic, Camera, FileText, Award
 } from 'lucide-react';
 import { smoothScrollTo } from '../animations/parallax';
+import { BsPerson } from 'react-icons/bs';
 
 const RegistrationForm = () => {
     // NEW: State to manage the primary choice path ('delegate' or 'ip')
@@ -21,7 +22,7 @@ const RegistrationForm = () => {
         college: '',
         year: '',
         committee_preference: '', // This will now store the specific choice (WHO, Assembly, IP - Photography, IP - Essay)
-        hasRegisteredEsperanza: '' // New field for Esperanza registration status
+        hasRegisteredEsperanza: 'no' // Default to 'no' for Esperanza registration status
     });
 
     // Debounce the form data. The effect will only run 1.5s after the user stops typing.
@@ -38,6 +39,7 @@ const RegistrationForm = () => {
     const [errors, setErrors] = useState({});
     const [success, setSuccess] = useState(false);
     const [globalError, setGlobalError] = useState('');
+    const [showFormIncomplete, setShowFormIncomplete] = useState(false);
     const [copiedUPI, setCopiedUPI] = useState(false);
     const [yearDropdownOpen, setYearDropdownOpen] = useState(false);
     const [dropdownPosition, setDropdownPosition] = useState({});
@@ -324,7 +326,7 @@ const RegistrationForm = () => {
                 return '';
 
             case 'hasRegisteredEsperanza':
-                if (!value) return 'Please select your Esperanza registration status';
+                // This field is optional - users can choose not to select Esperanza discount
                 return '';
 
             case 'committee_preference':
@@ -384,33 +386,158 @@ const RegistrationForm = () => {
         reader.readAsDataURL(file);
     };
 
+    // Check if form is ready for submission
+    const isFormReady = () => {
+        // Check registration path
+        if (!registrationPath) return false;
+        
+        // Check committee preference
+        if (!formData.committee_preference) return false;
+        
+        // Check required personal fields
+        const requiredFields = ['name', 'email', 'whatsapp', 'year'];
+        for (const field of requiredFields) {
+            if (!formData[field] || formData[field].trim() === '') return false;
+        }
+        
+        // Check college (required unless Doctor/Practitioner)
+        if (formData.year !== 'Doctor / Practitioner' && (!formData.college || formData.college.trim() === '')) return false;
+        
+        // Check MUN payment screenshot
+        if (!munPaymentPhoto) return false;
+        
+        // Check Esperanza payment screenshot if required
+        if (formData.hasRegisteredEsperanza === 'yes' && !esperanzaPaymentPhoto) return false;
+        
+        return true;
+    };
+
+    // Get the next pending step
+    const getNextPendingStep = () => {
+        if (!registrationPath) return 'Select Your Role';
+        if (!formData.committee_preference) return 'Choose Committee';
+        if (!formData.name || formData.name.trim() === '') return 'Enter Personal Details';
+        if (!formData.email || formData.email.trim() === '') return 'Enter Personal Details';
+        if (!formData.whatsapp || formData.whatsapp.trim() === '') return 'Enter Personal Details';
+        if (!formData.year || formData.year.trim() === '') return 'Enter Personal Details';
+        if (formData.year !== 'Doctor / Practitioner' && (!formData.college || formData.college.trim() === '')) return 'Enter Personal Details';
+        if (!munPaymentPhoto) return 'Upload Payment Screenshot';
+        if (formData.hasRegisteredEsperanza === 'yes' && !esperanzaPaymentPhoto) return 'Upload Esperanza Screenshot';
+        return 'Complete Registration';
+    };
+
+    // Hide form incomplete message when form becomes ready
+    useEffect(() => {
+        if (isFormReady() && showFormIncomplete) {
+            setShowFormIncomplete(false);
+        }
+    }, [isFormReady, showFormIncomplete]);
+
     // Form validation
     const validateForm = () => {
         const newErrors = {};
+        const missingFields = [];
+        
+        // Check each required field
         Object.keys(formData).forEach(field => {
             const error = validateField(field, formData[field]);
-            if (error) newErrors[field] = error;
+            if (error) {
+                newErrors[field] = error;
+                missingFields.push(field);
+            }
         });
+
+        // Check for missing registration path
+        if (!registrationPath) {
+            setGlobalError('Please select your role (Delegate or International Press) in Step 1');
+            setTimeout(() => {
+                const step1 = document.querySelector('[data-step="1"]');
+                if (step1) {
+                    step1.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                }
+            }, 100);
+            return false;
+        }
+
+        // Check for missing committee preference
+        if (!formData.committee_preference) {
+            setGlobalError('Please select your committee or International Press role in Step 2');
+            setTimeout(() => {
+                const step2 = document.querySelector('[data-step="2"]');
+                if (step2) {
+                    step2.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                }
+            }, 100);
+            return false;
+        }
+
+        // Check for missing personal information
+        if (missingFields.length > 0) {
+            const fieldNames = {
+                name: 'Full Name',
+                email: 'Email Address',
+                whatsapp: 'WhatsApp Number',
+                college: 'College/Institution',
+                year: 'Year of Study'
+            };
+            
+            const missingFieldNames = missingFields.map(field => fieldNames[field] || field).join(', ');
+            setGlobalError(`Please fill in the following required fields: ${missingFieldNames}`);
+            
+            // Scroll to first missing field
+            setTimeout(() => {
+                const firstErrorField = document.querySelector(`[name="${missingFields[0]}"]`);
+                if (firstErrorField) {
+                    firstErrorField.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    firstErrorField.focus();
+                } else {
+                    const step3 = document.querySelector('[data-step="3"]');
+                    if (step3) {
+                        step3.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    }
+                }
+            }, 100);
+            return false;
+        }
 
         // Validate MUN payment screenshot (always required)
         if (!munPaymentPhoto) {
-            setGlobalError('Please upload your MUN payment screenshot');
+            setGlobalError('Please upload your MUN payment screenshot in Step 5');
+            setTimeout(() => {
+                const step5 = document.querySelector('[data-step="5"]');
+                if (step5) {
+                    step5.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                }
+            }, 100);
             return false;
         }
 
         // Validate Esperanza payment screenshot (required only if user has registered for Esperanza)
         if (formData.hasRegisteredEsperanza === 'yes' && !esperanzaPaymentPhoto) {
-            setGlobalError('Please upload your Esperanza payment screenshot for verification');
+            setGlobalError('Please upload your Esperanza payment screenshot for verification in Step 5');
+            setTimeout(() => {
+                const step5 = document.querySelector('[data-step="5"]');
+                if (step5) {
+                    step5.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                }
+            }, 100);
             return false;
         }
 
         setErrors(newErrors);
-        return Object.keys(newErrors).length === 0;
+        setGlobalError(''); // Clear any previous global errors
+        return true;
     };
 
     // Form submission
     const handleSubmit = async (e) => {
         e.preventDefault();
+        
+        // If form is not ready, show the incomplete message
+        if (!isFormReady()) {
+            setShowFormIncomplete(true);
+            return;
+        }
 
         if (!validateForm()) return;
 
@@ -522,7 +649,7 @@ const RegistrationForm = () => {
 
                 <form onSubmit={handleSubmit} className="space-y-8">
                     {/* STEP 1: CHOOSE YOUR ROLE - This is the new primary fork */}
-                    <div className="bg-white rounded-3xl shadow-xl border border-gray-100 overflow-hidden">
+                    <div className="bg-white rounded-3xl shadow-xl border border-gray-100 overflow-hidden" data-step="1">
                         <div className="bg-gradient-to-r from-gray-700 to-gray-900 px-8 py-6">
                             <h2 className="text-2xl font-bold text-white flex items-center gap-3">
                                 <div className="w-8 h-8 bg-white/20 rounded-lg flex items-center justify-center">
@@ -541,7 +668,7 @@ const RegistrationForm = () => {
                                         : 'border-gray-200 hover:border-blue-300 hover:bg-gradient-to-r hover:from-gray-50 hover:to-blue-50'
                                     }`}
                             >
-                                <Shield className="w-12 h-12 mx-auto text-blue-500 mb-4" />
+                                <BsPerson className="w-12 h-12 mx-auto text-blue-500 mb-4" />
                                 <h3 className="text-xl font-bold text-gray-800">Register as a Delegate</h3>
                                 <p className="text-gray-600 mt-1">Participate in WHO or The Assembly of Homoeopathy.</p>
                             </div>
@@ -583,43 +710,117 @@ const RegistrationForm = () => {
                                     {/* CONDITIONAL: Delegate Options */}
                                     {registrationPath === 'delegate' && (
                                         <>
+                                        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                                            {/* WHO Committee */}
                                             <div
                                                 onClick={() => handlePreferenceChange('WHO')}
-                                                className={`cursor-pointer flex items-start gap-3 rounded-2xl border-2 p-4 transition-all duration-300 hover:scale-[1.02] ${formData.committee_preference === 'WHO'
-                                                        ? 'border-blue-500 bg-gradient-to-r from-blue-50 to-indigo-50 shadow-xl ring-4 ring-blue-100'
-                                                        : 'border-gray-200 hover:border-blue-300 hover:bg-gradient-to-r hover:from-gray-50 hover:to-blue-50'
+                                                className={`group cursor-pointer relative overflow-hidden rounded-3xl shadow-2xl hover:shadow-3xl transition-all duration-500 ${formData.committee_preference === 'WHO'
+                                                        ? 'ring-4 ring-green-400 scale-105 shadow-green-200'
+                                                        : 'hover:scale-105'
                                                     }`}
                                             >
-                                                <div className="w-10 h-10 bg-blue-100 text-blue-600 rounded-lg flex items-center justify-center flex-shrink-0">
-                                                    <Users className="w-6 h-6" />
+                                                {/* Background Image */}
+                                                <div className="absolute inset-0 opacity-15 group-hover:opacity-20 transition-opacity duration-500">
+                                                    <img 
+                                                        src="/images/World Health Organissation.webp" 
+                                                        alt="WHO Background" 
+                                                        className="w-full h-full object-cover filter"
+                                                    />
                                                 </div>
-                                                <div>
-                                                    <h4 className="text-lg font-bold text-gray-800">World Health Organization (WHO)</h4>
-                                                    <p className="text-gray-600 font-medium">Team of 2</p>
-                                                    <p className="text-sm text-gray-500 mt-1">Agenda: Integration of Traditional & Modern Medicine in Global Health Policies.</p>
-                                                    <p className="text-xs text-blue-600 mt-2 font-medium">Team details will be collected later in the WhatsApp group after each member registers individually.</p>
-                                                </div>
-                                            </div>
-                                            <div
-                                                onClick={() => handlePreferenceChange('The Assembly of Homoeopathy')}
-                                                className={`cursor-pointer flex items-start gap-3 rounded-2xl border-2 p-4 transition-all duration-300 hover:scale-[1.02] ${formData.committee_preference === 'The Assembly of Homoeopathy'
-                                                        ? 'border-purple-500 bg-gradient-to-r from-purple-50 to-violet-50 shadow-xl ring-4 ring-purple-100'
-                                                        : 'border-gray-200 hover:border-purple-300 hover:bg-gradient-to-r hover:from-gray-50 hover:to-purple-50'
-                                                    }`}
-                                            >
-                                                <div className="w-10 h-10 bg-purple-100 text-purple-600 rounded-lg flex items-center justify-center flex-shrink-0">
-                                                    <GraduationCap className="w-6 h-6" />
-                                                </div>
-                                                <div>
-                                                    <h4 className="text-lg font-bold text-gray-800">The Assembly of Homoeopathy</h4>
-                                                    <p className="text-gray-600 font-medium">Team of 2</p>
-                                                    <p className="text-sm text-gray-500 mt-1">Agenda: Homoeopathy in the modern era of advance drug research.</p>
-                                                    <p className="text-xs text-blue-600 mt-2 font-medium">Team details will be collected later in the WhatsApp group after each member registers individually.</p>
-                                                    <div className="mt-2 bg-yellow-100 border-l-4 border-yellow-400 text-yellow-800 p-2 rounded-r-lg text-xs">
-                                                        <strong>Note:</strong> Limited slots. Register early. Allotment on first come first serve basis. Excess registrations will be automatically allotted to WHO.
+
+                                                {/* Gradient Overlay */}
+                                                <div className={`absolute inset-0 bg-gradient-to-br opacity-80 group-hover:opacity-60 transition-all duration-500 ${
+                                                    formData.committee_preference === 'WHO'
+                                                        ? 'from-blue-900/80 via-blue-800/70 to-blue-900/80'
+                                                        : 'from-midnight-900/80 via-midnight-800/70 to-midnight-900/80 group-hover:from-midnight-900/60 group-hover:via-midnight-800/50 group-hover:to-midnight-900/60'
+                                                }`}></div>
+
+                                                {/* Content */}
+                                                <div className="relative z-10 p-8 text-white min-h-[50px] flex flex-col justify-between">
+                                                    {/* Header */}
+                                                    <div>
+                                                        {/* Committee Type Badge */}
+                                                        <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full text-sm font-semibold mb-6 bg-midnight-600/90 text-white backdrop-blur-sm">
+                                                            <Users className="w-4 h-4" />
+                                                            General Committee
+                                                        </div>
+
+                                                        {/* Title */}
+                                                        <h4 className="text-2xl font-bold mb-6 leading-tight group-hover:text-white transition-colors duration-300">
+                                                            World Health Organization (WHO)
+                                                        </h4>
+                                                    </div>
+
+                                                    {/* Footer */}
+                                                    <div className="border-t border-white/20 pt-4">
+                                                        <p className="text-gray-200 text-sm font-medium">Team of 2</p>
                                                     </div>
                                                 </div>
                                             </div>
+
+                                            {/* Assembly of Homoeopathy */}
+                                            <div
+                                                onClick={() => handlePreferenceChange('The Assembly of Homoeopathy')}
+                                                className={`group cursor-pointer relative overflow-hidden rounded-3xl shadow-2xl hover:shadow-3xl transition-all duration-500 ${formData.committee_preference === 'The Assembly of Homoeopathy'
+                                                        ? 'ring-4 ring-green-400 scale-105 shadow-green-200'
+                                                        : 'hover:scale-105'
+                                                    }`}
+                                            >
+                                                {/* Background Image */}
+                                                <div className="absolute inset-0 opacity-15 group-hover:opacity-20 transition-opacity duration-500">
+                                                    <img 
+                                                        src="/images/The Great Homoeopathic Assembly.jpg" 
+                                                        alt="Great Homoeopathic Assembly Background" 
+                                                        className="w-full h-full object-cover filter"
+                                                    />
+                                                </div>
+
+                                                {/* Gradient Overlay */}
+                                                <div className={`absolute inset-0 bg-gradient-to-br opacity-80 group-hover:opacity-60 transition-all duration-500 ${
+                                                    formData.committee_preference === 'The Assembly of Homoeopathy'
+                                                        ? 'from-cognac-900/80 via-cognac-800/70 to-cognac-900/80'
+                                                        : 'from-cognac-900/80 via-cognac-800/70 to-cognac-900/80 group-hover:from-cognac-900/60 group-hover:via-cognac-800/50 group-hover:to-cognac-900/60'
+                                                }`}></div>
+
+                                                {/* Content */}
+                                                <div className="relative z-10 p-8 text-white min-h-[300px] flex flex-col justify-between">
+                                                    {/* Header */}
+                                                    <div>
+                                                        {/* Committee Type Badge */}
+                                                        <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full text-sm font-semibold mb-6 bg-cognac-600/90 text-white backdrop-blur-sm">
+                                                            <Award className="w-4 h-4" />
+                                                            Exclusive Committee
+                                                        </div>
+
+                                                        {/* Title */}
+                                                        <h4 className="text-2xl font-bold mb-6 leading-tight group-hover:text-white transition-colors duration-300">
+                                                            The Great Homoeopathic Assembly
+                                                        </h4>
+                                                    </div>
+
+                                                    {/* Footer */}
+                                                    <div className="border-t border-white/20 pt-4">
+                                                        <p className="text-gray-200 mb-2 text-sm font-medium">Team of 2</p>
+                                                        <div className="bg-yellow-100/20 border border-yellow-300/30 text-yellow-200 p-3 rounded-lg text-xs leading-relaxed">
+                                                            <strong>Note:</strong> Limited slots. Allotment on first come first serve basis. Excess registrations will be automatically allotted to WHO.
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        
+                                        {/* Common Team Information */}
+                                        <div className="mt-6 bg-blue-50 border-2 border-blue-200 rounded-xl p-4">
+                                            <div className="flex items-start gap-3">
+                                                <Info className="w-5 h-5 text-blue-600 flex-shrink-0 mt-0.5" />
+                                                <div>
+                                                    <p className="text-blue-800 font-semibold mb-1">Team Registration Process</p>
+                                                    <p className="text-blue-700 text-sm">
+                                                        Team details will be collected later in the WhatsApp group after each member registers individually.
+                                                    </p>
+                                                </div>
+                                            </div>
+                                        </div>
                                         </>
                                     )}
                                     {/* CONDITIONAL: International Press Options */}
@@ -1103,16 +1304,22 @@ const RegistrationForm = () => {
                                     <div className="text-center">
                                         <button
                                             type="submit"
-                                            disabled={isSubmitting}
-                                            className={`w-full py-4 px-8 rounded-2xl font-bold text-lg transition-all duration-300 flex items-center justify-center gap-3 shadow-lg hover:shadow-xl ${isSubmitting
+                                            disabled={isSubmitting || !isFormReady()}
+                                            className={`w-full py-4 px-8 rounded-2xl font-bold text-lg transition-all duration-300 flex items-center justify-center gap-3 shadow-lg ${
+                                                isSubmitting || !isFormReady()
                                                     ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
-                                                    : 'bg-gradient-to-r from-emerald-600 via-teal-600 to-cyan-600 text-white hover:from-emerald-700 hover:via-teal-700 hover:to-cyan-700 transform hover:scale-[1.02]'
-                                                }`}
+                                                    : 'bg-gradient-to-r from-emerald-600 via-teal-600 to-cyan-600 text-white hover:from-emerald-700 hover:via-teal-700 hover:to-cyan-700 transform hover:scale-[1.02] hover:shadow-xl'
+                                            }`}
                                         >
                                             {isSubmitting ? (
                                                 <>
                                                     <Loader className="w-5 h-5 animate-spin" />
                                                     Submitting Registration...
+                                                </>
+                                            ) : !isFormReady() ? (
+                                                <>
+                                                    <AlertCircle className="w-5 h-5" />
+                                                    {getNextPendingStep()}
                                                 </>
                                             ) : (
                                                 <>
@@ -1121,6 +1328,29 @@ const RegistrationForm = () => {
                                                 </>
                                             )}
                                         </button>
+
+                                        {/* Form Status Indicator - Only show when user tries to submit incomplete form */}
+                                        {showFormIncomplete && !isFormReady() && !isSubmitting && (
+                                            <div className="mt-4 p-4 bg-yellow-50 border-2 border-yellow-200 rounded-xl">
+                                                <div className="flex items-start gap-3">
+                                                    <AlertCircle className="w-5 h-5 text-yellow-600 flex-shrink-0 mt-0.5" />
+                                                    <div>
+                                                        <p className="text-yellow-800 font-semibold mb-2">Form Incomplete</p>
+                                                        <ul className="text-yellow-700 text-sm space-y-1">
+                                                            {!registrationPath && <li>• Select your role (Delegate or International Press)</li>}
+                                                            {!formData.committee_preference && <li>• Choose your committee or IP role</li>}
+                                                            {(!formData.name || formData.name.trim() === '') && <li>• Enter your full name</li>}
+                                                            {(!formData.email || formData.email.trim() === '') && <li>• Enter your email address</li>}
+                                                            {(!formData.whatsapp || formData.whatsapp.trim() === '') && <li>• Enter your WhatsApp number</li>}
+                                                            {(!formData.year || formData.year.trim() === '') && <li>• Select your year of study</li>}
+                                                            {(formData.year !== 'Doctor / Practitioner' && (!formData.college || formData.college.trim() === '')) && <li>• Enter your college/institution</li>}
+                                                            {!munPaymentPhoto && <li>• Upload MUN payment screenshot</li>}
+                                                            {formData.hasRegisteredEsperanza === 'yes' && !esperanzaPaymentPhoto && <li>• Upload Esperanza payment screenshot</li>}
+                                                        </ul>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        )}
 
                                         <p className="text-center text-gray-500 mt-4">
                                             By registering, you agree to our terms and conditions for DIIMUN 2025
@@ -1133,9 +1363,26 @@ const RegistrationForm = () => {
 
                     {/* Global Error */}
                     {globalError && (
-                        <div className="bg-red-50 border-2 border-red-200 rounded-2xl p-6 flex items-center gap-4">
-                            <AlertCircle className="w-6 h-6 text-red-500 flex-shrink-0" />
-                            <p className="text-red-700 font-medium">{globalError}</p>
+                        <div className="bg-red-50 border-2 border-red-200 rounded-2xl p-6 mb-6">
+                            <div className="flex items-start gap-4">
+                                <AlertCircle className="w-6 h-6 text-red-500 flex-shrink-0 mt-0.5" />
+                                <div className="flex-1">
+                                    <h3 className="text-red-800 font-bold text-lg mb-2">Form Incomplete</h3>
+                                    <p className="text-red-700 font-medium mb-3">{globalError}</p>
+                                    <div className="bg-red-100 border border-red-300 rounded-lg p-3">
+                                        <p className="text-red-800 text-sm font-medium mb-1">Quick Checklist:</p>
+                                        <ul className="text-red-700 text-sm space-y-1">
+                                            <li>✓ Select your role (Delegate or International Press)</li>
+                                            <li>✓ Choose your committee or IP role</li>
+                                            <li>✓ Fill in personal details (name, email, WhatsApp, college, year)</li>
+                                            <li>✓ Complete payment and upload screenshot</li>
+                                            {formData.hasRegisteredEsperanza === 'yes' && (
+                                                <li>✓ Upload Esperanza payment screenshot</li>
+                                            )}
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     )}
 
