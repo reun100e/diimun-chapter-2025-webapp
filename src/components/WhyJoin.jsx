@@ -136,7 +136,7 @@ const WhyJoin = () => {
               </motion.div>
               
               <h3 className="text-2xl md:text-3xl font-bold mb-4">
-                FREE Online Training Program
+                Take FREE Online Training Program
               </h3>
               
               <p className="text-lg md:text-xl text-cognac-100 mb-6 max-w-2xl mx-auto">

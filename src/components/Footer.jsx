@@ -5,10 +5,10 @@ import {
     Facebook, Instagram, Twitter, Linkedin,
     Heart, ExternalLink, Award, Users
 } from 'lucide-react';
-import { ASSETS } from '../utils/constants';
+import { ASSETS, FOOTER_LINKS } from '../utils/constants';
 import { smoothScrollTo } from '../animations/parallax';
 
-const Footer = () => {
+const Footer = ({ onNavigate }) => {
     const currentYear = new Date().getFullYear();
     const [showScrollToTop, setShowScrollToTop] = useState(false);
 
@@ -50,14 +50,8 @@ const Footer = () => {
         }
     ];
 
-    const quickLinks = [
-        { label: "About DIIMUN", href: "#about" },
-        { label: "Event Details", href: "#details" },
-        { label: "Committees", href: "#highlights" },
-        { label: "Registration", href: "#register" },
-        { label: "FAQ", href: "#faq" },
-        { label: "Contact", href: "#contact" }
-    ];
+    // Use the new footer links structure
+    const { eventInfo, support, quickLinks } = FOOTER_LINKS;
 
     const socialLinks = [
         { icon: Facebook, label: "Facebook", href: "#", color: "hover:text-blue-600" },
@@ -66,11 +60,13 @@ const Footer = () => {
         { icon: Linkedin, label: "LinkedIn", href: "#", color: "hover:text-blue-700" }
     ];
 
-    const scrollToSection = (href) => {
+    const handleNavigation = (href) => {
         if (href.startsWith('#')) {
             smoothScrollTo(href, 100);
         } else {
-            window.open(href, '_blank');
+            // Handle page navigation
+            const page = href.substring(1) // Remove the leading slash
+            onNavigate(page);
         }
     };
 
@@ -78,7 +74,7 @@ const Footer = () => {
         <footer className="bg-gradient-to-br from-midnight-900 via-midnight-800 to-cognac-900 text-white">
             {/* Main Footer Content */}
             <div className="container-custom py-16">
-                <div className="grid lg:grid-cols-3 md:grid-cols-2 gap-12">
+                <div className="grid lg:grid-cols-4 md:grid-cols-2 gap-12">
                     {/* Brand Section */}
                     <motion.div
                         initial={{ opacity: 0, y: 30 }}
@@ -112,19 +108,43 @@ const Footer = () => {
                         </div>
                     </motion.div>
 
-                    {/* Quick Links */}
+                    {/* Event Info Links */}
+                    <motion.div
+                        initial={{ opacity: 0, y: 30 }}
+                        whileInView={{ opacity: 1, y: 0 }}
+                        transition={{ duration: 0.6, delay: 0.1 }}
+                        viewport={{ once: true }}
+                    >
+                        <h4 className="text-xl font-bold mb-6 text-white">Event Info</h4>
+                        <ul className="space-y-3">
+                            {eventInfo.map((link, index) => (
+                                <li key={link.label}>
+                                    <motion.button
+                                        onClick={() => handleNavigation(link.href)}
+                                        whileHover={{ x: 5 }}
+                                        className="text-cognac-200 hover:text-white transition-all duration-300 flex items-center gap-2 group"
+                                    >
+                                        <span className="w-1 h-1 bg-cognac-400 rounded-full group-hover:bg-white transition-colors duration-300"></span>
+                                        {link.label}
+                                    </motion.button>
+                                </li>
+                            ))}
+                        </ul>
+                    </motion.div>
+
+                    {/* Support Links */}
                     <motion.div
                         initial={{ opacity: 0, y: 30 }}
                         whileInView={{ opacity: 1, y: 0 }}
                         transition={{ duration: 0.6, delay: 0.2 }}
                         viewport={{ once: true }}
                     >
-                        <h4 className="text-xl font-bold mb-6 text-white">Quick Links</h4>
+                        <h4 className="text-xl font-bold mb-6 text-white">Support</h4>
                         <ul className="space-y-3">
-                            {quickLinks.map((link, index) => (
+                            {support.map((link, index) => (
                                 <li key={link.label}>
                                     <motion.button
-                                        onClick={() => scrollToSection(link.href)}
+                                        onClick={() => handleNavigation(link.href)}
                                         whileHover={{ x: 5 }}
                                         className="text-cognac-200 hover:text-white transition-all duration-300 flex items-center gap-2 group"
                                     >

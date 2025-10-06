@@ -83,10 +83,34 @@ export const NAV_LINKS = [
   { href: '#hero', label: 'Home' },
   { href: '#about', label: 'About' },
   { href: '#highlights', label: 'Committees' },
-  { href: '#why-join', label: 'Why Join' },
-  { href: '#details', label: 'Details' },
+  { href: '/schedule', label: 'Schedule' },
+  { href: '/guidelines', label: 'Guidelines' },
+  { href: '/awards', label: 'Awards' },
+  { href: '#register', label: 'Register' },
   { href: '#faq', label: 'FAQ' },
 ]
+
+// Footer Navigation Links
+export const FOOTER_LINKS = {
+  eventInfo: [
+    { href: '/schedule', label: 'Schedule' },
+    { href: '/guidelines', label: 'Guidelines' },
+    { href: '/awards', label: 'Awards' },
+    { href: '#highlights', label: 'Committees' }
+  ],
+  support: [
+    { href: '/terms', label: 'Terms & Conditions' },
+    { href: '#faq', label: 'FAQ' },
+    { href: '#contact', label: 'Contact' }
+  ],
+  quickLinks: [
+    { href: '#about', label: 'About DIIMUN' },
+    { href: '#details', label: 'Event Details' },
+    { href: '#highlights', label: 'Committees' },
+    { href: '#register', label: 'Registration' },
+    { href: '#faq', label: 'FAQ' }
+  ]
+}
 
 // Why Join Benefits
 export const BENEFITS = [

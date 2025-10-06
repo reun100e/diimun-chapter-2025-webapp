@@ -11,6 +11,9 @@ import { smoothScrollTo } from '../animations/parallax';
 import { BsPerson } from 'react-icons/bs';
 
 const RegistrationForm = () => {
+    // NEW: State to detect if the user is on an iOS device
+    const [isIOS, setIsIOS] = useState(false);
+
     // NEW: State to manage the primary choice path ('delegate' or 'ip')
     const [registrationPath, setRegistrationPath] = useState('');
 
@@ -62,6 +65,15 @@ const RegistrationForm = () => {
         { value: 'Doctor / Practitioner', label: 'Doctor / Practitioner' },
         { value: 'Staff (Asst./Assoc./Prof.)', label: 'Staff (Asst./Assoc./Prof.)' }
     ];
+
+    // iOS Detection - Run once when component mounts
+    useEffect(() => {
+        const userAgent = navigator.userAgent || navigator.vendor || window.opera;
+        // Check for iPhone, iPad, or iPod
+        if (/iPad|iPhone|iPod/.test(userAgent) && !window.MSStream) {
+            setIsIOS(true);
+        }
+    }, []);
 
     // Scroll to registration section when success state changes
     useEffect(() => {
@@ -196,14 +208,14 @@ const RegistrationForm = () => {
         }, 100);
     };
 
-    // Copy UPI ID and open UPI app
-    const handleUPIPayment = async () => {
-        // First, copy the UPI ID
+    // Copy UPI ID helper function
+    const copyUPI = async () => {
         try {
             await navigator.clipboard.writeText(upiId);
             setCopiedUPI(true);
             setTimeout(() => setCopiedUPI(false), 3000);
         } catch (err) {
+            // Fallback for older browsers
             const textArea = document.createElement('textarea');
             textArea.value = upiId;
             document.body.appendChild(textArea);
@@ -213,19 +225,17 @@ const RegistrationForm = () => {
             setCopiedUPI(true);
             setTimeout(() => setCopiedUPI(false), 3000);
         }
+    };
 
-        // Then, try to open UPI app with pre-filled details
+    // Updated handleUPIPayment for non-iOS devices
+    const handleUPIPayment = () => {
+        copyUPI(); // Still copy the ID first
         const amount = formData.hasRegisteredEsperanza === 'yes' ? '347' : '499';
         const transactionNote = `DIIMUN 2025 Registration - ${formData.name || 'Participant'}`;
         const upiUrl = `upi://pay?pa=${upiId}&pn=${encodeURIComponent('Aghosh B Prasad')}&am=${amount}&cu=INR&tn=${encodeURIComponent(transactionNote)}`;
-
-        // Small delay to ensure copy feedback is visible
+        
         setTimeout(() => {
-            try {
-                window.location.href = upiUrl;
-            } catch (error) {
-                console.log('UPI app not available, UPI ID has been copied to clipboard');
-            }
+            window.location.href = upiUrl;
         }, 500);
     };
 
@@ -1141,42 +1151,73 @@ const RegistrationForm = () => {
                                                 {formData.hasRegisteredEsperanza === 'yes' ? 'DIIMUN 2025 Registration (Esperanza Special Offer)' : 'DIIMUN 2025 Registration'}
                                             </p>
 
-                                                {/* UPI Details */}
-                                                <div className="bg-white border-2 border-blue-200 rounded-xl p-4 mb-6">
-                                                    <p className="text-gray-600 text-sm mb-2">Pay to UPI ID</p>
-                                                    <p className="font-mono font-bold text-base break-all text-gray-800">{upiId}</p>
-                                                </div>
-
-                                                {/* Payment Button */}
-                                                <button
-                                                    type="button"
-                                                    onClick={handleUPIPayment}
-                                                    className={`w-full py-4 px-6 rounded-xl font-bold text-lg transition-all duration-300 flex items-center justify-center gap-3 shadow-lg hover:shadow-xl ${copiedUPI
-                                                            ? 'bg-green-500 text-white'
-                                                            : 'bg-blue-600 text-white hover:bg-blue-700 active:scale-95'
+                                            {/* ====== CONDITIONAL PAYMENT UI ====== */}
+                                            {isIOS ? (
+                                                // --- UI for iPhone / iOS Users ---
+                                                <div className="space-y-4">
+                                                    <p className="text-gray-700 font-semibold">For iPhone users:</p>
+                                                    <div className="flex justify-center">
+                                                        <img src="/upi-qrcode.png" alt="UPI QR Code" className="w-48 h-48 rounded-lg border-4 border-white shadow-lg" />
+                                                    </div>
+                                                    <p className="text-sm text-gray-600">
+                                                        <strong>Tap and hold</strong> the QR code to pay, or scan it with your camera.
+                                                    </p>
+                                                    <div className="bg-white border-2 border-blue-200 rounded-xl p-4">
+                                                        <p className="text-gray-600 text-sm mb-2">Or copy UPI ID manually:</p>
+                                                        <p className="font-mono font-bold text-base break-all text-gray-800">{upiId}</p>
+                                                    </div>
+                                                    <button
+                                                        type="button"
+                                                        onClick={copyUPI}
+                                                        className={`w-full py-3 px-6 rounded-xl font-bold text-lg transition-all duration-300 flex items-center justify-center gap-3 shadow-lg ${
+                                                            copiedUPI 
+                                                                ? 'bg-green-500 text-white' 
+                                                                : 'bg-gray-600 text-white hover:bg-gray-700 active:scale-95'
                                                         }`}
-                                                >
-                                                    {copiedUPI ? (
-                                                        <>
-                                                            <Check className="w-5 h-5" />
-                                                            <span>Payment App Opening...</span>
-                                                        </>
-                                                    ) : (
-                                                        <>
-                                                            <Copy className="w-5 h-5" />
-                                                            <span>Pay ₹{formData.hasRegisteredEsperanza === 'yes' ? '347' : '499'} Now</span>
-                                                        </>
-                                                    )}
-                                                </button>
+                                                    >
+                                                        {copiedUPI ? <Check className="w-5 h-5" /> : <Copy className="w-5 h-5" />}
+                                                        {copiedUPI ? 'UPI ID Copied!' : 'Copy UPI ID'}
+                                                    </button>
+                                                </div>
+                                            ) : (
+                                                // --- UI for Android & Desktop Users ---
+                                                <div>
+                                                    <div className="bg-white border-2 border-blue-200 rounded-xl p-4 mb-6">
+                                                        <p className="text-gray-600 text-sm mb-2">Pay to UPI ID</p>
+                                                        <p className="font-mono font-bold text-base break-all text-gray-800">{upiId}</p>
+                                                    </div>
+                                                    <button
+                                                        type="button"
+                                                        onClick={handleUPIPayment}
+                                                        className={`w-full py-4 px-6 rounded-xl font-bold text-lg transition-all duration-300 flex items-center justify-center gap-3 shadow-lg hover:shadow-xl ${
+                                                            copiedUPI 
+                                                                ? 'bg-green-500 text-white' 
+                                                                : 'bg-blue-600 text-white hover:bg-blue-700 active:scale-95'
+                                                        }`}
+                                                    >
+                                                        {copiedUPI ? (
+                                                            <>
+                                                                <Check className="w-5 h-5" />
+                                                                <span>Payment App Opening...</span>
+                                                            </>
+                                                        ) : (
+                                                            <>
+                                                                <Copy className="w-5 h-5" />
+                                                                <span>Pay ₹{formData.hasRegisteredEsperanza === 'yes' ? '347' : '499'} Now</span>
+                                                            </>
+                                                        )}
+                                                    </button>
+                                                </div>
+                                            )}
+                                            {/* ====== END CONDITIONAL UI ====== */}
 
-                                                <p className="text-gray-600 text-sm mt-4">
-                                                    Questions? Call <a href="tel:+919400076226" className="font-semibold text-blue-600 hover:underline">+91 9400076226</a>
-                                                </p>
-                                            </div>
+                                            <p className="text-gray-600 text-sm mt-4">
+                                                Questions? Call <a href="tel:+919400076226" className="font-semibold text-blue-600 hover:underline">+91 9400076226</a>
+                                            </p>
                                         </div>
                                     </div>
                                 </div>
-                            
+                            </div>
 
                             {/* Step 5: Upload Payment Confirmation Screenshot */}
                             <div className="bg-white rounded-3xl shadow-xl border border-gray-100 overflow-hidden" data-step="5">
@@ -1353,11 +1394,21 @@ const RegistrationForm = () => {
                                         )}
 
                                         <p className="text-center text-gray-500 mt-4">
-                                            By registering, you agree to our terms and conditions for DIIMUN 2025
+                                            By registering, you agree to our{' '}
+                                            <a 
+                                                href="/terms" 
+                                                target="_blank" 
+                                                rel="noopener noreferrer"
+                                                className="text-blue-600 hover:text-blue-800 underline font-medium"
+                                            >
+                                                terms and conditions
+                                            </a>
+                                            {' '}for DIIMUN 2025
                                         </p>
                                     </div>
                                 </div>
                             </div>
+
                         </>
                     )}
 

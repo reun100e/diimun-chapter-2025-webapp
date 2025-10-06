@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { NAV_LINKS, ASSETS } from '../utils/constants'
 import { smoothScrollTo, scrollToElement } from '../animations/parallax'
 
-const Navigation = () => {
+const Navigation = ({ onNavigate, currentPage }) => {
   const [isScrolled, setIsScrolled] = useState(false)
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
 
@@ -29,24 +29,29 @@ const Navigation = () => {
     }
   }, [])
 
-  const scrollToSection = (href) => {
+  const handleNavigation = (href) => {
     // Close mobile menu first
     setIsMobileMenuOpen(false)
     
-    // Add a small delay to ensure mobile menu closes before scrolling
-    setTimeout(() => {
-      // Use different offset for mobile vs desktop
-      const isMobile = window.innerWidth < 768
-      const offset = isMobile ? 60 : 100
-      
-      // Try the new scrollToElement function first, fallback to smoothScrollTo
-      try {
-        scrollToElement(href, offset)
-      } catch (error) {
-        console.warn('scrollToElement failed, using fallback:', error)
-        smoothScrollTo(href, offset)
-      }
-    }, 150)
+    // Check if it's a hash link (section on same page) or a new page
+    if (href.startsWith('#')) {
+      // Handle section scrolling
+      setTimeout(() => {
+        const isMobile = window.innerWidth < 768
+        const offset = isMobile ? 60 : 100
+        
+        try {
+          scrollToElement(href, offset)
+        } catch (error) {
+          console.warn('scrollToElement failed, using fallback:', error)
+          smoothScrollTo(href, offset)
+        }
+      }, 150)
+    } else {
+      // Handle page navigation
+      const page = href.substring(1) // Remove the leading slash
+      onNavigate(page)
+    }
   }
 
   return (
@@ -88,30 +93,25 @@ const Navigation = () => {
 
           {/* Desktop Navigation */}
           <div className="hidden md:flex items-center space-x-8">
-            {NAV_LINKS.map((link) => (
-              <motion.button
-                key={link.href}
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                onClick={() => scrollToSection(link.href)}
-                className={`font-semibold transition-all duration-300 hover:scale-105 ${
-                  isScrolled 
-                    ? 'text-slate-700 hover:text-midnight-800' 
-                    : 'text-pearl-100 hover:text-gold-300'
-                }`}
-              >
-                {link.label}
-              </motion.button>
-            ))}
-            <motion.button
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-              onClick={() => scrollToSection('#register')}
-              className="group relative overflow-hidden bg-gradient-to-r from-emerald-600 to-teal-600 text-white font-semibold py-3 px-6 rounded-xl transition-all duration-300 shadow-lg hover:shadow-emerald-500/25"
-            >
-              <div className="absolute inset-0 bg-gradient-to-r from-emerald-400 to-teal-400 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-              <span className="relative z-10">Register Now</span>
-            </motion.button>
+            {NAV_LINKS.map((link) => {
+              const isActive = (link.href.startsWith('#') && currentPage === 'home') || 
+                              (link.href === `/${currentPage}`)
+              return (
+                <motion.button
+                  key={link.href}
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  onClick={() => handleNavigation(link.href)}
+                  className={`font-semibold transition-all duration-300 hover:scale-105 ${
+                    isScrolled 
+                      ? `text-slate-700 hover:text-midnight-800 ${isActive ? 'text-emerald-600' : ''}` 
+                      : `text-pearl-100 hover:text-gold-300 ${isActive ? 'text-gold-300' : ''}`
+                  }`}
+                >
+                  {link.label}
+                </motion.button>
+              )
+            })}
           </div>
           {/* Mobile Menu Button */}
           <motion.button
@@ -161,25 +161,24 @@ const Navigation = () => {
           >
             <div className="container-custom py-4">
               <div className="flex flex-col space-y-4">
-                {NAV_LINKS.map((link) => (
-                  <motion.button
-                    key={link.href}
-                    whileHover={{ x: 10 }}
-                    onClick={() => scrollToSection(link.href)}
-                    className="text-left text-slate-700 hover:text-midnight-800 font-semibold py-3 transition-all duration-300 hover:scale-105"
-                  >
-                    {link.label}
-                  </motion.button>
-                ))}
-                <motion.button
-                  whileHover={{ scale: 1.02 }}
-                  whileTap={{ scale: 0.98 }}
-                  onClick={() => scrollToSection('#register')}
-                  className="group relative overflow-hidden bg-gradient-to-r from-emerald-600 to-teal-600 text-white font-semibold py-3 px-6 rounded-xl transition-all duration-300 shadow-lg hover:shadow-emerald-500/25 mt-4 w-full"
-                >
-                  <div className="absolute inset-0 bg-gradient-to-r from-emerald-400 to-teal-400 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-                  <span className="relative z-10">Register Now</span>
-                </motion.button>
+                {NAV_LINKS.map((link) => {
+                  const isActive = (link.href.startsWith('#') && currentPage === 'home') || 
+                                  (link.href === `/${currentPage}`)
+                  return (
+                    <motion.button
+                      key={link.href}
+                      whileHover={{ x: 10 }}
+                      onClick={() => handleNavigation(link.href)}
+                      className={`text-left font-semibold py-3 transition-all duration-300 hover:scale-105 ${
+                        isActive 
+                          ? 'text-emerald-600' 
+                          : 'text-slate-700 hover:text-midnight-800'
+                      }`}
+                    >
+                      {link.label}
+                    </motion.button>
+                  )
+                })}
               </div>
             </div>
           </motion.div>
