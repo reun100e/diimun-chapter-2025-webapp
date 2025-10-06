@@ -1155,9 +1155,9 @@ const RegistrationForm = () => {
                                             {isIOS ? (
                                                 // --- UI for iPhone / iOS Users ---
                                                 <div className="space-y-4">
-                                                    <p className="text-gray-700 font-semibold">For iPhone users:</p>
+                                                    {/* <p className="text-gray-700 font-semibold">For iPhone users:</p> */}
                                                     <div className="flex justify-center">
-                                                        <img src="/upi-qrcode.png" alt="UPI QR Code" className="w-48 h-48 rounded-lg border-4 border-white shadow-lg" />
+                                                        <img src="/upi-qrcode.jpg" alt="UPI QR Code" className="w-48 h-48 rounded-lg border-4 border-white shadow-lg" />
                                                     </div>
                                                     <p className="text-sm text-gray-600">
                                                         <strong>Tap and hold</strong> the QR code to pay, or scan it with your camera.
