@@ -6,11 +6,29 @@ import { smoothScrollTo, scrollToElement } from '../animations/parallax'
 const Navigation = ({ onNavigate, currentPage }) => {
   const [isScrolled, setIsScrolled] = useState(false)
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
+  const [activeSection, setActiveSection] = useState('hero')
 
   useEffect(() => {
     const handleScroll = () => {
       // Show navbar only when scrolled down (50px)
       setIsScrolled(window.scrollY > 50)
+
+      // Update active section based on scroll position
+      if (currentPage === 'home') {
+        const sections = ['hero', 'about', 'highlights', 'details', 'register', 'faq']
+        const scrollPosition = window.scrollY + 150 // Offset for better detection
+        
+        for (let i = sections.length - 1; i >= 0; i--) {
+          const element = document.getElementById(sections[i])
+          if (element) {
+            const offsetTop = element.offsetTop
+            if (scrollPosition >= offsetTop) {
+              setActiveSection(sections[i])
+              break
+            }
+          }
+        }
+      }
     }
 
     const handleResize = () => {
@@ -23,11 +41,14 @@ const Navigation = ({ onNavigate, currentPage }) => {
     window.addEventListener('scroll', handleScroll)
     window.addEventListener('resize', handleResize)
     
+    // Initial check
+    handleScroll()
+    
     return () => {
       window.removeEventListener('scroll', handleScroll)
       window.removeEventListener('resize', handleResize)
     }
-  }, [])
+  }, [currentPage])
 
   const handleNavigation = (href) => {
     // Close mobile menu first
@@ -128,8 +149,10 @@ const Navigation = ({ onNavigate, currentPage }) => {
           {/* Desktop Navigation */}
           <div className="hidden md:flex items-center space-x-8">
             {NAV_LINKS.filter(link => link.href !== '#register').map((link) => {
-              const isActive = (link.href.startsWith('#') && currentPage === 'home') || 
-                              (link.href === `/${currentPage}`)
+              // Check if link is active based on current page or current section
+              const isActive = link.href.startsWith('#') 
+                ? (currentPage === 'home' && link.href === `#${activeSection}`)
+                : (link.href === `/${currentPage}`)
               return (
                 <motion.button
                   key={link.href}
@@ -165,27 +188,32 @@ const Navigation = ({ onNavigate, currentPage }) => {
                 ? 'text-slate-700 hover:bg-pearl-100' 
                 : 'text-pearl-100 hover:bg-white/10'
             }`}
+            aria-label={isMobileMenuOpen ? 'Close menu' : 'Open menu'}
           >
-            <div className="w-6 h-6 flex flex-col justify-center space-y-1">
+            <div className="w-6 h-6 flex flex-col justify-center items-center relative">
               <motion.span
                 animate={{
                   rotate: isMobileMenuOpen ? 45 : 0,
-                  y: isMobileMenuOpen ? 8 : 0
+                  y: isMobileMenuOpen ? 0 : -4
                 }}
-                className="w-6 h-0.5 bg-current transform origin-center transition-all duration-200"
+                transition={{ duration: 0.3, ease: 'easeInOut' }}
+                className="w-6 h-0.5 bg-current absolute"
               />
               <motion.span
                 animate={{
-                  opacity: isMobileMenuOpen ? 0 : 1
+                  opacity: isMobileMenuOpen ? 0 : 1,
+                  scale: isMobileMenuOpen ? 0.8 : 1
                 }}
-                className="w-6 h-0.5 bg-current transition-all duration-200"
+                transition={{ duration: 0.2, ease: 'easeInOut' }}
+                className="w-6 h-0.5 bg-current absolute"
               />
               <motion.span
                 animate={{
                   rotate: isMobileMenuOpen ? -45 : 0,
-                  y: isMobileMenuOpen ? -8 : 0
+                  y: isMobileMenuOpen ? 0 : 4
                 }}
-                className="w-6 h-0.5 bg-current transform origin-center transition-all duration-200"
+                transition={{ duration: 0.3, ease: 'easeInOut' }}
+                className="w-6 h-0.5 bg-current absolute"
               />
             </div>
           </motion.button>
@@ -205,8 +233,10 @@ const Navigation = ({ onNavigate, currentPage }) => {
             <div className="container-custom py-4">
               <div className="flex flex-col space-y-4">
                 {NAV_LINKS.filter(link => link.href !== '#register').map((link) => {
-                  const isActive = (link.href.startsWith('#') && currentPage === 'home') || 
-                                  (link.href === `/${currentPage}`)
+                  // Check if link is active based on current page or current section
+                  const isActive = link.href.startsWith('#') 
+                    ? (currentPage === 'home' && link.href === `#${activeSection}`)
+                    : (link.href === `/${currentPage}`)
                   return (
                     <motion.button
                       key={link.href}

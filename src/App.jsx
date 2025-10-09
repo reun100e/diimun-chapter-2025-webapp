@@ -40,6 +40,12 @@ function App() {
 
     // Handle browser navigation (back/forward buttons)
     const handlePopState = () => {
+      // Scroll to top when using browser back/forward buttons
+      window.scrollTo({
+        top: 0,
+        behavior: 'instant'
+      })
+      
       const path = window.location.pathname
       setCurrentPage(path === '/' ? 'home' : path.substring(1))
     }
@@ -57,6 +63,12 @@ function App() {
 
   // Function to handle page navigation
   const navigateToPage = (page) => {
+    // Scroll to top immediately when navigating to any page
+    window.scrollTo({
+      top: 0,
+      behavior: 'instant' // Instant scroll to top, no smooth animation
+    })
+    
     setCurrentPage(page)
     // Update browser URL without page reload
     const url = page === 'home' ? '/' : `/${page}`
