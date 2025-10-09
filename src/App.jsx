@@ -12,6 +12,7 @@ import EventDetails from './components/EventDetails'
 import RegistrationForm from './components/RegistrationForm'
 import FAQ from './components/FAQ'
 import Footer from './components/Footer'
+import SEO from './components/common/SEO'
 
 // Lazy load page components for better performance
 const Schedule = lazy(() => import('./components/pages/Schedule'))
@@ -164,6 +165,7 @@ function App() {
 
   return (
     <div className="min-h-screen bg-pearl-50 overflow-x-hidden">
+      <SEO page={currentPage} />
       <Navigation onNavigate={navigateToPage} currentPage={currentPage} />
       {renderPage()}
       <Footer onNavigate={navigateToPage} />

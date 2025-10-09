@@ -1,5 +1,14 @@
 {
   "rewrites": [
+    { "source": "/registration-guide", "destination": "/registration-guide/index.html" },
+    { "source": "/schedule", "destination": "/schedule/index.html" },
+    { "source": "/awards", "destination": "/awards/index.html" },
+    { "source": "/who-committee-guidelines", "destination": "/who-committee-guidelines/index.html" },
+    { "source": "/great-assembly-guidelines", "destination": "/great-assembly-guidelines/index.html" },
+    { "source": "/ipc-guidelines", "destination": "/ipc-guidelines/index.html" },
+    { "source": "/ipc-submission", "destination": "/ipc-submission/index.html" },
+    { "source": "/terms", "destination": "/terms/index.html" },
+    { "source": "/technology-policy", "destination": "/technology-policy/index.html" },
     { "source": "/(.*)", "destination": "/" }
   ]
 }

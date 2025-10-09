@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "vite build",
+    "build": "vite build && node scripts/generateMetaHTML.js",
     "lint": "eslint . --ext js,jsx --report-unused-disable-directives --max-warnings 100",
     "preview": "vite preview"
   },
@@ -16,6 +16,7 @@
     "lucide-react": "^0.544.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
+    "react-helmet-async": "^2.0.5",
     "react-icons": "^5.5.0"
   },
   "devDependencies": {
