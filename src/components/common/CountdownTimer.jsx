@@ -9,7 +9,8 @@ const CountdownTimer = ({
   showHours = true,
   showMinutes = true,
   showSeconds = true,
-  size = "large" // "small", "medium", "large"
+  size = "large", // "small", "medium", "large"
+  compact = false // New compact mode for inline display
 }) => {
   const [timeLeft, setTimeLeft] = useState({
     days: 0,
@@ -110,6 +111,23 @@ const CountdownTimer = ({
           {label}
         </span>
       </motion.div>
+    )
+  }
+
+  // Compact mode rendering (for inline usage)
+  if (compact) {
+    if (isExpired) {
+      return (
+        <span className="font-bold text-sm sm:text-base">
+          Registration Closed
+        </span>
+      )
+    }
+    
+    return (
+      <span className="font-bold text-sm sm:text-base tabular-nums">
+        {timeLeft.days}d {timeLeft.hours}h {timeLeft.minutes}m left
+      </span>
     )
   }
 

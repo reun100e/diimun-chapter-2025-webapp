@@ -11,7 +11,7 @@ export const EVENT_SCHEDULE = {
     { 
       time: "8:00 AM", 
       title: "Registration & Reporting", 
-      description: "All delegates must report to the registration desk. Carry valid college ID card and Aadhar card along with MUN registration confirmation.",
+      description: "All delegates must report to the registration desk. Carry valid college ID card along with MUN registration confirmation.",
       icon: "Users",
       duration: "1 hour"
     },
@@ -322,7 +322,6 @@ export const REGISTRATION_REQUIREMENTS = {
     note: "All delegates must report to the registration desk by 8:00 AM",
     documents: [
       "Valid college ID card",
-      "Aadhar card",
       "MUN registration confirmation"
     ],
     warning: "Late arrivals may not be permitted entry into committee sessions"
@@ -464,7 +463,7 @@ export const FAQ_CONTENT = [
   },
   {
     question: "What should I bring to the event?",
-    answer: "Bring a valid college ID card, Aadhar card, MUN registration confirmation, stationery (though some will be provided), and portfolio research. IPC members should also bring laptops/tablets and cameras as required."
+    answer: "Bring a valid college ID card, MUN registration confirmation, stationery (though some will be provided), and portfolio research. IPC members should also bring laptops/tablets and cameras as required."
   },
   {
     question: "What time should I arrive?",

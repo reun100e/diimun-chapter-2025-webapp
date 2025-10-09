@@ -120,7 +120,7 @@ const Schedule = () => {
             </div>
             <div className="flex items-center gap-2 bg-white/10 backdrop-blur-sm px-4 py-2 rounded-full">
               <Users className="w-4 h-4" />
-              <span>Lecture Hall 4</span>
+              <span>Floor 3, Lecture Hall 3 & 4</span>
             </div>
           </motion.div>
         </div>
@@ -356,7 +356,7 @@ const Schedule = () => {
                       <div className="w-5 h-5 bg-blue-100 rounded flex items-center justify-center flex-shrink-0 mt-0.5">
                         <span className="text-blue-600 text-xs">✓</span>
                       </div>
-                      <span>Valid College ID & Aadhar Card</span>
+                      <span>Valid College ID</span>
                     </li>
                     <li className="flex items-start gap-2">
                       <div className="w-5 h-5 bg-blue-100 rounded flex items-center justify-center flex-shrink-0 mt-0.5">

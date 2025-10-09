@@ -3,7 +3,7 @@ GENERAL INSTRUCTIONS FOR DELEGATES AND REPORTERS
 
 1. REGISTRATION & REPORTING
 All delegates must report to the registration desk by  - 8am
-Carry a valid college ID card and aadhar card along with your MUN registration confirmation
+Carry a valid college ID card along with your MUN registration confirmation
 Late arrivals may not be permitted entry into committee sessions
 
 2. MANDATORY REQUIREMENTS

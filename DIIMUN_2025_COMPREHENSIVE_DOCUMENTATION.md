@@ -67,7 +67,6 @@
 - **Reporting Time**: By 8:00 AM on event day
 - **Required Documents**: 
   - Valid college ID card
-  - Aadhar card
   - MUN registration confirmation
 - **Late Arrivals**: May not be permitted entry
 

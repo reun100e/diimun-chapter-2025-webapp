@@ -23,7 +23,7 @@ const RegistrationGuide = () => {
   // Auto-scroll down when page loads with 2-second delay (310px on desktop, 360px on mobile)
   useEffect(() => {
     const timer = setTimeout(() => {
-      const scrollDistance = window.innerWidth >= 768 ? 310 : 360
+      const scrollDistance = window.innerWidth >= 768 ? 200 : 220
       window.scrollTo({
         top: scrollDistance,
         behavior: 'smooth'

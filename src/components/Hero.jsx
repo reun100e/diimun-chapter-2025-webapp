@@ -16,7 +16,7 @@ const Hero = () => {
       <motion.img 
         src="/images/hero.webp" 
         alt="Hero Background" 
-        className="absolute inset-0 w-full h-full object-cover z-0"
+        className="absolute inset-0 w-full h-full object-cover object-[43%] md:object-center z-0"
         animate={{
           scale: [1, 1.05, 1],
           x: [0, -10, 0],
@@ -117,28 +117,45 @@ const Hero = () => {
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.2 }}
-            className="text-accent text-gold-300 mb-6 tracking-wider pt-4"
+            style={{ fontWeight: 400, letterSpacing: '0.01em' }}
+            className="text-accent font-light text-gold-300 mb-6 tracking-wider pt-4"
           >
             Doctors Nexus Amity (DNA) in collaboration with GHMCT presents an Esperanza exclusive
           </motion.p>
 
-          {/* Main Heading */}
+          {/* Main Heading - Redesigned with MUN Emphasis */}
           <motion.h1
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.4 }}
-            className="heading-display text-4xl md:text-6xl lg:text-7xl mb-8 leading-tight"
+            className="heading-display mb-8 leading-tight"
           >
-            <div className="space-y-2">
-              <span className="block gradient-text-elegant text-5xl md:text-7xl lg:text-8xl leading-none">
-                Doctors Integrated
-              </span>
-              <span className="block gradient-text-gold text-5xl md:text-7xl lg:text-8xl leading-none">
-                International Model
-              </span>
-              <span className="block text-pearl-100 text-5xl md:text-7xl lg:text-8xl leading-none">
-                United Nations
-              </span>
+            <div className="space-y-0">
+              {/* Doctors Integrated International - Elegant Lead */}
+              <motion.span
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.8, delay: 0.5 }}
+                className="block font-elegant bg-gradient-to-r from-cognac-500/80 to-orange-500/80 bg-clip-text text-transparent text-3xl md:text-2xl lg:text-3xl font-medium tracking-normal leading-tight"
+                style={{ fontWeight: 800, }}
+              >
+                Doctors Integrated International
+              </motion.span>
+              
+              {/* Model United Nations - Primary Focus with Clean Modern Design */}
+              <motion.div
+                initial={{ opacity: 0, scale: 0.95 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ duration: 1, delay: 0.7 }}
+                className="block"
+              >
+                <span className="block font-display text-pearl-50 text-5xl md:text-8xl lg:text-9xl font-black leading-none tracking-tight mb-1">
+                  Model United
+                </span>
+                <span className="block font-display text-pearl-50 text-5xl md:text-8xl lg:text-9xl font-black leading-none tracking-tight">
+                  Nations
+                </span>
+              </motion.div>
             </div>
           </motion.h1>
 
@@ -147,13 +164,15 @@ const Hero = () => {
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.8 }}
-            className="mb-12"
+            className="mb-4"
           >
             {/* <h2 className="heading-elegant text-2xl md:text-3xl lg:text-4xl text-cognac-200 mb-6">
               {EVENT_INFO.subtitle}
             </h2> */}
-            <p className="text-lg md:text-xl lg:text-2xl text-pearl-200 font-light mb-8 max-w-4xl mx-auto leading-relaxed">
-              {EVENT_INFO.tagline}
+            <p className="text-md md:text-xl lg:text-2xl font-light mb-6 max-w-3xl mx-auto leading-relaxed">
+              <span className="text-pearl-300 font-normal">
+                {EVENT_INFO.tagline}
+              </span>
             </p>
             <div className="flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-4 text-sm sm:text-base md:text-lg mb-8">
               <motion.div 
@@ -188,6 +207,34 @@ const Hero = () => {
                 size="medium"
               />
             </motion.div> */}
+          </motion.div>
+
+          {/* Minimal Urgency Ribbon - Above Register Button */}
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.5, delay: 1.0 }}
+            className="mb-2"
+          >
+            <motion.div
+              animate={{ 
+                opacity: [0.85, 1, 0.85],
+              }}
+              transition={{ 
+                duration: 2.5, 
+                repeat: Infinity, 
+                ease: 'easeInOut' 
+              }}
+              className="flex items-center justify-center gap-2 text-pearl-200/90 text-xs sm:text-sm"
+            >
+              <Clock className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-gold-400/80" />
+              <CountdownTimer 
+                targetDate="2025-10-25T17:00:00+05:30"
+                compact={true}
+              />
+              <span className="text-gold-300/60">•</span>
+              <span className="font-medium text-copper-300/90">Limited Seats</span>
+            </motion.div>
           </motion.div>
 
           {/* Enhanced CTA Buttons */}

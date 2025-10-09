@@ -94,6 +94,8 @@ export default {
         'sans': ['Inter', 'ui-sans-serif', 'system-ui', 'sans-serif'],
         // Accent Typography - Modern Monospace for Highlights
         'mono': ['JetBrains Mono', 'ui-monospace', 'SFMono-Regular', 'monospace'],
+        // Elegant Typography - Cinzel for Distinguished Text
+        'elegant': ['Cinzel', 'Georgia', 'serif'],
       },
       fontSize: {
         // Enhanced Typography Scale
