@@ -8,10 +8,19 @@
 @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800&display=swap');
 
 @layer base {
+  /* Fix for mobile viewport height issues */
+  :root {
+    --vh: 1vh;
+  }
+
   html {
     scroll-behavior: smooth;
     font-feature-settings: 'cv02', 'cv03', 'cv04', 'cv11';
     overflow-x: hidden;
+    /* Ensure background covers entire viewport on mobile */
+    min-height: 100vh;
+    min-height: -webkit-fill-available;
+    background-color: theme('colors.pearl.50');
   }
   
   body {
@@ -24,6 +33,18 @@
     -moz-osx-font-smoothing: grayscale;
     text-rendering: optimizeLegibility;
     overflow-x: hidden;
+    /* Fix mobile viewport height */
+    min-height: 100vh;
+    min-height: -webkit-fill-available;
+    /* Add padding for safe areas on mobile devices */
+    padding-bottom: env(safe-area-inset-bottom, 0);
+  }
+
+  /* Ensure root div extends fully on mobile */
+  #root {
+    min-height: 100vh;
+    min-height: -webkit-fill-available;
+    background-color: theme('colors.pearl.50');
   }
 
   /* Enhanced Typography Hierarchy */
