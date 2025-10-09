@@ -1,4 +1,5 @@
 import { useEffect, useState, Suspense, lazy } from 'react'
+import { motion, AnimatePresence } from 'framer-motion'
 import AOS from 'aos'
 import 'aos/dist/aos.css'
 
@@ -13,6 +14,7 @@ import RegistrationForm from './components/RegistrationForm'
 import FAQ from './components/FAQ'
 import Footer from './components/Footer'
 import SEO from './components/common/SEO'
+import { ASSETS } from './utils/constants'
 
 // Lazy load page components for better performance
 const Schedule = lazy(() => import('./components/pages/Schedule'))
@@ -76,14 +78,49 @@ function App() {
     window.history.pushState({ page }, '', url)
   }
 
-  // Loading component for lazy-loaded pages
+  // Loading component for lazy-loaded pages with DNA logo
   const PageLoader = () => (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50">
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      transition={{ duration: 0.3 }}
+      className="min-h-screen flex items-center justify-center bg-gradient-to-br from-pearl-50 via-cognac-50 to-midnight-50"
+    >
       <div className="text-center">
-        <div className="w-16 h-16 border-4 border-indigo-200 border-t-indigo-600 rounded-full animate-spin mx-auto mb-4"></div>
-        <p className="text-gray-600">Loading page...</p>
+        <motion.div
+          animate={{
+            scale: [1, 1.1, 1],
+            opacity: [0.7, 1, 0.7],
+          }}
+          transition={{
+            duration: 2,
+            repeat: Infinity,
+            ease: "easeInOut"
+          }}
+          className="mx-auto mb-6"
+        >
+          <img 
+            src={ASSETS.dnaLogo} 
+            alt="DNA Logo" 
+            className="w-24 h-24 mx-auto"
+          />
+        </motion.div>
+        <motion.p
+          animate={{
+            opacity: [0.5, 1, 0.5],
+          }}
+          transition={{
+            duration: 2,
+            repeat: Infinity,
+            ease: "easeInOut"
+          }}
+          className="text-cognac-600 font-medium text-lg"
+        >
+          Loading...
+        </motion.p>
       </div>
-    </div>
+    </motion.div>
   )
 
   // Render the appropriate page
@@ -167,7 +204,17 @@ function App() {
     <div className="min-h-screen bg-pearl-50 overflow-x-hidden">
       <SEO page={currentPage} />
       <Navigation onNavigate={navigateToPage} currentPage={currentPage} />
-      {renderPage()}
+      <AnimatePresence mode="wait">
+        <motion.div
+          key={currentPage}
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          transition={{ duration: 0.3, ease: 'easeInOut' }}
+        >
+          {renderPage()}
+        </motion.div>
+      </AnimatePresence>
       <Footer onNavigate={navigateToPage} />
     </div>
   )

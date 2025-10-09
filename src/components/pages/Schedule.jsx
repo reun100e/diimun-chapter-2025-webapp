@@ -28,7 +28,7 @@ const Schedule = () => {
     const scrollToRevealNav = () => {
       // Detect if mobile or desktop
       const isMobile = window.innerWidth < 768
-      const scrollAmount = isMobile ? 200 : 150
+      const scrollAmount = isMobile ? 250 : 150
 
       // Smooth scroll after 2 second delay
       setTimeout(() => {

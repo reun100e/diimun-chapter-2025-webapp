@@ -70,7 +70,7 @@ const Navigation = ({ onNavigate, currentPage }) => {
             console.warn('scrollToElement failed, using fallback:', error)
             smoothScrollTo(href, offset)
           }
-        }, 300) // Increased delay to allow page navigation
+        }, 650) // Increased delay to account for fade-out (300ms) + fade-in (300ms) animations
       } else {
         // We're already on home page, just scroll to section
         setTimeout(() => {
@@ -102,7 +102,7 @@ const Navigation = ({ onNavigate, currentPage }) => {
             console.warn('scrollToElement failed for timeline, using fallback:', error)
             smoothScrollTo('#timeline', offset)
           }
-        }, 500) // Wait for page to load and render
+        }, 650) // Wait for page fade transition to complete before scrolling
       }
     }
   }
