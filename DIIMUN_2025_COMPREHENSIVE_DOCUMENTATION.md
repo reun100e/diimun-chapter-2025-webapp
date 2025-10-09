@@ -82,7 +82,7 @@
 
 #### For International Press Corps (IPC):
 - Press pass (provided at registration)
-- Laptop/tablet for live reporting (compulsory)
+- Laptop/tablet for essay writing (compulsory)
 - Camera (optional, for photography)
 - Recording devices (subject to approval)
 - Write-ups in PDF format

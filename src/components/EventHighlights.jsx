@@ -2,7 +2,7 @@ import React from 'react'
 import { motion } from 'framer-motion'
 import { COMMITTEES, ASSETS } from '../utils/constants'
 import { smoothScrollTo } from '../animations/parallax'
-import { Users2, Award, Zap } from 'lucide-react'
+import { Award, Zap, FileText } from 'lucide-react'
 
 const EventHighlights = () => {
   return (
@@ -20,14 +20,14 @@ const EventHighlights = () => {
             Choose Your Committee
           </h2>
           <p className="text-xl md:text-2xl text-gray-600 max-w-4xl mx-auto mb-8">
-            Two prestigious committees await your participation. Each offers a unique perspective on homoeopathic discourse and global healthcare challenges.
+            Three prestigious committees await your participation. Each offers a unique perspective on homoeopathic discourse, global healthcare challenges, and media coverage.
           </p>
           <div className="w-32 h-1.5 bg-gradient-to-r from-midnight-600 via-cognac-600 to-gold-500 mx-auto rounded-full shadow-glow"></div>
         </motion.div>
 
         {/* Committee Sections */}
         <div className="max-w-7xl mx-auto mb-20">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {COMMITTEES.map((committee, index) => (
               <motion.div
                 key={committee.title}
@@ -46,10 +46,16 @@ const EventHighlights = () => {
                       alt="WHO Background" 
                       className="w-full h-full object-cover filter"
                     />
-                  ) : (
+                  ) : committee.title.includes('Great Homoeopathic Assembly') ? (
                     <img 
                       src={ASSETS.greatAssemblyImage} 
                       alt="Great Homoeopathic Assembly Background" 
+                      className="w-full h-full object-cover filter"
+                    />
+                  ) : (
+                    <img 
+                      src={ASSETS.ipcImage} 
+                      alt="IPC Background" 
                       className="w-full h-full object-cover filter"
                     />
                   )}
@@ -59,6 +65,8 @@ const EventHighlights = () => {
                 <div className={`absolute inset-0 bg-gradient-to-br opacity ${
                   committee.type === 'Exclusive Committee' 
                     ? 'from-cognac-900/80 via-cognac-800/70 to-cognac-900/80 group-hover:from-cognac-900/60 group-hover:via-cognac-800/50 group-hover:to-cognac-900/60' 
+                    : committee.type === 'Media Committee'
+                    ? 'from-purple-900/80 via-purple-800/70 to-purple-900/80 group-hover:from-purple-900/60 group-hover:via-purple-800/50 group-hover:to-purple-900/60'
                     : 'from-midnight-900/80 via-midnight-800/70 to-midnight-900/80 group-hover:from-midnight-900/60 group-hover:via-midnight-800/50 group-hover:to-midnight-900/60'
                 } transition-all duration-500`}></div>
 
@@ -70,9 +78,11 @@ const EventHighlights = () => {
                     <div className={`inline-flex items-center gap-2 px-4 py-2 rounded-full text-sm font-semibold mb-6 ${
                       committee.type === 'Exclusive Committee' 
                         ? 'bg-cognac-600/90 text-white backdrop-blur-sm' 
+                        : committee.type === 'Media Committee'
+                        ? 'bg-purple-600/90 text-white backdrop-blur-sm'
                         : 'bg-midnight-600/90 text-white backdrop-blur-sm'
                     }`}>
-                      {committee.type === 'Exclusive Committee' ? <Award className="w-4 h-4" /> : <Users2 className="w-4 h-4" />}
+                      {committee.type === 'Exclusive Committee' ? <Award className="w-4 h-4" /> : committee.type === 'Media Committee' ? <FileText className="w-4 h-4" /> : <Zap className="w-4 h-4" />}
                       {committee.type}
                     </div>
 
@@ -90,13 +100,8 @@ const EventHighlights = () => {
 
                   {/* Footer */}
                   <div className="border-t border-white/20 pt-6">
-                    <h4 className="font-semibold text-white mb-3 flex items-center gap-2">
-                      <Users2 className="w-5 h-5" />
-                      Eligibility
-                    </h4>
-                    <p className="text-gray-200 mb-4">Open to all medical students and professionals</p>
                     {committee.note && (
-                      <p className="text-sm text-cognac-300 font-medium italic mb-6">
+                      <p className="text-sm text-gray-300 font-medium italic mb-6">
                         Note: {committee.note}
                       </p>
                     )}
@@ -109,10 +114,12 @@ const EventHighlights = () => {
                       className={`w-full py-3 px-6 rounded-xl font-bold text-lg transition-all duration-300 ${
                         committee.type === 'Exclusive Committee'
                           ? 'bg-gradient-to-r from-cognac-500 to-cognac-600 hover:from-cognac-400 hover:to-cognac-500 text-white shadow-lg hover:shadow-xl'
+                          : committee.type === 'Media Committee'
+                          ? 'bg-gradient-to-r from-purple-500 to-purple-600 hover:from-purple-400 hover:to-purple-500 text-white shadow-lg hover:shadow-xl'
                           : 'bg-gradient-to-r from-midnight-500 to-midnight-600 hover:from-midnight-400 hover:to-midnight-500 text-white shadow-lg hover:shadow-xl'
                       }`}
                     >
-                      Join {committee.title.includes('WHO') ? 'WHO Committee' : 'Great Assembly'}
+                      Join The {committee.title.includes('WHO') ? 'WHO Committee' : committee.title.includes('Great Homoeopathic Assembly') ? 'Great Homoeopathic Assembly' : 'International Press Corps'}
                     </motion.button>
                   </div>
                 </div>
@@ -145,6 +152,7 @@ const EventHighlights = () => {
             <span>Discover Why Join</span>
           </motion.button>
         </motion.div>
+
 
       </div>
     </section>

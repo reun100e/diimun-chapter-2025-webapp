@@ -45,7 +45,7 @@ const WhyJoin = () => {
             Why Join DIIMUN?
           </h2>
           <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-            Discover the unique opportunities and benefits that await you in this groundbreaking homoeopathic MUN experience
+            Discover the unique opportunities and benefits that await you in this groundbreaking Homoeopathic MUN experience
           </p>
           <div className="w-24 h-1 bg-gradient-to-r from-midnight-600 to-cognac-600 mx-auto rounded-full mt-6"></div>
         </motion.div>
@@ -167,7 +167,7 @@ const WhyJoin = () => {
             Ready to Make Your Mark?
           </h3>
           <p className="text-lg text-gray-600 mb-8 max-w-2xl mx-auto">
-            Join fellow homoeopathy enthusiasts in this unique intellectual journey where tradition meets innovation.
+            Join fellow Homoeopathy enthusiasts in this unique intellectual journey where tradition meets innovation.
           </p>
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
             <motion.button

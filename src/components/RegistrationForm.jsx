@@ -7,6 +7,7 @@ import {
     CheckCircle, AlertCircle, Loader, Copy, Check,
     Star, Info, ChevronDown, ChevronUp, Users, Shield, Mic, Camera, FileText, Award
 } from 'lucide-react';
+import { ASSETS } from '../utils/constants'
 import { smoothScrollTo } from '../animations/parallax';
 import { BsPerson } from 'react-icons/bs';
 
@@ -668,6 +669,17 @@ const RegistrationForm = () => {
                                 Step 1: Choose Your Role
                             </h2>
                             <p className="text-gray-300 mt-2">Are you participating as a Delegate or as International Press?</p>
+                            <p className="text-gray-400/50 text-xs mt-1">
+                                Need help? Check out the{' '}
+                                <a 
+                                    href="/registration-guide" 
+                                    target="_blank" 
+                                    rel="noopener noreferrer"
+                                    className="text-gray-400/60 hover:text-gray-300/70 underline"
+                                >
+                                    Registration Guide
+                                </a>
+                            </p>
                         </div>
                         <div className="p-8 grid md:grid-cols-2 gap-6">
                             {/* Delegate Path */}
@@ -732,7 +744,7 @@ const RegistrationForm = () => {
                                                 {/* Background Image */}
                                                 <div className="absolute inset-0 opacity-15 group-hover:opacity-20 transition-opacity duration-500">
                                                     <img 
-                                                        src="/images/World Health Organissation.webp" 
+                                                        src={ASSETS.whoLogo}  
                                                         alt="WHO Background" 
                                                         className="w-full h-full object-cover filter"
                                                     />
@@ -779,7 +791,7 @@ const RegistrationForm = () => {
                                                 {/* Background Image */}
                                                 <div className="absolute inset-0 opacity-15 group-hover:opacity-20 transition-opacity duration-500">
                                                     <img 
-                                                        src="/images/The Great Homoeopathic Assembly.jpg" 
+                                                        src={ASSETS.greatAssemblyImage} 
                                                         alt="Great Homoeopathic Assembly Background" 
                                                         className="w-full h-full object-cover filter"
                                                     />
@@ -1156,7 +1168,7 @@ const RegistrationForm = () => {
                                                 {/* QR Code Section */}
                                                 <div className="space-y-4">
                                                     <div className="flex justify-center">
-                                                        <img src="/upi-qrcode.jpg" alt="UPI QR Code" className="w-48 h-48 rounded-lg border-4 border-white shadow-lg" />
+                                                        <img src={ASSETS.upiQrcode} alt="UPI QR Code" className="w-48 h-48 rounded-lg border-4 border-white shadow-lg" />
                                                     </div>
                                                     {isIOS ? (
                                                         <p className="text-sm text-gray-600 text-center">
@@ -1382,13 +1394,13 @@ const RegistrationForm = () => {
                                             </div>
                                         )}
 
-                                        <p className="text-center text-gray-500 mt-4">
+                                        <p className="text-center text-xs text-gray-400/50 mt-4">
                                             By registering, you agree to our{' '}
                                             <a 
                                                 href="/terms" 
                                                 target="_blank" 
                                                 rel="noopener noreferrer"
-                                                className="text-blue-600 hover:text-blue-800 underline font-medium"
+                                                className="underline"
                                             >
                                                 terms and conditions
                                             </a>

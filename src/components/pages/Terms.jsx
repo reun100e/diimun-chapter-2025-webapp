@@ -1,417 +1,291 @@
 import React from 'react'
-import { motion } from 'framer-motion'
-import { 
-  FileText, 
-  Calendar, 
-  CreditCard, 
-  Users, 
-  Shield, 
-  Phone, 
-  Mail,
-  AlertTriangle,
-  CheckCircle,
-  XCircle,
-  Info
-} from 'lucide-react'
 
 const Terms = () => {
   const termsSections = [
     {
-      id: 'registration',
-      title: 'Registration Terms',
-      icon: <Users className="w-6 h-6" />,
+      id: 'introduction',
+      title: '1. Introduction',
       content: [
+        'These Terms and Conditions ("Terms") govern your registration and participation in the Doctors Integrated International Model United Nations (DIIMUN) 2025 event organized by DNA (Doctors Nexus Amity).',
+        'By completing your registration and payment, you acknowledge that you have read, understood, and agree to be bound by these Terms. If you do not agree with any part of these Terms, please do not proceed with registration.'
+      ]
+    },
+    {
+      id: 'registration',
+      title: '2. Registration',
+      subsections: [
         {
-          title: 'Registration Deadline',
-          description: 'October 25th, 2025',
-          type: 'deadline'
+          subtitle: '2.1 Registration Deadline',
+          content: 'All registrations must be completed by October 25th, 2025. No late registrations will be accepted under any circumstances.'
         },
         {
-          title: 'No Late Registrations',
-          description: 'Registrations after the deadline will not be accepted under any circumstances.',
-          type: 'warning'
+          subtitle: '2.2 Individual Registration',
+          content: 'Each team member must register separately through the official registration portal. Team details will be collected at a later stage.'
         },
         {
-          title: 'Team Changes',
-          description: 'No changes in committee and teams after October 29th, 2025.',
-          type: 'info'
+          subtitle: '2.3 Team Changes',
+          content: 'No changes in committee assignments or team composition will be permitted after October 29th, 2025.'
         },
         {
-          title: 'Individual Registration',
-          description: 'Each team member must register separately. Team details will be collected later.',
-          type: 'info'
+          subtitle: '2.4 Registration Confirmation',
+          content: 'Registration is considered complete only upon receipt of payment and email confirmation from the organizers.'
         }
       ]
     },
     {
       id: 'payment',
-      title: 'Payment Terms',
-      icon: <CreditCard className="w-6 h-6" />,
-      content: [
+      title: '3. Payment Terms',
+      subsections: [
         {
-          title: 'Registration Fee',
-          description: '₹499 (₹347 for Esperanza 4.0 participants)',
-          type: 'info'
+          subtitle: '3.1 Registration Fee',
+          content: 'The registration fee is ₹499 per participant. Participants who attended Esperanza 4.0 are eligible for a discounted fee of ₹347.'
         },
         {
-          title: 'Payment Method',
-          description: 'UPI only - aghoshbprasad100@okaxis',
-          type: 'info'
+          subtitle: '3.2 Payment Method',
+          content: 'Payment must be made via UPI to the following address: aghoshbprasad100@okaxis. No other payment methods will be accepted.'
         },
         {
-          title: 'Refund Policy',
-          description: 'No refunds after October 25th, 2025. Refunds before deadline subject to processing fees.',
-          type: 'warning'
+          subtitle: '3.3 Payment Verification',
+          content: 'All payments will be verified within 24-48 hours. You will receive a confirmation email upon successful verification.'
         },
         {
-          title: 'Payment Verification',
-          description: '24-48 hours for payment verification. Confirmation email will be sent after verification.',
-          type: 'info'
+          subtitle: '3.4 Fee Inclusions',
+          content: 'The registration fee includes event participation, food, and refreshments during the event day. It does not include travel or accommodation expenses.'
         },
         {
-          title: 'Fee Includes',
-          description: 'Participation, food, and refreshments only. Travel and accommodation not included.',
-          type: 'info'
+          subtitle: '3.5 Refund Policy',
+          content: 'No refunds will be provided after October 25th, 2025. Refund requests submitted before the deadline are subject to processing fees and must be submitted in writing to the organizers.'
         }
       ]
     },
     {
       id: 'participation',
-      title: 'Event Participation Terms',
-      icon: <Shield className="w-6 h-6" />,
-      content: [
+      title: '4. Event Participation',
+      subsections: [
         {
-          title: 'Mandatory Attendance',
-          description: 'All registered participants must attend the event. Absence without prior notice may result in blacklisting.',
-          type: 'warning'
+          subtitle: '4.1 Attendance',
+          content: 'All registered participants are required to attend the event. Failure to attend without prior notice may result in blacklisting from future DNA events.'
         },
         {
-          title: 'Dress Code',
-          description: 'Formal Western Business Attire is mandatory. Casual wear will not be permitted.',
-          type: 'warning'
+          subtitle: '4.2 Dress Code',
+          content: 'Formal Western Business Attire is mandatory for all participants throughout the event. Casual wear will not be permitted.'
         },
         {
-          title: 'Conduct',
-          description: 'Professional behavior required at all times. Unparliamentary language or disruptive behavior will result in immediate expulsion.',
-          type: 'warning'
+          subtitle: '4.3 Code of Conduct',
+          content: 'Participants must maintain professional behavior at all times. Use of unparliamentary language, disruptive behavior, or violation of event rules will result in immediate expulsion from the event without refund.'
         },
         {
-          title: 'Technology Policy',
-          description: 'Devices must be on silent mode. Use for personal entertainment is prohibited.',
-          type: 'info'
+          subtitle: '4.4 Technology Usage',
+          content: 'All electronic devices must be kept on silent mode during committee sessions. Use of devices for personal entertainment during sessions is strictly prohibited.'
         },
         {
-          title: 'Recording Policy',
-          description: 'No unauthorized recording allowed. Violation results in device confiscation and event ban.',
-          type: 'warning'
+          subtitle: '4.5 Recording Policy',
+          content: 'Unauthorized audio or video recording of event proceedings is strictly prohibited. Violations will result in immediate device confiscation and removal from the event.'
         },
         {
-          title: 'Disciplinary Action',
-          description: 'Violations may result in expulsion from the event without refund.',
-          type: 'warning'
+          subtitle: '4.6 Disciplinary Action',
+          content: 'The organizing committee reserves the right to expel any participant who violates these Terms or event rules. No refunds will be provided in case of expulsion.'
         }
       ]
     },
     {
       id: 'communication',
-      title: 'Communication Terms',
-      icon: <Mail className="w-6 h-6" />,
-      content: [
+      title: '5. Communication and Consent',
+      subsections: [
         {
-          title: 'Notification Consent',
-          description: 'Agreement to receive emails, WhatsApp messages, and calls from DNA regarding the event.',
-          type: 'info'
+          subtitle: '5.1 Event Communication',
+          content: 'By registering, you consent to receive communications from DNA via email, WhatsApp, and phone calls regarding event updates, schedules, and related information.'
         },
         {
-          title: 'Future Events',
-          description: 'Consent to be notified about future DNA events and activities.',
-          type: 'info'
+          subtitle: '5.2 Future Events',
+          content: 'You consent to be informed about future DNA events and activities. You may opt out of such communications at any time by contacting the organizers.'
         },
         {
-          title: 'Voluntary Participation',
-          description: 'Participation is voluntary and not forced by any person or institutional body.',
-          type: 'info'
+          subtitle: '5.3 Voluntary Participation',
+          content: 'You confirm that your participation in DIIMUN 2025 is entirely voluntary and has not been coerced by any person or institutional body.'
         },
         {
-          title: 'Rule Compliance',
-          description: 'Agreement to follow all rules and decisions by the executive board before, during, and after the event.',
-          type: 'info'
+          subtitle: '5.4 Rule Compliance',
+          content: 'You agree to comply with all rules, decisions, and directives issued by the executive board and organizing committee before, during, and after the event.'
         }
       ]
     },
     {
       id: 'liability',
-      title: 'Liability Terms',
-      icon: <AlertTriangle className="w-6 h-6" />,
-      content: [
+      title: '6. Liability and Responsibility',
+      subsections: [
         {
-          title: 'Personal Responsibility',
-          description: 'Participants are responsible for their own safety and well-being during the event.',
-          type: 'warning'
+          subtitle: '6.1 Personal Safety',
+          content: 'Participants are solely responsible for their own safety and well-being during the event. The organizers shall not be held liable for any personal injury or loss.'
         },
         {
-          title: 'Property Damage',
-          description: 'Participants are liable for any property damage caused by their actions.',
-          type: 'warning'
+          subtitle: '6.2 Property Damage',
+          content: 'Participants shall be held liable for any damage to property or facilities caused by their actions. The cost of repairs or replacement will be borne by the responsible participant.'
         },
         {
-          title: 'Medical Emergencies',
-          description: 'Organizers are not responsible for medical emergencies. Participants should have appropriate insurance.',
-          type: 'warning'
+          subtitle: '6.3 Medical Emergencies',
+          content: 'The organizers are not responsible for any medical emergencies that may occur during the event. Participants are advised to maintain appropriate health insurance coverage.'
         },
         {
-          title: 'Travel',
-          description: 'Participants are responsible for their own travel arrangements and safety.',
-          type: 'info'
+          subtitle: '6.4 Travel and Accommodation',
+          content: 'Participants are responsible for arranging and bearing the costs of their own travel and accommodation. The organizers accept no liability for any travel-related issues.'
         },
         {
-          title: 'Accommodation',
-          description: 'Participants are responsible for their own accommodation arrangements.',
-          type: 'info'
+          subtitle: '6.5 Personal Belongings',
+          content: 'Participants are responsible for the safekeeping of their personal belongings. The organizers shall not be liable for any loss or theft of personal property.'
         }
       ]
     },
     {
       id: 'intellectual',
-      title: 'Intellectual Property',
-      icon: <FileText className="w-6 h-6" />,
-      content: [
+      title: '7. Intellectual Property',
+      subsections: [
         {
-          title: 'Content Usage',
-          description: 'Organizers may use event photos/videos for promotional purposes without additional consent.',
-          type: 'info'
+          subtitle: '7.1 Event Content',
+          content: 'The organizers reserve the right to use photographs, videos, and other media captured during the event for promotional purposes without seeking additional consent or providing compensation.'
         },
         {
-          title: 'Participant Content',
-          description: 'Participants retain rights to their own content but grant usage rights to organizers.',
-          type: 'info'
+          subtitle: '7.2 Participant Content',
+          content: 'While participants retain ownership of their own intellectual content, they grant DNA the right to use such content for promotional and archival purposes.'
         },
         {
-          title: 'Committee Materials',
-          description: 'All committee materials and resources are proprietary to DNA and cannot be shared externally.',
-          type: 'warning'
+          subtitle: '7.3 Committee Materials',
+          content: 'All committee materials, background guides, and resources provided by DNA are proprietary and confidential. These materials shall not be shared, distributed, or published externally without prior written permission.'
         }
       ]
     },
     {
       id: 'force-majeure',
-      title: 'Force Majeure',
-      icon: <AlertTriangle className="w-6 h-6" />,
-      content: [
+      title: '8. Force Majeure',
+      subsections: [
         {
-          title: 'Event Cancellation',
-          description: 'Organizers reserve the right to cancel the event due to unforeseen circumstances.',
-          type: 'warning'
+          subtitle: '8.1 Event Cancellation',
+          content: 'The organizers reserve the right to cancel or postpone the event due to circumstances beyond their control, including but not limited to natural disasters, pandemics, government restrictions, or other force majeure events.'
         },
         {
-          title: 'Refund Policy',
-          description: 'In case of cancellation, refunds will be processed as per the refund policy.',
-          type: 'info'
+          subtitle: '8.2 Refunds in Case of Cancellation',
+          content: 'In the event of cancellation by the organizers, refunds will be processed as per the applicable refund policy. Processing time may vary depending on circumstances.'
         },
         {
-          title: 'Rescheduling',
-          description: 'Event may be rescheduled with prior notice. Participants will be informed of new dates.',
-          type: 'info'
+          subtitle: '8.3 Event Rescheduling',
+          content: 'If the event is rescheduled, participants will be notified of the new dates. Registration will remain valid for the rescheduled event unless otherwise specified.'
         }
       ]
     },
     {
       id: 'governing',
-      title: 'Governing Law',
-      icon: <Shield className="w-6 h-6" />,
-      content: [
+      title: '9. Governing Law and Jurisdiction',
+      subsections: [
         {
-          title: 'Jurisdiction',
-          description: 'All disputes are subject to local jurisdiction and Indian law.',
-          type: 'info'
+          subtitle: '9.1 Applicable Law',
+          content: 'These Terms shall be governed by and construed in accordance with the laws of India.'
         },
         {
-          title: 'Legal Compliance',
-          description: 'All participants must comply with local laws and regulations.',
-          type: 'info'
+          subtitle: '9.2 Jurisdiction',
+          content: 'All disputes arising from or in connection with these Terms or the event shall be subject to the exclusive jurisdiction of the courts in Trivandrum, Kerala, India.'
         },
         {
-          title: 'Dispute Resolution',
-          description: 'Disputes will be resolved through arbitration in accordance with Indian law.',
-          type: 'info'
+          subtitle: '9.3 Dispute Resolution',
+          content: 'In the event of any dispute, the parties agree to first attempt resolution through good faith negotiations. If unsuccessful, disputes shall be resolved through arbitration in accordance with Indian law.'
         }
+      ]
+    },
+    {
+      id: 'amendments',
+      title: '10. Amendments',
+      content: [
+        'The organizers reserve the right to modify these Terms at any time. Any changes will be communicated to registered participants via email.',
+        'Continued participation following notification of changes constitutes acceptance of the modified Terms.'
+      ]
+    },
+    {
+      id: 'contact',
+      title: '11. Contact Information',
+      content: [
+        'For any questions regarding these Terms and Conditions, please contact:',
+        'Email: dna@aghosh.in',
+        'Phone: +91 94423 08824',
+        'Organization: DNA (Doctors Nexus Amity)',
+        'Event: DIIMUN 2025'
       ]
     }
   ]
 
-  const getIconForType = (type) => {
-    switch (type) {
-      case 'deadline':
-        return <Calendar className="w-5 h-5 text-red-500" />
-      case 'warning':
-        return <AlertTriangle className="w-5 h-5 text-yellow-500" />
-      case 'info':
-        return <Info className="w-5 h-5 text-blue-500" />
-      default:
-        return <CheckCircle className="w-5 h-5 text-green-500" />
-    }
-  }
-
-  const getBgColorForType = (type) => {
-    switch (type) {
-      case 'deadline':
-        return 'bg-red-50 border-red-200'
-      case 'warning':
-        return 'bg-yellow-50 border-yellow-200'
-      case 'info':
-        return 'bg-blue-50 border-blue-200'
-      default:
-        return 'bg-green-50 border-green-200'
-    }
-  }
-
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 py-12">
-      <div className="container-custom">
+    <div className="min-h-screen bg-white py-12 px-4">
+      <div className="max-w-4xl mx-auto">
         {/* Header */}
-        <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6 }}
-          className="text-center mb-16"
-        >
-          <div className="inline-flex items-center gap-3 bg-gradient-to-r from-midnight-100 to-cognac-100 text-midnight-800 px-6 py-3 rounded-full font-semibold mb-6">
-            <FileText className="w-6 h-6" />
-            Terms & Conditions
-          </div>
-          <h1 className="text-4xl md:text-6xl font-bold bg-gradient-to-r from-midnight-800 to-cognac-600 bg-clip-text text-transparent mb-6">
-            DIIMUN 2025 Terms & Conditions
+        <div className="text-center mb-12 pb-8 border-b-2 border-gray-200">
+          <h1 className="text-4xl font-bold text-gray-900 mb-4">
+            Terms and Conditions
           </h1>
-          <p className="text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
-            Please read these terms and conditions carefully before registering for DIIMUN 2025. 
-            By registering, you agree to be bound by these terms.
+          <p className="text-xl text-gray-700 mb-2">
+            DIIMUN 2025
           </p>
-          <div className="w-32 h-1.5 bg-gradient-to-r from-midnight-600 via-cognac-600 to-gold-500 mx-auto rounded-full shadow-glow mt-8"></div>
-        </motion.div>
+          <p className="text-base text-gray-600">
+            Doctors Integrated International Model United Nations
+          </p>
+        </div>
 
         {/* Important Notice */}
-        <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.1 }}
-          className="bg-gradient-to-r from-red-50 to-orange-50 border-2 border-red-200 rounded-2xl p-8 mb-12"
-        >
-          <div className="flex items-start gap-4">
-            <AlertTriangle className="w-8 h-8 text-red-500 flex-shrink-0 mt-1" />
-            <div>
-              <h3 className="text-xl font-bold text-red-800 mb-3">Important Notice</h3>
-              <p className="text-red-700 leading-relaxed">
-                These terms and conditions are legally binding. By completing your registration, 
-                you acknowledge that you have read, understood, and agree to be bound by all terms 
-                and conditions outlined below. If you do not agree with any part of these terms, 
-                please do not proceed with registration.
-              </p>
-            </div>
-          </div>
-        </motion.div>
+        {/* <div className="border-2 border-gray-900 p-6 mb-10">
+          <p className="text-base text-gray-900 font-semibold mb-3">
+            IMPORTANT NOTICE
+          </p>
+          <p className="text-base text-gray-800 leading-relaxed">
+            These terms and conditions are legally binding. By completing your registration, 
+            you acknowledge that you have read, understood, and agree to be bound by all terms 
+            and conditions outlined below. If you do not agree with any part of these terms, 
+            please do not proceed with registration.
+          </p>
+        </div> */}
 
         {/* Terms Sections */}
-        <div className="space-y-12">
-          {termsSections.map((section, sectionIndex) => (
-            <motion.div
-              key={section.id}
-              initial={{ opacity: 0, y: 30 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 0.2 + sectionIndex * 0.1 }}
-              className="bg-white rounded-3xl shadow-xl border border-gray-100 overflow-hidden"
-            >
-              {/* Section Header */}
-              <div className="bg-gradient-to-r from-midnight-600 to-cognac-600 px-8 py-6">
-                <h2 className="text-2xl md:text-3xl font-bold text-white flex items-center gap-4">
-                  <div className="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center">
-                    {section.icon}
-                  </div>
-                  {section.title}
-                </h2>
-              </div>
-
-              {/* Section Content */}
-              <div className="p-8">
-                <div className="grid gap-6">
-                  {section.content.map((item, itemIndex) => (
-                    <motion.div
-                      key={itemIndex}
-                      initial={{ opacity: 0, x: -20 }}
-                      animate={{ opacity: 1, x: 0 }}
-                      transition={{ duration: 0.4, delay: 0.3 + sectionIndex * 0.1 + itemIndex * 0.05 }}
-                      className={`border-2 rounded-2xl p-6 ${getBgColorForType(item.type)}`}
-                    >
-                      <div className="flex items-start gap-4">
-                        <div className="flex-shrink-0 mt-1">
-                          {getIconForType(item.type)}
-                        </div>
-                        <div className="flex-1">
-                          <h3 className="text-lg font-bold text-gray-800 mb-2">
-                            {item.title}
-                          </h3>
-                          <p className="text-gray-700 leading-relaxed">
-                            {item.description}
-                          </p>
-                        </div>
-                      </div>
-                    </motion.div>
+        <div className="space-y-8">
+          {termsSections.map((section) => (
+            <div key={section.id} className="border-b border-gray-200 pb-8 last:border-b-0">
+              <h2 className="text-2xl font-bold text-gray-900 mb-4">
+                {section.title}
+              </h2>
+              
+              {section.content && (
+                <div className="space-y-3">
+                  {section.content.map((paragraph, idx) => (
+                    <p key={idx} className="text-base text-gray-800 leading-relaxed">
+                      {paragraph}
+                    </p>
                   ))}
                 </div>
-              </div>
-            </motion.div>
+              )}
+
+              {section.subsections && (
+                <div className="space-y-4">
+                  {section.subsections.map((subsection, idx) => (
+                    <div key={idx}>
+                      <h3 className="text-lg font-semibold text-gray-900 mb-2">
+                        {subsection.subtitle}
+                      </h3>
+                      <p className="text-base text-gray-800 leading-relaxed">
+                        {subsection.content}
+                      </p>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
           ))}
         </div>
 
-        {/* Contact Information */}
-        <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.8 }}
-          className="mt-16 bg-gradient-to-r from-midnight-800 to-cognac-700 rounded-3xl p-8 md:p-12 text-white text-center"
-        >
-          <h3 className="text-2xl md:text-3xl font-bold mb-6">
-            Questions About These Terms?
-          </h3>
-          <p className="text-lg text-cognac-200 mb-8 max-w-2xl mx-auto">
-            If you have any questions about these terms and conditions, please contact us before proceeding with registration.
-          </p>
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-6">
-            <motion.a
-              href="tel:+919442308824"
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-              className="bg-white text-midnight-800 font-bold py-3 px-8 rounded-full hover:bg-cognac-50 transition-colors duration-300 inline-flex items-center gap-3"
-            >
-              <Phone className="w-5 h-5" />
-              <span>Call Us</span>
-            </motion.a>
-            <motion.a
-              href="mailto:contact@diimun2025.com"
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-              className="border-2 border-white text-white font-bold py-3 px-8 rounded-full hover:bg-white/10 transition-colors duration-300 inline-flex items-center gap-3"
-            >
-              <Mail className="w-5 h-5" />
-              <span>Email Us</span>
-            </motion.a>
-          </div>
-        </motion.div>
-
         {/* Last Updated */}
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 0.6, delay: 1.0 }}
-          className="text-center mt-12"
-        >
-          <p className="text-gray-500 text-sm">
+        <div className="text-center mt-12 pt-8 border-t border-gray-200">
+          <p className="text-sm text-gray-600">
             Last updated: {new Date().toLocaleDateString('en-IN', { 
               year: 'numeric', 
               month: 'long', 
               day: 'numeric' 
             })}
           </p>
-        </motion.div>
+        </div>
       </div>
     </div>
   )

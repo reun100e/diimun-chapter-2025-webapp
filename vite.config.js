@@ -10,6 +10,17 @@ export default defineConfig({
   },
   build: {
     outDir: 'dist',
-    sourcemap: true
+    sourcemap: false, // Disabled for production security
+    chunkSizeWarningLimit: 1000,
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          // Split vendor code for better caching
+          'react-vendor': ['react', 'react-dom'],
+          'animation-vendor': ['framer-motion', 'aos'],
+          'ui-vendor': ['lucide-react', 'react-icons']
+        }
+      }
+    }
   }
 })

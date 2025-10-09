@@ -1,0 +1,12 @@
+# Environment Variables Template
+# Copy this content to create your .env file
+
+VITE_SUPABASE_URL=https://your-project-id.supabase.co
+VITE_SUPABASE_ANON_KEY=your-supabase-anon-key
+
+# Instructions:
+# 1. Replace the values above with your actual Supabase credentials
+# 2. Save as .env in the project root
+# 3. Never commit .env to git (it's already in .gitignore)
+# 4. For deployment, configure these in your hosting platform's environment variables
+

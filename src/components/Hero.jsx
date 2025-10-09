@@ -1,8 +1,9 @@
 import React from 'react'
 import { motion } from 'framer-motion'
 import { EVENT_INFO, ASSETS } from '../utils/constants'
-import { Calendar, MapPin, Target, BookOpen, ChevronDown } from 'lucide-react'
+import { Calendar, MapPin, Target, BookOpen, ChevronDown, Clock, Users } from 'lucide-react'
 import { smoothScrollTo } from '../animations/parallax'
+import CountdownTimer from './common/CountdownTimer'
 
 const Hero = () => {
   const scrollToAbout = () => {
@@ -11,11 +12,28 @@ const Hero = () => {
 
   return (
     <section id="hero" className="relative min-h-screen flex items-center justify-center overflow-hidden">
-      {/* Enhanced Background with Gradient */}
-      <div className="absolute inset-0 gradient-bg-hero"></div>
+      {/* Hero Background Image with Panning Animation */}
+      <motion.img 
+        src="/images/hero.webp" 
+        alt="Hero Background" 
+        className="absolute inset-0 w-full h-full object-cover z-0"
+        animate={{
+          scale: [1, 1.05, 1],
+          x: [0, -10, 0],
+          y: [0, -5, 0]
+        }}
+        transition={{
+          duration: 20,
+          repeat: Infinity,
+          ease: 'easeInOut'
+        }}
+      />
       
-      {/* Enhanced overlay for better text contrast */}
-      <div className="absolute inset-0 bg-gradient-to-b from-black/30 via-black/10 to-black/40"></div>
+      {/* Enhanced Background with Gradient - reduced opacity */}
+      <div className="absolute inset-0 gradient-bg-hero opacity-60"></div>
+      
+      {/* Enhanced overlay for better text contrast - reduced opacity */}
+      <div className="absolute inset-0 bg-gradient-to-b from-black/20 via-black/5 to-black/25"></div>
       
       {/* DNA Logo Background Element */}
       <motion.div
@@ -101,7 +119,7 @@ const Hero = () => {
             transition={{ duration: 0.6, delay: 0.2 }}
             className="text-accent text-gold-300 mb-6 tracking-wider pt-4"
           >
-            Doctors Nexus Amity (DNA) in collaboration with GHMCT presents an Expranza exclusive
+            Doctors Nexus Amity (DNA) in collaboration with GHMCT presents an Esperanza exclusive
           </motion.p>
 
           {/* Main Heading */}
@@ -137,7 +155,7 @@ const Hero = () => {
             <p className="text-lg md:text-xl lg:text-2xl text-pearl-200 font-light mb-8 max-w-4xl mx-auto leading-relaxed">
               {EVENT_INFO.tagline}
             </p>
-            <div className="flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-4 text-sm sm:text-base md:text-lg">
+            <div className="flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-4 text-sm sm:text-base md:text-lg mb-8">
               <motion.div 
                 whileHover={{ scale: 1.05 }}
                 className="card-glass px-4 py-3 sm:px-6 sm:py-4 flex items-center gap-2 sm:gap-4 backdrop-blur-md"
@@ -153,9 +171,23 @@ const Hero = () => {
                 className="card-glass px-4 py-3 sm:px-6 sm:py-4 flex items-center gap-2 sm:gap-4 backdrop-blur-md cursor-pointer hover:bg-white/20 transition-all duration-300"
               >
                 <MapPin className="w-5 h-5 sm:w-6 sm:h-6 text-copper-300" />
-                <span className="font-semibold text-copper-200">GHMC Trivandrum</span>
+                <span className="font-semibold text-copper-200">{EVENT_INFO.venue}</span>
               </motion.a>
             </div>
+
+            {/* Countdown Timer */}
+            {/* <motion.div
+              initial={{ opacity: 0, y: 30 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.9 }}
+              className="max-w-md mx-auto mb-8"
+            >
+              <CountdownTimer 
+                targetDate="2025-10-25T23:59:59"
+                title="Registration Deadline"
+                size="medium"
+              />
+            </motion.div> */}
           </motion.div>
 
           {/* Enhanced CTA Buttons */}

@@ -1,44 +1,13 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ChevronDown, ChevronUp, HelpCircle, Clock, Mail, Phone, MapPin } from 'lucide-react';
+import { FAQ_CONTENT, CONTACT_INFO } from '../utils/content';
 
 const FAQ = () => {
     const [openFAQ, setOpenFAQ] = useState(null);
 
-    const faqs = [
-        {
-            question: "What happens after I register?",
-            answer: "After registration, your payment will be verified within 24-48 hours. You'll receive a confirmation email with event details, committee assignments, and access to our free 3-day communication workshop."
-        },
-        {
-            question: "Can I change my registration type after payment?",
-            answer: "Yes, you can upgrade from MUN Only to MUN + Conference by paying the difference. However, downgrades are not possible after payment confirmation. Please contact us immediately if you need to make changes."
-        },
-        {
-            question: "What if my payment screenshot is not clear?",
-            answer: "If your payment screenshot is unclear or rejected, we'll contact you via WhatsApp or email within 24 hours. You can resubmit a clearer image through the link we'll provide."
-        },
-        {
-            question: "Is the communication workshop really free?",
-            answer: "Yes! The 3-day online workshop on 'Art of Communication' is completely free for all registered participants. It includes MUN training, debate techniques, and public speaking skills."
-        },
-        {
-            question: "What are the topics for the MUN?",
-            answer: "The topics for each committee will be announced later."
-        },
-        {
-            question: "What should I bring on the event day?",
-            answer: "Bring your confirmation email, a valid ID, notebook, pen, and formal attire. Lunch and refreshments will be provided. Detailed guidelines will be sent after registration confirmation."
-        },
-        {
-            question: "Can I participate if I'm not from a medical college?",
-            answer: "DIIMUN is specifically designed for homoeopathy students and professionals. While we focus on medical education, passionate individuals from related fields may contact us for special consideration."
-        },
-        {
-            question: "Can i get refund if i cancel my registration?",
-            answer: "No, refunds are not available after payment confirmation. However, you can transfer your registration to a friend or family member if you're unable to attend."
-        }
-    ];
+    // Use comprehensive FAQ content from content.js
+    const faqs = FAQ_CONTENT;
 
     const toggleFAQ = (index) => {
         setOpenFAQ(openFAQ === index ? null : index);
@@ -115,6 +84,42 @@ const FAQ = () => {
                         ))}
                     </div>
                 </div>
+
+                {/* Contact Information */}
+                <motion.div
+                    initial={{ opacity: 0, y: 30 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.6, delay: 0.3 }}
+                    viewport={{ once: true }}
+                    className="mt-16 text-center"
+                >
+                    <div className="bg-gradient-to-r from-indigo-600 to-midnight-600 rounded-3xl p-8 text-white">
+                        <h3 className="text-2xl font-bold mb-4">Still Have Questions?</h3>
+                        <p className="text-blue-100 mb-6">
+                            Contact our organizing committee for any clarifications before the day of the conference.
+                        </p>
+                        <div className="flex flex-col sm:flex-row items-center justify-center gap-6">
+                            <motion.a
+                                href={`mailto:${CONTACT_INFO.email}`}
+                                whileHover={{ scale: 1.05 }}
+                                whileTap={{ scale: 0.95 }}
+                                className="flex items-center gap-3 bg-white/20 hover:bg-white/30 px-6 py-3 rounded-xl transition-all duration-300"
+                            >
+                                <Mail className="w-5 h-5" />
+                                <span className="font-medium">{CONTACT_INFO.email}</span>
+                            </motion.a>
+                            <motion.a
+                                href={`tel:${CONTACT_INFO.phone}`}
+                                whileHover={{ scale: 1.05 }}
+                                whileTap={{ scale: 0.95 }}
+                                className="flex items-center gap-3 bg-white/20 hover:bg-white/30 px-6 py-3 rounded-xl transition-all duration-300"
+                            >
+                                <Phone className="w-5 h-5" />
+                                <span className="font-medium">{CONTACT_INFO.phone}</span>
+                            </motion.a>
+                        </div>
+                    </div>
+                </motion.div>
 
             </div>
         </section>

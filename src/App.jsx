@@ -1,5 +1,4 @@
-import React, { useEffect, useState } from 'react'
-import { motion } from 'framer-motion'
+import { useEffect, useState, Suspense, lazy } from 'react'
 import AOS from 'aos'
 import 'aos/dist/aos.css'
 
@@ -14,11 +13,18 @@ import RegistrationForm from './components/RegistrationForm'
 import FAQ from './components/FAQ'
 import Footer from './components/Footer'
 
-// New Page Components
-import Schedule from './components/pages/Schedule'
-import Guidelines from './components/pages/Guidelines'
-import Awards from './components/pages/Awards'
-import Terms from './components/pages/Terms'
+// Lazy load page components for better performance
+const Schedule = lazy(() => import('./components/pages/Schedule'))
+const Awards = lazy(() => import('./components/pages/Awards'))
+const Terms = lazy(() => import('./components/pages/Terms'))
+const TechnologyPolicy = lazy(() => import('./components/pages/TechnologyPolicy'))
+const RegistrationGuide = lazy(() => import('./components/pages/RegistrationGuide'))
+const IPCSubmission = lazy(() => import('./components/pages/IPCSubmission'))
+
+// Committee-specific guideline pages
+const WHOCommitteeGuidelines = lazy(() => import('./components/pages/WHOCommitteeGuidelines'))
+const GreatAssemblyGuidelines = lazy(() => import('./components/pages/GreatAssemblyGuidelines'))
+const IPCGuidelines = lazy(() => import('./components/pages/IPCGuidelines'))
 
 function App() {
   const [currentPage, setCurrentPage] = useState('home')
@@ -57,17 +63,73 @@ function App() {
     window.history.pushState({ page }, '', url)
   }
 
+  // Loading component for lazy-loaded pages
+  const PageLoader = () => (
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50">
+      <div className="text-center">
+        <div className="w-16 h-16 border-4 border-indigo-200 border-t-indigo-600 rounded-full animate-spin mx-auto mb-4"></div>
+        <p className="text-gray-600">Loading page...</p>
+      </div>
+    </div>
+  )
+
   // Render the appropriate page
   const renderPage = () => {
     switch(currentPage) {
       case 'schedule':
-        return <Schedule />
-      case 'guidelines':
-        return <Guidelines />
+        return (
+          <Suspense fallback={<PageLoader />}>
+            <Schedule />
+          </Suspense>
+        )
       case 'awards':
-        return <Awards />
+        return (
+          <Suspense fallback={<PageLoader />}>
+            <Awards />
+          </Suspense>
+        )
       case 'terms':
-        return <Terms />
+        return (
+          <Suspense fallback={<PageLoader />}>
+            <Terms />
+          </Suspense>
+        )
+      case 'technology-policy':
+        return (
+          <Suspense fallback={<PageLoader />}>
+            <TechnologyPolicy />
+          </Suspense>
+        )
+      case 'registration-guide':
+        return (
+          <Suspense fallback={<PageLoader />}>
+            <RegistrationGuide />
+          </Suspense>
+        )
+      case 'who-committee-guidelines':
+        return (
+          <Suspense fallback={<PageLoader />}>
+            <WHOCommitteeGuidelines />
+          </Suspense>
+        )
+      case 'great-assembly-guidelines':
+        return (
+          <Suspense fallback={<PageLoader />}>
+            <GreatAssemblyGuidelines />
+          </Suspense>
+        )
+      case 'ipc-guidelines':
+        return (
+          <Suspense fallback={<PageLoader />}>
+            <IPCGuidelines />
+          </Suspense>
+        )
+      case 'ipc-submission':
+        return (
+          <Suspense fallback={<PageLoader />}>
+            <IPCSubmission />
+          </Suspense>
+        )
       case 'home':
       default:
         return (

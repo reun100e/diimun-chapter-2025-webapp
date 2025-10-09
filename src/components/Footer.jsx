@@ -45,13 +45,13 @@ const Footer = ({ onNavigate }) => {
         {
             icon: Calendar,
             label: "Date",
-            value: "November 4th, 2024",
+            value: "November 4th, 2025",
             link: null
         }
     ];
 
     // Use the new footer links structure
-    const { eventInfo, support, quickLinks } = FOOTER_LINKS;
+    const { eventInfo, committeeGuidelines, support, quickLinks } = FOOTER_LINKS;
 
     const socialLinks = [
         { icon: Facebook, label: "Facebook", href: "#", color: "hover:text-blue-600" },
@@ -67,6 +67,8 @@ const Footer = ({ onNavigate }) => {
             // Handle page navigation
             const page = href.substring(1) // Remove the leading slash
             onNavigate(page);
+            // Scroll to top of page after navigation
+            window.scrollTo({ top: 0, behavior: 'smooth' });
         }
     };
 
@@ -102,9 +104,21 @@ const Footer = ({ onNavigate }) => {
                             Doctors Integrated International Model United Nations - 
                             Empowering future healthcare leaders through meaningful dialogue and debate.
                         </p>
-                        <div className="flex items-center gap-2 text-cognac-300">
-                            <Award className="w-5 h-5" />
-                            <span className="text-sm">Trusted by 500+ Homoeopathic Scholars</span>
+                        
+                        {/* Support Links - Subtle placement */}
+                        <div className="mt-8 pt-6 border-t border-cognac-700/30">
+                            <ul className="space-y-2">
+                                {support.map((link, index) => (
+                                    <li key={link.label}>
+                                        <button
+                                            onClick={() => handleNavigation(link.href)}
+                                            className="text-cognac-300 hover:text-cognac-100 transition-colors duration-300 text-sm underline"
+                                        >
+                                            {link.label}
+                                        </button>
+                                    </li>
+                                ))}
+                            </ul>
                         </div>
                     </motion.div>
 
@@ -132,16 +146,16 @@ const Footer = ({ onNavigate }) => {
                         </ul>
                     </motion.div>
 
-                    {/* Support Links */}
+                    {/* Committee Guidelines */}
                     <motion.div
                         initial={{ opacity: 0, y: 30 }}
                         whileInView={{ opacity: 1, y: 0 }}
                         transition={{ duration: 0.6, delay: 0.2 }}
                         viewport={{ once: true }}
                     >
-                        <h4 className="text-xl font-bold mb-6 text-white">Support</h4>
+                        <h4 className="text-xl font-bold mb-6 text-white">Committee Guidelines</h4>
                         <ul className="space-y-3">
-                            {support.map((link, index) => (
+                            {committeeGuidelines.map((link, index) => (
                                 <li key={link.label}>
                                     <motion.button
                                         onClick={() => handleNavigation(link.href)}
@@ -160,7 +174,7 @@ const Footer = ({ onNavigate }) => {
                     <motion.div
                         initial={{ opacity: 0, y: 30 }}
                         whileInView={{ opacity: 1, y: 0 }}
-                        transition={{ duration: 0.6, delay: 0.4 }}
+                        transition={{ duration: 0.6, delay: 0.3 }}
                         viewport={{ once: true }}
                     >
                         <h4 className="text-xl font-bold mb-6 text-white">Contact Info</h4>

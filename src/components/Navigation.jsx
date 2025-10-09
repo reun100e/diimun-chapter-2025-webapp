@@ -35,22 +35,54 @@ const Navigation = ({ onNavigate, currentPage }) => {
     
     // Check if it's a hash link (section on same page) or a new page
     if (href.startsWith('#')) {
-      // Handle section scrolling
-      setTimeout(() => {
-        const isMobile = window.innerWidth < 768
-        const offset = isMobile ? 60 : 100
-        
-        try {
-          scrollToElement(href, offset)
-        } catch (error) {
-          console.warn('scrollToElement failed, using fallback:', error)
-          smoothScrollTo(href, offset)
-        }
-      }, 150)
+      // If we're not on the home page, navigate to home first, then scroll
+      if (currentPage !== 'home') {
+        onNavigate('home')
+        // Wait for page navigation to complete, then scroll
+        setTimeout(() => {
+          const isMobile = window.innerWidth < 768
+          const offset = isMobile ? 60 : 100
+          
+          try {
+            scrollToElement(href, offset)
+          } catch (error) {
+            console.warn('scrollToElement failed, using fallback:', error)
+            smoothScrollTo(href, offset)
+          }
+        }, 300) // Increased delay to allow page navigation
+      } else {
+        // We're already on home page, just scroll to section
+        setTimeout(() => {
+          const isMobile = window.innerWidth < 768
+          const offset = isMobile ? 60 : 100
+          
+          try {
+            scrollToElement(href, offset)
+          } catch (error) {
+            console.warn('scrollToElement failed, using fallback:', error)
+            smoothScrollTo(href, offset)
+          }
+        }, 150)
+      }
     } else {
       // Handle page navigation
       const page = href.substring(1) // Remove the leading slash
       onNavigate(page)
+      
+      // Special case: Schedule page should scroll to timeline section
+      if (page === 'schedule') {
+        setTimeout(() => {
+          const isMobile = window.innerWidth < 768
+          const offset = isMobile ? 100 : 100
+          
+          try {
+            scrollToElement('#timeline', offset)
+          } catch (error) {
+            console.warn('scrollToElement failed for timeline, using fallback:', error)
+            smoothScrollTo('#timeline', offset)
+          }
+        }, 500) // Wait for page to load and render
+      }
     }
   }
 
@@ -73,7 +105,9 @@ const Navigation = ({ onNavigate, currentPage }) => {
           {/* Logo */}
           <motion.div
             whileHover={{ scale: 1.05 }}
-            className="flex items-center space-x-4"
+            whileTap={{ scale: 0.95 }}
+            onClick={() => handleNavigation('#hero')}
+            className="flex items-center space-x-4 cursor-pointer"
           >
             <div className="w-12 h-12 rounded-2xl overflow-hidden shadow-medium bg-white p-1">
               <img 
@@ -93,7 +127,7 @@ const Navigation = ({ onNavigate, currentPage }) => {
 
           {/* Desktop Navigation */}
           <div className="hidden md:flex items-center space-x-8">
-            {NAV_LINKS.map((link) => {
+            {NAV_LINKS.filter(link => link.href !== '#register').map((link) => {
               const isActive = (link.href.startsWith('#') && currentPage === 'home') || 
                               (link.href === `/${currentPage}`)
               return (
@@ -112,6 +146,15 @@ const Navigation = ({ onNavigate, currentPage }) => {
                 </motion.button>
               )
             })}
+            <motion.button
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              onClick={() => handleNavigation('#register')}
+              className="group relative overflow-hidden bg-gradient-to-r from-emerald-600 to-teal-600 text-white font-semibold py-3 px-6 rounded-xl transition-all duration-300 shadow-lg hover:shadow-emerald-500/25"
+            >
+              <div className="absolute inset-0 bg-gradient-to-r from-emerald-400 to-teal-400 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+              <span className="relative z-10">Register Now</span>
+            </motion.button>
           </div>
           {/* Mobile Menu Button */}
           <motion.button
@@ -161,7 +204,7 @@ const Navigation = ({ onNavigate, currentPage }) => {
           >
             <div className="container-custom py-4">
               <div className="flex flex-col space-y-4">
-                {NAV_LINKS.map((link) => {
+                {NAV_LINKS.filter(link => link.href !== '#register').map((link) => {
                   const isActive = (link.href.startsWith('#') && currentPage === 'home') || 
                                   (link.href === `/${currentPage}`)
                   return (
@@ -179,6 +222,15 @@ const Navigation = ({ onNavigate, currentPage }) => {
                     </motion.button>
                   )
                 })}
+                <motion.button
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
+                  onClick={() => handleNavigation('#register')}
+                  className="group relative overflow-hidden bg-gradient-to-r from-emerald-600 to-teal-600 text-white font-semibold py-3 px-6 rounded-xl transition-all duration-300 shadow-lg hover:shadow-emerald-500/25 mt-4 w-full"
+                >
+                  <div className="absolute inset-0 bg-gradient-to-r from-emerald-400 to-teal-400 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                  <span className="relative z-10">Register Now</span>
+                </motion.button>
               </div>
             </div>
           </motion.div>

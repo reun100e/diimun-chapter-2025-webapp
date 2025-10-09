@@ -1,6 +1,6 @@
-import React from 'react'
 import { motion } from 'framer-motion'
 import { STALWARTS, EVENT_INFO } from '../utils/constants'
+import { Calendar, Users, Award, BookOpen } from 'lucide-react'
 
 const About = () => {
 
@@ -66,7 +66,7 @@ const About = () => {
               {/* First set of stalwarts */}
               {STALWARTS.map((stalwart, index) => (
                 <motion.div
-                  key={`first-${stalwart.name}`}
+                  key={`first-${index}`}
                   initial={{ opacity: 0, y: 30 }}
                   whileInView={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.6, delay: index * 0.1 }}
@@ -93,7 +93,7 @@ const About = () => {
               {/* Duplicate set for seamless loop */}
               {STALWARTS.map((stalwart, index) => (
                 <motion.div
-                  key={`second-${stalwart.name}`}
+                  key={`second-${index}`}
                   whileHover={{ y: -5, scale: 1.05 }}
                   className="group cursor-pointer flex-shrink-0"
                 >

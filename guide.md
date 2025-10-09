@@ -15,7 +15,7 @@ Portfolio research and position papers (if applicable)
 Country placard (will be provided by the organizing committee)
 For International Press Corps (IPC) Members:
 Press pass (will be provided at registration)
-Laptop/tablet for live reporting and article writing is compulsory.
+Laptop/tablet for writing is compulsory.
 Camera (optional, for photography)
 Recording devices (subject to approval by Executive Board)
 Basic stationery will be provided but reporters can bring according to their convenience.

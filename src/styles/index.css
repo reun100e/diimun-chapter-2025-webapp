@@ -67,24 +67,50 @@
     text-transform: none;
   }
 
-  /* Enhanced Custom Scrollbar */
-  ::-webkit-scrollbar {
-    width: 12px;
+  /* Hide main page scrollbar while keeping scroll functionality */
+  html {
+    scrollbar-width: none; /* Firefox */
+    -ms-overflow-style: none; /* IE and Edge */
   }
   
-  ::-webkit-scrollbar-track {
-    background: theme('colors.pearl.200');
-    border-radius: 6px;
+  html::-webkit-scrollbar {
+    display: none; /* WebKit browsers */
   }
   
-  ::-webkit-scrollbar-thumb {
+  /* Custom scrollbar for form elements and dropdowns */
+  select::-webkit-scrollbar,
+  .dropdown::-webkit-scrollbar,
+  .form-dropdown::-webkit-scrollbar,
+  .registration-form::-webkit-scrollbar,
+  textarea::-webkit-scrollbar {
+    width: 8px;
+  }
+  
+  select::-webkit-scrollbar-track,
+  .dropdown::-webkit-scrollbar-track,
+  .form-dropdown::-webkit-scrollbar-track,
+  .registration-form::-webkit-scrollbar-track,
+  textarea::-webkit-scrollbar-track {
+    background: theme('colors.pearl.100');
+    border-radius: 4px;
+  }
+  
+  select::-webkit-scrollbar-thumb,
+  .dropdown::-webkit-scrollbar-thumb,
+  .form-dropdown::-webkit-scrollbar-thumb,
+  .registration-form::-webkit-scrollbar-thumb,
+  textarea::-webkit-scrollbar-thumb {
+    background: linear-gradient(135deg, theme('colors.midnight.500'), theme('colors.cognac.500'));
+    border-radius: 4px;
+    border: 1px solid theme('colors.pearl.200');
+  }
+  
+  select::-webkit-scrollbar-thumb:hover,
+  .dropdown::-webkit-scrollbar-thumb:hover,
+  .form-dropdown::-webkit-scrollbar-thumb:hover,
+  .registration-form::-webkit-scrollbar-thumb:hover,
+  textarea::-webkit-scrollbar-thumb:hover {
     background: linear-gradient(135deg, theme('colors.midnight.600'), theme('colors.cognac.600'));
-    border-radius: 6px;
-    border: 2px solid theme('colors.pearl.200');
-  }
-  
-  ::-webkit-scrollbar-thumb:hover {
-    background: linear-gradient(135deg, theme('colors.midnight.700'), theme('colors.cognac.700'));
   }
 
   /* Selection Styling */
