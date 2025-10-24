@@ -37,7 +37,7 @@ const WhatsAppButton = () => {
             name: "Dr. Athith Sesha",
             specialty: "Committee Queries",
             image: "/images/doctors/dr-athith.jpg",
-            whatsappNumber: "+917010150600",
+            whatsappNumber: "+919488546782",
             description: "Committee guidelines & procedures"
         }
     ];
