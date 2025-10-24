@@ -188,11 +188,11 @@ export const COMMITTEES = [
   },
   {
     title: 'International Press Corps (IPC)',
-    description: 'Serve as the media coverage team for all committee proceedings with journalistic integrity. Document debates, and create comprehensive reports while maintaining unbiased coverage of the event proceedings.',
+    description: 'Serve as the official media coverage team with strict journalistic integrity and neutrality. Provide unbiased reports, capture visual narratives, and document committee proceedings. Journalists must submit minimum one report per committee with proper structure and fact-checking. Photographers must submit minimum 5 curated images daily (1080p resolution). Committee access subject to Chair approval.',
     icon: 'FileText',
     type: 'Media Committee',
     eligibility: 'Open to all medical students and professionals',
-    note: 'Laptop/tablet required for essay writing'
+    note: 'Laptop/tablet required for journalists. Press ID must be visible at all times. Maintain strict neutrality.'
   }
 ]
 

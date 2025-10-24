@@ -31,6 +31,126 @@ const IPCGuidelines = () => {
     
     return () => clearTimeout(timer)
   }, [])
+  const coreResponsibilities = [
+    {
+      title: 'Unbiased Reporting',
+      description: 'Provide unbiased reports, editorials, and features covering all committee proceedings',
+      icon: <FileText className="w-5 h-5" />
+    },
+    {
+      title: 'Visual Narratives',
+      description: 'Capture compelling visual narratives through professional photography',
+      icon: <Camera className="w-5 h-5" />
+    },
+    {
+      title: 'Journalistic Integrity',
+      description: 'Uphold the principles of journalistic integrity, neutrality, and professionalism at all times',
+      icon: <Shield className="w-5 h-5" />
+    }
+  ]
+
+  const accessAndConduct = [
+    {
+      title: 'Neutrality',
+      description: 'All journalists and photographers must maintain strict neutrality and refrain from expressing personal, political, or national bias in any form.',
+      icon: <Shield className="w-5 h-5" />,
+      type: 'mandatory'
+    },
+    {
+      title: 'Professional Decorum',
+      description: 'Members of IP (International Press) shall behave respectfully toward all delegates, chairs, and organizers. Any disruptive behavior can lead to suspension of credentials.',
+      icon: <Users className="w-5 h-5" />,
+      type: 'mandatory'
+    },
+    {
+      title: 'Identification',
+      description: 'Each journalist and photographer must carry their official press ID card visibly within committee sessions and during inter-committee movements.',
+      icon: <CheckCircle className="w-5 h-5" />,
+      type: 'mandatory'
+    },
+    {
+      title: 'Committee Access',
+      description: 'Access is subject to Chair/Presiding Officer approval. Journalists may observe but not participate in debate or voting procedures. Recording devices must be used discreetly.',
+      icon: <AlertTriangle className="w-5 h-5" />,
+      type: 'mandatory'
+    }
+  ]
+
+  const journalistGuidelines = [
+    {
+      title: 'Daily Reporting',
+      description: 'Each journalist must submit at least one report summarizing the key events, motions, and debates of their assigned committee. Reports should include quotes, delegate stances, and committee mood — written in a neutral and engaging manner.',
+      requirements: [
+        'Minimum one report per assigned committee',
+        'Include key events, motions, and debates',
+        'Add quotes and delegate stances',
+        'Capture committee mood and atmosphere',
+        'Written in neutral and engaging tone'
+      ]
+    },
+    {
+      title: 'Structure & Style',
+      description: 'All articles should follow a clear structure with professional journalistic tone.',
+      requirements: [
+        'Structure: Headline, Introduction, Context, Discussion, Conclusion',
+        'Use professional journalistic tone',
+        'Avoid slang, exaggeration, or personal commentary',
+        'Maintain objectivity throughout',
+        'Engage readers with clear, concise writing'
+      ]
+    },
+    {
+      title: 'Accuracy & Verification',
+      description: 'Cross-check all facts, quotes, and delegate names. Misinformation or misquoting will be treated as a serious violation.',
+      requirements: [
+        'Cross-check all facts and quotes',
+        'Verify delegate names and positions',
+        'Confirm information from multiple sources',
+        'No misinformation or misquoting',
+        'Fact-check before submission'
+      ]
+    },
+    {
+      title: 'Sources & Citations',
+      description: 'If external references are used, cite sources clearly. Do not plagiarize or copy content from existing media outlets.',
+      requirements: [
+        'Cite all external references clearly',
+        'No plagiarism from any source',
+        'No copying from existing media outlets',
+        'Original content only',
+        'Proper attribution when required'
+      ]
+    }
+  ]
+
+  const photographerGuidelines = [
+    {
+      title: 'Photo Ethics',
+      description: 'Capture moments that reflect the essence of the debate, diplomacy, and diversity. Avoid photos that may demean, embarrass, or misrepresent delegates or staff.',
+      icon: <Camera className="w-5 h-5" />
+    },
+    {
+      title: 'Equal Representation',
+      description: 'Ensure equal representation of all committees and delegates, not just popular ones.',
+      icon: <Users className="w-5 h-5" />
+    },
+    {
+      title: 'Quality Standards',
+      description: 'Maintain high-quality images (minimum 1080p resolution). Avoid excessive filters or manipulative edits that distort context.',
+      icon: <CheckCircle className="w-5 h-5" />
+    },
+    {
+      title: 'Permission & Consent',
+      description: 'Ask for permission before close-up shots or backstage photography. Avoid flash photography during ongoing speeches or debates.',
+      icon: <AlertTriangle className="w-5 h-5" />
+    },
+    {
+      title: 'Daily Submissions',
+      description: 'Photographers must submit a minimum of 5 curated images daily, categorized (e.g., Committee, Break, Ceremony). Artistic or conceptual shots are encouraged for closing-day displays or media showcases, provided they adhere to UN ethics.',
+      icon: <FileText className="w-5 h-5" />
+    }
+  ]
+
   const dressCodeRequirements = [
     {
       title: 'Professional Media Attire',
@@ -39,7 +159,7 @@ const IPCGuidelines = () => {
     },
     {
       title: 'Press Badge Display',
-      description: 'Visible press identification and professional credentials',
+      description: 'Visible press identification and professional credentials must be worn at all times',
       type: 'mandatory'
     },
     {
@@ -51,29 +171,6 @@ const IPCGuidelines = () => {
       title: 'Media Professional Standards',
       description: 'Maintain the dignity and professionalism expected of international press corps',
       type: 'mandatory'
-    }
-  ]
-
-  const conductRules = [
-    {
-      title: 'Journalistic Integrity',
-      description: 'Maintain unbiased, factual reporting throughout all committee proceedings',
-      icon: <Shield className="w-5 h-5" />
-    },
-    {
-      title: 'Professional Documentation',
-      description: 'Create comprehensive, accurate records of all committee activities',
-      icon: <FileText className="w-5 h-5" />
-    },
-    {
-      title: 'Respectful Coverage',
-      description: 'Cover proceedings without disrupting the flow of committee sessions',
-      icon: <Camera className="w-5 h-5" />
-    },
-    {
-      title: 'Timely Reporting',
-      description: 'Meet all submission deadlines for press releases and reports',
-      icon: <Clock className="w-5 h-5" />
     }
   ]
 
@@ -261,38 +358,201 @@ const IPCGuidelines = () => {
           </div>
         </motion.div>
 
-        {/* Page Under Construction */}
+        {/* Core Responsibilities */}
         <motion.div
           initial={{ opacity: 0, y: 30 }}
-          animate={{ opacity: 1, y: 0 }}
+          whileInView={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}
-          className="bg-gradient-to-br from-yellow-50 to-orange-100 border border-yellow-200 rounded-3xl shadow-2xl p-8 md:p-12 mb-16 flex flex-col items-center justify-center"
+          viewport={{ once: true }}
+          className="bg-white rounded-3xl shadow-2xl border border-gray-100 overflow-hidden mb-16"
         >
-          <div className="flex flex-col items-center gap-4">
-            <div className="w-20 h-20 bg-yellow-100 rounded-full flex items-center justify-center mb-4 shadow-md">
-              <Info className="w-10 h-10 text-yellow-500" />
-            </div>
-            <h2 className="text-3xl md:text-4xl font-bold text-yellow-700 mb-2 text-center">
-              Page Under Construction
+          <div className="bg-gradient-to-r from-purple-600 to-indigo-600 px-8 py-6">
+            <h2 className="text-2xl md:text-3xl font-bold text-white flex items-center gap-4">
+              <div className="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center">
+                <Shield className="w-6 h-6" />
+              </div>
+              Core Responsibilities
             </h2>
-            <p className="text-lg text-yellow-800 text-center max-w-2xl mb-2">
-              Information such as <span className="font-semibold">Equipment Requirements</span>, <span className="font-semibold"> Reporting Formats</span>, <span className="font-semibold">Dress Code</span>, <span className="font-semibold">Conduct Rules</span>, and more will be added soon.
-            </p>
-            <p className="text-base text-yellow-700 text-center">
-              Please check back later for detailed guidelines and updates for the International Press Corps.
-            </p>
+          </div>
+          <div className="p-8">
+            <div className="grid md:grid-cols-3 gap-6">
+              {coreResponsibilities.map((item, index) => (
+                <motion.div
+                  key={index}
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.4, delay: index * 0.1 }}
+                  viewport={{ once: true }}
+                  className="bg-gradient-to-br from-purple-50 to-indigo-50 border border-purple-200 rounded-2xl p-6"
+                >
+                  <div className="w-12 h-12 bg-purple-100 rounded-xl flex items-center justify-center mb-4">
+                    {item.icon}
+                  </div>
+                  <h3 className="text-lg font-bold text-gray-800 mb-3">
+                    {item.title}
+                  </h3>
+                  <p className="text-gray-600 leading-relaxed">
+                    {item.description}
+                  </p>
+                </motion.div>
+              ))}
+            </div>
           </div>
         </motion.div>
 
-        {/* Equipment Requirements */}
-        {/* <motion.div
+        {/* Access and Conduct Rules */}
+        <motion.div
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.2 }}
           viewport={{ once: true }}
           className="bg-white rounded-3xl shadow-2xl border border-gray-100 overflow-hidden mb-16"
         >
-          <div className="bg-gradient-to-r from-purple-600 to-indigo-600 px-8 py-6">
+          <div className="bg-gradient-to-r from-red-600 to-orange-600 px-8 py-6">
+            <h2 className="text-2xl md:text-3xl font-bold text-white flex items-center gap-4">
+              <div className="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center">
+                <AlertTriangle className="w-6 h-6" />
+              </div>
+              Rules and Regulations
+            </h2>
+          </div>
+          <div className="p-8">
+            <div className="space-y-6">
+              {accessAndConduct.map((rule, index) => (
+                <motion.div
+                  key={index}
+                  initial={{ opacity: 0, x: -20 }}
+                  whileInView={{ opacity: 1, x: 0 }}
+                  transition={{ duration: 0.4, delay: index * 0.1 }}
+                  viewport={{ once: true }}
+                  className="border-2 border-red-200 rounded-2xl p-6 bg-red-50"
+                >
+                  <div className="flex items-start gap-4">
+                    <div className="w-12 h-12 bg-red-100 rounded-xl flex items-center justify-center flex-shrink-0">
+                      {rule.icon}
+                    </div>
+                    <div className="flex-1">
+                      <div className="flex items-center gap-3 mb-2">
+                        <h3 className="text-lg font-bold text-red-900">
+                          {rule.title}
+                        </h3>
+                        <span className="px-3 py-1 bg-red-200 text-red-800 text-xs font-bold rounded-full uppercase">
+                          {rule.type}
+                        </span>
+                      </div>
+                      <p className="text-red-800 leading-relaxed">
+                        {rule.description}
+                      </p>
+                    </div>
+                  </div>
+                </motion.div>
+              ))}
+            </div>
+          </div>
+        </motion.div>
+
+        {/* Journalist Guidelines */}
+        <motion.div
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, delay: 0.4 }}
+          viewport={{ once: true }}
+          className="bg-white rounded-3xl shadow-2xl border border-gray-100 overflow-hidden mb-16"
+        >
+          <div className="bg-gradient-to-r from-blue-600 to-cyan-600 px-8 py-6">
+            <h2 className="text-2xl md:text-3xl font-bold text-white flex items-center gap-4">
+              <div className="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center">
+                <PenTool className="w-6 h-6" />
+              </div>
+              Journalist Guidelines
+            </h2>
+          </div>
+          <div className="p-8">
+            <div className="space-y-8">
+              {journalistGuidelines.map((guideline, index) => (
+                <motion.div
+                  key={index}
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.4, delay: index * 0.1 }}
+                  viewport={{ once: true }}
+                  className="bg-gradient-to-br from-blue-50 to-cyan-50 border border-blue-200 rounded-2xl p-6"
+                >
+                  <h3 className="text-xl font-bold text-blue-900 mb-3">
+                    {guideline.title}
+                  </h3>
+                  <p className="text-blue-800 mb-4 leading-relaxed">
+                    {guideline.description}
+                  </p>
+                  <div className="space-y-2">
+                    {guideline.requirements.map((req, reqIndex) => (
+                      <div key={reqIndex} className="flex items-start gap-2">
+                        <CheckCircle className="w-4 h-4 text-blue-600 mt-1 flex-shrink-0" />
+                        <span className="text-sm text-blue-700">{req}</span>
+                      </div>
+                    ))}
+                  </div>
+                </motion.div>
+              ))}
+            </div>
+          </div>
+        </motion.div>
+
+        {/* Photographer Guidelines */}
+        <motion.div
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, delay: 0.6 }}
+          viewport={{ once: true }}
+          className="bg-white rounded-3xl shadow-2xl border border-gray-100 overflow-hidden mb-16"
+        >
+          <div className="bg-gradient-to-r from-emerald-600 to-teal-600 px-8 py-6">
+            <h2 className="text-2xl md:text-3xl font-bold text-white flex items-center gap-4">
+              <div className="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center">
+                <Camera className="w-6 h-6" />
+              </div>
+              Photographer Guidelines
+            </h2>
+          </div>
+          <div className="p-8">
+            <div className="grid md:grid-cols-2 gap-6">
+              {photographerGuidelines.map((guideline, index) => (
+                <motion.div
+                  key={index}
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.4, delay: index * 0.1 }}
+                  viewport={{ once: true }}
+                  className="bg-gradient-to-br from-emerald-50 to-teal-50 border border-emerald-200 rounded-2xl p-6"
+                >
+                  <div className="flex items-start gap-4">
+                    <div className="w-12 h-12 bg-emerald-100 rounded-xl flex items-center justify-center flex-shrink-0">
+                      {guideline.icon}
+                    </div>
+                    <div className="flex-1">
+                      <h3 className="text-lg font-bold text-emerald-900 mb-2">
+                        {guideline.title}
+                      </h3>
+                      <p className="text-emerald-800 leading-relaxed text-sm">
+                        {guideline.description}
+                      </p>
+                    </div>
+                  </div>
+                </motion.div>
+              ))}
+            </div>
+          </div>
+        </motion.div>
+
+        {/* Equipment Requirements */}
+        <motion.div
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, delay: 0.8 }}
+          viewport={{ once: true }}
+          className="bg-white rounded-3xl shadow-2xl border border-gray-100 overflow-hidden mb-16"
+        >
+          <div className="bg-gradient-to-r from-indigo-600 to-purple-600 px-8 py-6">
             <h2 className="text-2xl md:text-3xl font-bold text-white flex items-center gap-4">
               <div className="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center">
                 <Laptop className="w-6 h-6" />
@@ -307,9 +567,9 @@ const IPCGuidelines = () => {
                   key={index}
                   initial={{ opacity: 0, y: 20 }}
                   whileInView={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.4, delay: 0.3 + index * 0.1 }}
+                  transition={{ duration: 0.4, delay: 0.9 + index * 0.1 }}
                   viewport={{ once: true }}
-                  className="bg-gradient-to-br from-purple-50 to-indigo-50 border border-purple-200 rounded-2xl p-6"
+                  className="bg-gradient-to-br from-indigo-50 to-purple-50 border border-indigo-200 rounded-2xl p-6"
                 >
                   <h3 className="text-lg font-bold text-gray-800 mb-4">
                     {category.title}
@@ -317,7 +577,7 @@ const IPCGuidelines = () => {
                   <ul className="space-y-2">
                     {category.items.map((item, itemIndex) => (
                       <li key={itemIndex} className="flex items-start gap-2 text-sm text-gray-600">
-                        <CheckCircle className="w-4 h-4 text-purple-500 mt-0.5 flex-shrink-0" />
+                        <CheckCircle className="w-4 h-4 text-indigo-500 mt-0.5 flex-shrink-0" />
                         {item}
                       </li>
                     ))}
@@ -326,17 +586,17 @@ const IPCGuidelines = () => {
               ))}
             </div>
           </div>
-        </motion.div> */}
+        </motion.div>
 
         {/* Dress Code */}
-        {/* <motion.div
+        <motion.div
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.4 }}
+          transition={{ duration: 0.6, delay: 1.0 }}
           viewport={{ once: true }}
           className="bg-white rounded-3xl shadow-2xl border border-gray-100 overflow-hidden mb-16"
         >
-          <div className="bg-gradient-to-r from-indigo-600 to-blue-600 px-8 py-6">
+          <div className="bg-gradient-to-r from-slate-600 to-gray-600 px-8 py-6">
             <h2 className="text-2xl md:text-3xl font-bold text-white flex items-center gap-4">
               <div className="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center">
                 <Users className="w-6 h-6" />
@@ -350,8 +610,8 @@ const IPCGuidelines = () => {
                 <motion.div
                   key={index}
                   initial={{ opacity: 0, x: -20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ duration: 0.4, delay: 0.5 + index * 0.1 }}
+                  whileInView={{ opacity: 1, x: 0 }}
+                  transition={{ duration: 0.4, delay: 1.1 + index * 0.1 }}
                   viewport={{ once: true }}
                   className={`border-2 rounded-2xl p-6 ${getTypeColor(item.type)}`}
                 >
@@ -372,20 +632,20 @@ const IPCGuidelines = () => {
               ))}
             </div>
           </div>
-        </motion.div> */}
+        </motion.div>
 
         {/* Reporting Formats */}
-        {/* <motion.div
+        <motion.div
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.6 }}
+          transition={{ duration: 0.6, delay: 1.2 }}
           viewport={{ once: true }}
           className="bg-white rounded-3xl shadow-2xl border border-gray-100 overflow-hidden mb-16"
         >
-          <div className="bg-gradient-to-r from-blue-600 to-cyan-600 px-8 py-6">
+          <div className="bg-gradient-to-r from-cyan-600 to-blue-600 px-8 py-6">
             <h2 className="text-2xl md:text-3xl font-bold text-white flex items-center gap-4">
               <div className="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center">
-                <PenTool className="w-6 h-6" />
+                <Clock className="w-6 h-6" />
               </div>
               Reporting Formats & Deadlines
             </h2>
@@ -396,118 +656,79 @@ const IPCGuidelines = () => {
                 <motion.div
                   key={index}
                   initial={{ opacity: 0, x: -20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ duration: 0.4, delay: 0.7 + index * 0.1 }}
+                  whileInView={{ opacity: 1, x: 0 }}
+                  transition={{ duration: 0.4, delay: 1.3 + index * 0.1 }}
                   viewport={{ once: true }}
-                  className="bg-gradient-to-r from-blue-50 to-cyan-50 border border-blue-200 rounded-2xl p-6"
+                  className="bg-gradient-to-r from-cyan-50 to-blue-50 border border-cyan-200 rounded-2xl p-6"
                 >
                   <div className="grid md:grid-cols-4 gap-4">
                     <div>
-                      <h3 className="text-lg font-bold text-blue-800 mb-2">
+                      <h3 className="text-lg font-bold text-cyan-800 mb-2">
                         {format.title}
                       </h3>
-                      <p className="text-blue-600 text-sm">
+                      <p className="text-cyan-600 text-sm">
                         {format.description}
                       </p>
                     </div>
                     <div>
-                      <h4 className="font-semibold text-blue-700 mb-2">Format:</h4>
-                      <p className="text-blue-600 text-sm">
+                      <h4 className="font-semibold text-cyan-700 mb-2">Format:</h4>
+                      <p className="text-cyan-600 text-sm">
                         {format.format}
                       </p>
                     </div>
                     <div>
-                      <h4 className="font-semibold text-blue-700 mb-2">Deadline:</h4>
-                      <p className="text-blue-600 text-sm">
+                      <h4 className="font-semibold text-cyan-700 mb-2">Deadline:</h4>
+                      <p className="text-cyan-600 text-sm">
                         {format.deadline}
                       </p>
                     </div>
                     <div className="flex items-center">
-                      <div className="w-3 h-3 bg-blue-500 rounded-full"></div>
-                      <span className="ml-2 text-blue-600 text-sm">Active</span>
+                      <div className="w-3 h-3 bg-cyan-500 rounded-full"></div>
+                      <span className="ml-2 text-cyan-600 text-sm">Active</span>
                     </div>
                   </div>
                 </motion.div>
               ))}
             </div>
           </div>
-        </motion.div> */}
-
-        {/* Conduct Rules */}
-        {/* <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.8 }}
-          viewport={{ once: true }}
-          className="bg-white rounded-3xl shadow-2xl border border-gray-100 overflow-hidden mb-16"
-        >
-          <div className="bg-gradient-to-r from-green-600 to-emerald-600 px-8 py-6">
-            <h2 className="text-2xl md:text-3xl font-bold text-white flex items-center gap-4">
-              <div className="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center">
-                <Shield className="w-6 h-6" />
-              </div>
-              Conduct & Behavior Rules
-            </h2>
-          </div>
-          <div className="p-8">
-            <div className="grid md:grid-cols-2 gap-6">
-              {conductRules.map((rule, index) => (
-                <motion.div
-                  key={index}
-                  initial={{ opacity: 0, y: 20 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.4, delay: 0.9 + index * 0.1 }}
-                  viewport={{ once: true }}
-                  className="bg-green-50 border border-green-200 rounded-2xl p-6"
-                >
-                  <div className="flex items-start gap-4">
-                    <div className="w-12 h-12 bg-green-100 rounded-xl flex items-center justify-center flex-shrink-0">
-                      {rule.icon}
-                    </div>
-                    <div className="flex-1">
-                      <h3 className="text-lg font-bold text-green-800 mb-2">
-                        {rule.title}
-                      </h3>
-                      <p className="text-green-700 leading-relaxed">
-                        {rule.description}
-                      </p>
-                    </div>
-                  </div>
-                </motion.div>
-              ))}
-            </div>
-          </div>
-        </motion.div> */}
+        </motion.div>
 
         {/* Important Reminders */}
-        {/* <motion.div
+        <motion.div
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 1.0 }}
+          transition={{ duration: 0.6, delay: 1.4 }}
           viewport={{ once: true }}
           className="bg-gradient-to-r from-orange-50 to-red-50 border-2 border-orange-200 rounded-2xl p-8 mb-16"
         >
           <div className="flex items-start gap-4">
             <AlertTriangle className="w-8 h-8 text-orange-600 flex-shrink-0 mt-1" />
             <div>
-              <h3 className="text-xl font-bold text-orange-800 mb-3">Critical IPC Requirements</h3>
+              <h3 className="text-xl font-bold text-orange-800 mb-3">Critical IPC Requirements & Reminders</h3>
               <ul className="text-orange-700 space-y-2">
-                <li>• Laptop/tablet is MANDATORY - no exceptions</li>
-                <li>• Maintain complete access to all committee proceedings</li>
-                <li>• Coordinate with other IPC members for comprehensive coverage</li>
+                <li>• Laptop/tablet is MANDATORY for all journalists - no exceptions</li>
+                <li>• Press ID card must be visibly displayed at all times during sessions</li>
+                <li>• Committee access requires Chair/Presiding Officer approval</li>
+                <li>• Maintain strict neutrality - no personal, political, or national bias</li>
+                <li>• Minimum one report per assigned committee (journalists)</li>
+                <li>• Minimum 5 curated images daily, categorized (photographers)</li>
+                <li>• All images must be minimum 1080p resolution</li>
+                <li>• Cross-check all facts, quotes, and delegate names before submission</li>
+                <li>• No flash photography during speeches or debates</li>
+                <li>• Ask permission before close-up or backstage photography</li>
                 <li>• Submit all reports in the specified format and timeline</li>
-                <li>• Ensure all documentation meets professional journalism standards</li>
+                <li>• Disruptive behavior may lead to suspension of credentials</li>
                 <li>• Maintain backup of all work throughout the event</li>
               </ul>
             </div>
           </div>
-        </motion.div> */}
+        </motion.div>
 
         {/* Contact Information */}
-        {/* <motion.div
+        <motion.div
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 1.2 }}
+          transition={{ duration: 0.6, delay: 1.6 }}
           viewport={{ once: true }}
           className="bg-gradient-to-r from-purple-600 to-indigo-600 rounded-3xl p-8 text-white text-center"
         >
@@ -519,7 +740,7 @@ const IPCGuidelines = () => {
           </p>
           <div className="flex flex-col sm:flex-row items-center justify-center gap-6">
             <motion.a
-              href="mailto:contact@diimun2025.com"
+              href="mailto:dna@aghosh.in"
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
               className="flex items-center gap-3 bg-white/20 hover:bg-white/30 px-6 py-3 rounded-xl transition-all duration-300"
@@ -533,11 +754,11 @@ const IPCGuidelines = () => {
               whileTap={{ scale: 0.95 }}
               className="flex items-center gap-3 bg-white/20 hover:bg-white/30 px-6 py-3 rounded-xl transition-all duration-300"
             >
-              <Users className="w-5 h-5" />
+              <Mic className="w-5 h-5" />
               <span className="font-medium">Call Us</span>
             </motion.a>
           </div>
-        </motion.div> */}
+        </motion.div>
       </div>
       </div>
     </div>

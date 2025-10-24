@@ -178,20 +178,47 @@ export const COMMITTEES = {
   },
   ipc: {
     name: "International Press Corps (IPC)",
-    description: "Media coverage and reporting on all committee proceedings with journalistic integrity.",
+    description: "Media coverage and reporting on all committee proceedings with journalistic integrity, neutrality, and professionalism.",
+    coreResponsibilities: [
+      "Provide unbiased reports, editorials, and features",
+      "Capture visual narratives through photography",
+      "Uphold principles of journalistic integrity and neutrality"
+    ],
     requirements: [
-      "Laptop/tablet for essay writing and article writing (compulsory)",
-      "Camera (optional, for photography)",
+      "Press ID card (must be visibly displayed at all times)",
+      "Laptop/tablet for essay writing and article writing (compulsory for journalists)",
+      "Camera (optional, for photography - minimum 1080p resolution required)",
       "Basic stationery and research materials"
     ],
     skills: [
       "Journalistic writing",
       "Photography",
       "Essay writing",
-      "Interview techniques"
+      "Interview techniques",
+      "Fact-checking and verification",
+      "Neutral and unbiased reporting"
     ],
+    rulesAndRegulations: {
+      neutrality: "All journalists and photographers must maintain strict neutrality and refrain from expressing personal, political, or national bias in any form",
+      professionalDecorum: "Members of IP (International Press) shall behave respectfully toward all delegates, chairs, and organizers. Any disruptive behavior can lead to suspension of credentials",
+      identification: "Each journalist and photographer must carry their official press ID card visibly within committee sessions and during inter-committee movements",
+      committeeAccess: "Access is subject to Chair/Presiding Officer approval. Journalists may observe but not participate in debate or voting procedures. Recording devices must be used discreetly"
+    },
+    journalistGuidelines: {
+      dailyReporting: "Each journalist must submit at least one report summarizing the key events, motions, and debates of their assigned committee. Reports should include quotes, delegate stances, and committee mood — written in a neutral and engaging manner",
+      structureAndStyle: "All articles should follow clear structure: headline, introduction, context, discussion, conclusion. Use professional journalistic tone; avoid slang, exaggeration, or personal commentary",
+      accuracyAndVerification: "Cross-check all facts, quotes, and delegate names. Misinformation or misquoting will be treated as a serious violation",
+      sourcesAndCitations: "If external references are used, cite sources clearly. Do not plagiarize or copy content from existing media outlets"
+    },
+    photographerGuidelines: {
+      photoEthics: "Capture moments that reflect the essence of the debate, diplomacy, and diversity. Avoid photos that may demean, embarrass, or misrepresent delegates or staff",
+      equalRepresentation: "Ensure equal representation of all committees and delegates, not just popular ones",
+      qualityStandards: "Maintain high-quality images (minimum 1080p resolution). Avoid excessive filters or manipulative edits that distort context",
+      permissionAndConsent: "Ask for permission before close-up shots or backstage photography. Avoid flash photography during ongoing speeches or debates",
+      dailySubmissions: "Photographers must submit a minimum of 5 curated images daily, categorized (e.g., Committee, Break, Ceremony). Artistic or conceptual shots are encouraged for closing-day displays or media showcases, provided they adhere to UN ethics"
+    },
     special: {
-      access: "IPC delegates have access to all committee rooms for coverage",
+      access: "IPC delegates have access to all committee rooms for coverage, subject to Chair/Presiding Officer approval",
       format: "Articles need to be drafted digitally and NOT written on paper",
       submission: "Required to submit one document in PDF form/JPEG with allotted chest Numbers as file name",
       formatting: "The document shall be in TIMES NEW ROMAN, Size 12, Line Spacing: 1.15 and with word limit of 500-700 words",
@@ -309,12 +336,14 @@ export const REGISTRATION_REQUIREMENTS = {
   ipc: {
     title: "Special Requirements for International Press Corps (IPC) Members",
     items: [
-      "Press pass (will be provided at registration)",
-      "Laptop/tablet for essay writing and article writing (compulsory)",
-      "Camera (optional, for photography)",
-      "Recording devices (subject to approval by Executive Board)",
+      "Press pass (will be provided at registration - must be visibly displayed at all times)",
+      "Laptop/tablet for essay writing and article writing (compulsory for journalists)",
+      "Camera (optional, for photography - minimum 1080p resolution required)",
+      "Recording devices (subject to approval by Chair/Presiding Officer - must be used discreetly)",
       "Basic stationery (will be provided but reporters can bring according to their convenience)",
-      "Write up should be in PDF format"
+      "Write up should be in PDF format (Times New Roman, Size 12, Line Spacing 1.15, 500-700 words)",
+      "Journalists: Minimum one report per assigned committee required",
+      "Photographers: Minimum 5 curated images daily, categorized (Committee, Break, Ceremony)"
     ]
   },
   reporting: {
@@ -455,7 +484,7 @@ export const FAQ_CONTENT = [
   },
   {
     question: "What are the requirements for International Press Corps members?",
-    answer: "IPC members must have a laptop/tablet for essay writing and article writing (compulsory), camera (optional), and must submit articles in PDF format with specific formatting requirements (Times New Roman, Size 12, Line Spacing 1.15, 500-700 words)."
+    answer: "IPC members must maintain strict neutrality and uphold journalistic integrity. Requirements include: press ID card (visible at all times), laptop/tablet for journalists (compulsory), camera for photographers (minimum 1080p resolution). Journalists must submit minimum one report per assigned committee with proper structure and fact-checking. Photographers must submit minimum 5 curated images daily, categorized. Committee access requires Chair approval. All articles must follow formatting guidelines (Times New Roman, Size 12, Line Spacing 1.15, 500-700 words)."
   },
   {
     question: "Can I get a refund if I cancel my registration?",
