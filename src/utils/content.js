@@ -85,14 +85,15 @@ export const EVENT_SCHEDULE = {
 
 // Dress Code Guidelines
 export const DRESS_CODE = {
-  mandatory: "Formal Western Business Attire is MANDATORY for all participants",
+  mandatory: "Western Formals are preferred but not mandatory for all participants",
   male: {
     title: "Male Delegates",
     requirements: [
-      "Full formal suit with tie, OR",
+      "Western formals preferred: Full formal suit with tie, OR",
       "Formal shirt with tie, dress trousers, and formal shoes",
       "Blazer/coat (recommended)",
-      "Well-groomed appearance"
+      "Well-groomed appearance",
+      "Smart casual attire also acceptable"
     ],
     examples: [
       "Dark suit with white/light blue shirt and tie",
@@ -103,11 +104,12 @@ export const DRESS_CODE = {
   female: {
     title: "Female Delegates",
     requirements: [
-      "Formal pantsuit, OR",
+      "Western formals preferred: Formal pantsuit, OR",
       "Formal business dress/skirt suit, OR",
       "Formal saree with formal blouse",
       "Closed formal footwear",
-      "Professional grooming"
+      "Professional grooming",
+      "Smart casual attire also acceptable"
     ],
     examples: [
       "Business pantsuit with blouse",
@@ -116,14 +118,13 @@ export const DRESS_CODE = {
     ]
   },
   prohibited: [
-    "Casual wear including jeans",
-    "T-shirts and casual tops",
-    "Sneakers and casual footwear",
-    "Ethnic casual wear",
+    "Overly casual wear (athletic wear, pajamas)",
+    "T-shirts and tank tops",
+    "Sneakers and flip-flops",
     "Revealing or inappropriate clothing"
   ],
   special: {
-    note: "Traditional formal attire representing your assigned country is permitted but must maintain formal standards.",
+    note: "Traditional formal attire representing your assigned country is permitted. Smart casual attire is also acceptable for those who prefer it.",
     recognition: "There will be appreciation and recognition for BEST DRESSED DELEGATE."
   }
 }
@@ -403,7 +404,7 @@ export const MEALS = {
 export const TERMS_CONDITIONS = {
   registration: [
     "No registrations after 25th October 2025",
-    "No changes in committee and teams after 29th of October 2025"
+    "No changes in committee assignments after 29th of October 2025. Team changes for Great Assembly allowed until deadline."
   ],
   refunds: [
     "No refunds after 25th October 2025"
@@ -455,16 +456,20 @@ export const CONTACT_INFO = {
 // FAQ Content
 export const FAQ_CONTENT = [
   {
-    question: "What is the registration deadline for DIIMUN 2025?",
-    answer: "The registration deadline is October 25th, 2025. No registrations will be accepted after this date."
+    question: "Can I participate in both MUN and Esperanza events?",
+    answer: "Yes, it is possible to participate in both MUN and Esperanza events. For short paper presentations at Esperanza, prior notification should be made to the organizing committee so that separate time will be provided when the committee is in break for you to complete your paper presentation. Otherwise, you can always take your time with point of personal privilege, but normal MUN session would continue during that time."
   },
   {
-    question: "Can I change my committee or team after registration?",
-    answer: "No changes in committee and teams are allowed after October 29th, 2025. Please make your selection carefully during registration."
+    question: "Can I change my committee assignment after registration?",
+    answer: "No changes in committee assignments are allowed after October 29th, 2025. For Great Assembly teams, team changes are allowed until the deadline. Please make your selection carefully during registration."
+  },
+  {
+    question: "What is the team structure for different committees?",
+    answer: "WHO Committee: Single delegation (individual participation). Great Assembly: Team of 2 members. International Press Corps: Individual participation. Team details for Great Assembly will be collected after individual registration."
   },
   {
     question: "What is the dress code for the event?",
-    answer: "Formal Western Business Attire is MANDATORY for all participants. This includes formal suits with ties for male delegates and formal pantsuits or business dresses for female delegates. Traditional formal attire representing your assigned country is also permitted."
+    answer: "Western Formals are preferred but not mandatory for all participants. This includes formal suits with ties for male delegates and formal pantsuits or business dresses for female delegates. Smart casual attire is also acceptable. Traditional formal attire representing your assigned country is also permitted."
   },
   {
     question: "Are laptops and mobile phones allowed?",

@@ -13,6 +13,7 @@ import EventDetails from './components/EventDetails'
 import RegistrationForm from './components/RegistrationForm'
 import FAQ from './components/FAQ'
 import Footer from './components/Footer'
+import WhatsAppButton from './components/WhatsAppButton'
 import SEO from './components/common/SEO'
 import { ASSETS } from './utils/constants'
 
@@ -216,6 +217,7 @@ function App() {
         </motion.div>
       </AnimatePresence>
       <Footer onNavigate={navigateToPage} />
+      <WhatsAppButton />
     </div>
   )
 }

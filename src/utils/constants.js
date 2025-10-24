@@ -24,7 +24,7 @@ export const EVENT_INFO = {
   theme: 'Voice Your Opinions, Shape Healthcare\'s Future',
   targetAudience: 'Homoeopathy students & professionals',
   date: 'November 4th, 2025',
-  format: 'Team-based competition (2 members per team)',
+  format: 'WHO: Single delegation, Great Assembly: Team of 2',
   workshop: '3-day online workshop on "Art of Communication" - FREE for all participants',
   venue: 'GHMC Trivandrum, Kerala',
   registrationDeadline: 'October 25th, 2025',
@@ -156,7 +156,7 @@ export const BENEFITS = [
   {
     icon: 'Handshake',
     title: 'Team-Based Learning',
-    description: 'Collaborate with a partner in this comprehensive elocution cum debate competition.',
+    description: 'Collaborate with a partner in the Great Assembly or participate individually in WHO committee.',
     image: '/images/Team-Based Learning.webp',
     gradient: 'from-pink-600 to-rose-700'
   },
@@ -188,7 +188,7 @@ export const COMMITTEES = [
   },
   {
     title: 'International Press Corps (IPC)',
-    description: 'Serve as the official media coverage team with strict journalistic integrity and neutrality. Provide unbiased reports, capture visual narratives, and document committee proceedings. Journalists must submit minimum one report per committee with proper structure and fact-checking. Photographers must submit minimum 5 curated images daily (1080p resolution). Committee access subject to Chair approval.',
+    description: 'Serve as the official media coverage with strict journalistic integrity and neutrality. Provide unbiased reports, capture visual narratives, and document committee proceedings. Journalists must submit minimum one report per committee with proper structure and fact-checking. Photographers must submit minimum 5 curated images at event end (1080p resolution). Committee access subject to Chair approval.',
     icon: 'FileText',
     type: 'Media Committee',
     eligibility: 'Open to all medical students and professionals',
@@ -204,8 +204,8 @@ export const HIGHLIGHTS = [
     icon: 'Building',
   },
   {
-    title: 'Team-Based Competition',
-    description: 'Participate with a partner in this comprehensive elocution cum debate competition where you control the flow of the entire event.',
+    title: 'Mixed Competition Format',
+    description: 'WHO: Individual participation. Great Assembly: Team of 2. Participate in this comprehensive elocution cum debate competition where you control the flow of the entire event.',
     icon: 'Handshake',
   },
   {

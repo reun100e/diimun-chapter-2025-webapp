@@ -78,10 +78,10 @@ const IPCGuidelines = () => {
 
   const journalistGuidelines = [
     {
-      title: 'Daily Reporting',
-      description: 'Each journalist must submit at least one report summarizing the key events, motions, and debates of their assigned committee. Reports should include quotes, delegate stances, and committee mood — written in a neutral and engaging manner.',
+      title: 'Final Report Submission',
+      description: 'Each journalist must submit one comprehensive report summarizing the key events, motions, and debates of their assigned committee. The report should include quotes, delegate stances, and committee mood — written in a neutral and engaging manner.',
       requirements: [
-        'Minimum one report per assigned committee',
+        'One final report per assigned committee (due around 4 PM)',
         'Include key events, motions, and debates',
         'Add quotes and delegate stances',
         'Capture committee mood and atmosphere',
@@ -145,8 +145,8 @@ const IPCGuidelines = () => {
       icon: <AlertTriangle className="w-5 h-5" />
     },
     {
-      title: 'Daily Submissions',
-      description: 'Photographers must submit a minimum of 5 curated images daily, categorized (e.g., Committee, Break, Ceremony). Artistic or conceptual shots are encouraged for closing-day displays or media showcases, provided they adhere to UN ethics.',
+      title: 'Final Photo Submission',
+      description: 'Photographers must submit a minimum of 5 curated images at the end of the event, categorized (e.g., Committee, Break, Ceremony). Artistic or conceptual shots are encouraged for closing-day displays or media showcases, provided they adhere to UN ethics.',
       icon: <FileText className="w-5 h-5" />
     }
   ]
@@ -154,8 +154,8 @@ const IPCGuidelines = () => {
   const dressCodeRequirements = [
     {
       title: 'Professional Media Attire',
-      description: 'Formal business attire appropriate for media professionals covering international events',
-      type: 'mandatory'
+      description: 'Western formals preferred but not mandatory. Smart casual attire also acceptable for media professionals covering international events',
+      type: 'recommended'
     },
     {
       title: 'Press Badge Display',
@@ -209,22 +209,10 @@ const IPCGuidelines = () => {
 
   const reportingFormats = [
     {
-      title: 'Live Updates',
-      description: 'Real-time updates during committee sessions',
-      format: 'Short posts, bullet points, key quotes',
-      deadline: 'During sessions'
-    },
-    {
-      title: 'Session Reports',
-      description: 'Comprehensive reports after each committee session',
-      format: 'Detailed written reports with photos',
-      deadline: 'Within 30 minutes of session end'
-    },
-    {
-      title: 'Final Summary',
-      description: 'Complete coverage summary of all proceedings',
-      format: 'Comprehensive report with multimedia elements',
-      deadline: 'End of event day'
+      title: 'Final Report',
+      description: 'Comprehensive report covering all committee proceedings',
+      format: 'Detailed written report with photos',
+      deadline: 'Around 4 PM (end of committee sessions)'
     }
   ]
 
@@ -710,8 +698,8 @@ const IPCGuidelines = () => {
                 <li>• Press ID card must be visibly displayed at all times during sessions</li>
                 <li>• Committee access requires Chair/Presiding Officer approval</li>
                 <li>• Maintain strict neutrality - no personal, political, or national bias</li>
-                <li>• Minimum one report per assigned committee (journalists)</li>
-                <li>• Minimum 5 curated images daily, categorized (photographers)</li>
+                <li>• One final report per assigned committee (journalists) - due around 4 PM</li>
+                <li>• Minimum 5 curated images at event end, categorized (photographers)</li>
                 <li>• All images must be minimum 1080p resolution</li>
                 <li>• Cross-check all facts, quotes, and delegate names before submission</li>
                 <li>• No flash photography during speeches or debates</li>

@@ -775,7 +775,7 @@ const RegistrationForm = () => {
 
                                                     {/* Footer */}
                                                     <div className="border-t border-white/20 pt-4">
-                                                        <p className="text-gray-200 text-sm font-medium">Team of 2</p>
+                                                        <p className="text-gray-200 text-sm font-medium">Single Delegation</p>
                                                     </div>
                                                 </div>
                                             </div>
@@ -831,14 +831,14 @@ const RegistrationForm = () => {
                                             </div>
                                         </div>
                                         
-                                        {/* Common Team Information */}
+                                        {/* Committee Information */}
                                         <div className="mt-6 bg-blue-50 border-2 border-blue-200 rounded-xl p-4">
                                             <div className="flex items-start gap-3">
                                                 <Info className="w-5 h-5 text-blue-600 flex-shrink-0 mt-0.5" />
                                                 <div>
-                                                    <p className="text-blue-800 font-semibold mb-1">Team Registration Process</p>
+                                                    <p className="text-blue-800 font-semibold mb-1">Committee Assignment Process</p>
                                                     <p className="text-blue-700 text-sm">
-                                                        Team details will be collected later in the WhatsApp group after each member registers individually.
+                                                        WHO: Single delegation. Great Assembly: Team of 2. Committee assignments will be confirmed after registration. Team details for Great Assembly will be collected later in the WhatsApp group.
                                                     </p>
                                                 </div>
                                             </div>

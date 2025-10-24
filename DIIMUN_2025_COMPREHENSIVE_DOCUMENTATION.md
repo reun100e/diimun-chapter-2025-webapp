@@ -18,7 +18,7 @@
 - **Collaboration**: ESPERANZA 4.0 Exclusive
 - **Date**: November 4th, 2025
 - **Venue**: GHMC Trivandrum
-- **Format**: Team-based competition (2 members per team)
+- **Format**: WHO: Single delegation, Great Assembly: Team of 2
 
 ### Event Theme
 "A comprehensive elocution cum debate competition where you embody legendary homoeopathic stalwarts and shape the future of healthcare discourse."

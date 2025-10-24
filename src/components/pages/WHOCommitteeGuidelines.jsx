@@ -31,9 +31,9 @@ const WHOCommitteeGuidelines = () => {
   }, [])
   const dressCodeRequirements = [
     {
-      title: 'Formal Western Business Attire',
-      description: 'Complete formal suit with tie for male delegates, formal pantsuit or business dress for female delegates',
-      type: 'mandatory'
+      title: 'Western Formals Preferred',
+      description: 'Western formals preferred but not mandatory. Complete formal suit with tie for male delegates, formal pantsuit or business dress for female delegates. Smart casual attire also acceptable.',
+      type: 'recommended'
     },
     {
       title: 'Professional Grooming',

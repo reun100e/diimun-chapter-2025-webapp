@@ -127,7 +127,7 @@ Winners announced and prized awarded at the conclusion session at the seminar st
 TERMS AND CONDITIONS
 No registrations after 25th October 2025
 No refunds after 25th October 2025
-No changes in committee and teams after 29th of October
+No changes in committee assignments after 29th of October
 The Fee only includes Participation along with food and refreshments alone. Travel and stay are not included
 By agreeing you also agree to be notified about the event via mail, whatsapp, calls from DNA and to be notified about the further events conducted by DNA
 You also agree that you participate by will and not as forced by any person or institutional body

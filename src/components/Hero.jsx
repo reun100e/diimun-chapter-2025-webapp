@@ -233,7 +233,7 @@ const Hero = () => {
                 compact={true}
               />
               <span className="text-gold-300/60">•</span>
-              <span className="font-medium text-copper-300/90">Limited Seats</span>
+              <span className="font-medium text-copper-300/90">Early bird registrations closed</span>
             </motion.div>
           </motion.div>
 

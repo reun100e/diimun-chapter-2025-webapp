@@ -20,11 +20,11 @@ const Terms = () => {
         },
         {
           subtitle: '2.2 Individual Registration',
-          content: 'Each team member must register separately through the official registration portal. Team details will be collected at a later stage.'
+          content: 'Each participant must register individually through the official registration portal. WHO: Individual participation. Great Assembly: Team of 2 (team details collected after individual registration). Committee assignments will be confirmed after registration.'
         },
         {
-          subtitle: '2.3 Team Changes',
-          content: 'No changes in committee assignments or team composition will be permitted after October 29th, 2025.'
+          subtitle: '2.3 Committee Changes',
+          content: 'No changes in committee assignments will be permitted after October 29th, 2025. For Great Assembly teams, team changes are allowed until the deadline.'
         },
         {
           subtitle: '2.4 Registration Confirmation',
@@ -68,7 +68,7 @@ const Terms = () => {
         },
         {
           subtitle: '4.2 Dress Code',
-          content: 'Formal Western Business Attire is mandatory for all participants throughout the event. Casual wear will not be permitted.'
+          content: 'Western Formals are preferred but not mandatory for all participants throughout the event. Smart casual attire is also acceptable. Overly casual wear (athletic wear, pajamas) will not be permitted.'
         },
         {
           subtitle: '4.3 Code of Conduct',
