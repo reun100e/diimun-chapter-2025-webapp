@@ -232,8 +232,9 @@ const RegistrationForm = () => {
     const handleUPIPayment = () => {
         copyUPI(); // Still copy the ID first
         const amount = formData.hasRegisteredEsperanza === 'yes' ? '347' : '499';
-        const transactionNote = `DIIMUN 2025 Registration - ${formData.name || 'Participant'}`;
-        const upiUrl = `upi://pay?pa=${upiId}&pn=${encodeURIComponent('Aghosh B Prasad')}&am=${amount}&cu=INR&tn=${encodeURIComponent(transactionNote)}`;
+        // Use a simpler, shorter transaction note to avoid URL encoding issues
+        const transactionNote = 'DIIMUN 2025 Reg';
+        const upiUrl = `upi://pay?pa=${upiId}&pn=${encodeURIComponent('Aghosh B Prasad')}&am=${amount}&cu=INR&tn=${transactionNote}`;
         
         setTimeout(() => {
             window.location.href = upiUrl;
