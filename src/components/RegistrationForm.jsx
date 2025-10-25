@@ -228,19 +228,6 @@ const RegistrationForm = () => {
         }
     };
 
-    // Updated handleUPIPayment for non-iOS devices
-    const handleUPIPayment = () => {
-        copyUPI(); // Still copy the ID first
-        const amount = formData.hasRegisteredEsperanza === 'yes' ? '347' : '499';
-        // Use a simpler, shorter transaction note to avoid URL encoding issues
-        const transactionNote = 'DIIMUN 2025 Reg';
-        const upiUrl = `upi://pay?pa=${upiId}&pn=${encodeURIComponent('Aghosh B Prasad')}&am=${amount}&cu=INR&tn=${transactionNote}`;
-        
-        setTimeout(() => {
-            window.location.href = upiUrl;
-        }, 500);
-    };
-
     // Custom year dropdown handler
     const handleYearSelect = (value) => {
         setFormData(prev => ({
@@ -1188,10 +1175,10 @@ const RegistrationForm = () => {
                                                     <p className="font-mono font-bold text-base break-all text-gray-800">{upiId}</p>
                                                 </div>
 
-                                                {/* Pay Now Button */}
+                                                {/* Copy UPI ID Button */}
                                                 <button
                                                     type="button"
-                                                    onClick={handleUPIPayment}
+                                                    onClick={copyUPI}
                                                     className={`w-full py-4 px-6 rounded-xl font-bold text-lg transition-all duration-300 flex items-center justify-center gap-3 shadow-lg hover:shadow-xl ${
                                                         copiedUPI 
                                                             ? 'bg-green-500 text-white' 
@@ -1201,15 +1188,20 @@ const RegistrationForm = () => {
                                                     {copiedUPI ? (
                                                         <>
                                                             <Check className="w-5 h-5" />
-                                                            <span>Payment App Opening...</span>
+                                                            <span>UPI ID Copied!</span>
                                                         </>
                                                     ) : (
                                                         <>
                                                             <Copy className="w-5 h-5" />
-                                                            <span>Pay ₹{formData.hasRegisteredEsperanza === 'yes' ? '347' : '499'} Now</span>
+                                                            <span>Copy UPI ID & Pay ₹{formData.hasRegisteredEsperanza === 'yes' ? '347' : '499'}</span>
                                                         </>
                                                     )}
                                                 </button>
+                                                
+                                                {/* Helpful instruction */}
+                                                <p className="text-center text-gray-600 text-sm mt-3">
+                                                    Paste the UPI ID in your payment app and enter the amount manually
+                                                </p>
                                             </div>
                                             {/* ====== END UNIVERSAL UI ====== */}
 
