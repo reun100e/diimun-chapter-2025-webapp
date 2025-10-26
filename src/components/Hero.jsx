@@ -229,7 +229,7 @@ const Hero = () => {
             >
               <Clock className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-gold-400/80" />
               <CountdownTimer 
-                targetDate="2025-10-25T17:00:00+05:30"
+                targetDate="2025-10-28T17:00:00+05:30"
                 compact={true}
               />
               <span className="text-gold-300/60">•</span>
