@@ -209,7 +209,7 @@ const Hero = () => {
             </motion.div> */}
           </motion.div>
 
-          {/* Minimal Urgency Ribbon - Above Register Button */}
+          {/* Registration Status Ribbon - Above Register Button */}
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
@@ -225,15 +225,21 @@ const Hero = () => {
                 repeat: Infinity, 
                 ease: 'easeInOut' 
               }}
-              className="flex items-center justify-center gap-2 text-pearl-200/90 text-xs sm:text-sm"
+              className="flex flex-col sm:flex-row items-center justify-center gap-2 text-pearl-200/90 text-xs sm:text-sm"
             >
-              <Clock className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-gold-400/80" />
-              <CountdownTimer 
-                targetDate="2025-10-28T17:00:00+05:30"
-                compact={true}
-              />
-              <span className="text-gold-300/60">•</span>
-              <span className="font-medium text-copper-300/90">Early bird registrations closed</span>
+              <div className="flex items-center gap-2">
+                <Clock className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-gold-400/80" />
+                <CountdownTimer 
+                  targetDate="2025-10-30T17:00:00+05:30"
+                  compact={true}
+                />
+              </div>
+              <span className="text-gold-300/60 hidden sm:inline">•</span>
+              <div className="flex items-center gap-2">
+                <span className="font-medium text-green-300/90">WHO & IPC registrations open</span>
+                <span className="text-gold-300/60">•</span>
+                <span className="font-medium text-red-300/90">Great Assembly closed</span>
+              </div>
             </motion.div>
           </motion.div>
 
@@ -253,7 +259,7 @@ const Hero = () => {
               <div className="absolute inset-0 bg-gradient-to-r from-emerald-400 via-teal-400 to-cyan-400 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
               <span className="relative z-10 flex items-center justify-center gap-3">
                 <Target className="w-6 h-6 group-hover:rotate-12 transition-transform duration-300" />
-                <span>Register Now</span>
+                <span>Register for WHO / IPC</span>
               </span>
               <div className="absolute inset-0 rounded-2xl bg-gradient-to-r from-white/0 via-white/10 to-white/0 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700"></div>
             </motion.button>
@@ -266,7 +272,7 @@ const Hero = () => {
               <div className="absolute inset-0 bg-gradient-to-r from-white/0 via-white/10 to-white/20 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
               <span className="relative z-10 flex items-center justify-center gap-3">
                 <BookOpen className="w-6 h-6 group-hover:rotate-12 transition-transform duration-300" />
-                <span>Choose Committee</span>
+                <span>View Available Options</span>
               </span>
             </motion.button>
 

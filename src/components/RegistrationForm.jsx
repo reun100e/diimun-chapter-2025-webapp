@@ -680,7 +680,7 @@ const RegistrationForm = () => {
                             >
                                 <BsPerson className="w-12 h-12 mx-auto text-blue-500 mb-4" />
                                 <h3 className="text-xl font-bold text-gray-800">Register as a Delegate</h3>
-                                <p className="text-gray-600 mt-1">Participate in WHO or The Assembly of Homoeopathy.</p>
+                                <p className="text-gray-600 mt-1">Participate in WHO Committee (Great Assembly registration closed).</p>
                             </div>
                             {/* IP Path */}
                             <div
@@ -768,13 +768,9 @@ const RegistrationForm = () => {
                                                 </div>
                                             </div>
 
-                                            {/* Assembly of Homoeopathy */}
+                                            {/* Assembly of Homoeopathy - CLOSED */}
                                             <div
-                                                onClick={() => handlePreferenceChange('The Assembly of Homoeopathy')}
-                                                className={`group cursor-pointer relative overflow-hidden rounded-3xl shadow-2xl hover:shadow-3xl transition-all duration-500 ${formData.committee_preference === 'The Assembly of Homoeopathy'
-                                                        ? 'ring-4 ring-green-400 scale-105 shadow-green-200'
-                                                        : 'hover:scale-105'
-                                                    }`}
+                                                className="group cursor-pointer relative overflow-hidden rounded-3xl shadow-2xl transition-all duration-500 opacity-60 cursor-not-allowed"
                                             >
                                                 {/* Background Image */}
                                                 <div className="absolute inset-0 opacity-15 group-hover:opacity-20 transition-opacity duration-500">
@@ -797,13 +793,13 @@ const RegistrationForm = () => {
                                                     {/* Header */}
                                                     <div>
                                                         {/* Committee Type Badge */}
-                                                        <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full text-sm font-semibold mb-6 bg-cognac-600/90 text-white backdrop-blur-sm">
+                                                        <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full text-sm font-semibold mb-6 bg-red-600/90 text-white backdrop-blur-sm">
                                                             <Award className="w-4 h-4" />
-                                                            Exclusive Committee
+                                                            Registration Closed
                                                         </div>
 
                                                         {/* Title */}
-                                                        <h4 className="text-2xl font-bold mb-6 leading-tight group-hover:text-white transition-colors duration-300">
+                                                        <h4 className="text-2xl font-bold mb-6 leading-tight text-white">
                                                             The Great Homoeopathic Assembly
                                                         </h4>
                                                     </div>
@@ -811,8 +807,8 @@ const RegistrationForm = () => {
                                                     {/* Footer */}
                                                     <div className="border-t border-white/20 pt-4">
                                                         <p className="text-gray-200 mb-2 text-sm font-medium">Team of 2</p>
-                                                        <div className="bg-yellow-100/20 border border-yellow-300/30 text-yellow-200 p-3 rounded-lg text-xs leading-relaxed">
-                                                            <strong>Note:</strong> Limited slots. Allotment on first come first serve basis. Excess registrations will be automatically allotted to WHO.
+                                                        <div className="bg-red-100/20 border border-red-900/30 text-red-900 p-3 rounded-lg text-xs leading-relaxed">
+                                                            <strong>Registration Closed:</strong> All slots for The Great Homoeopathic Assembly have been filled. Please select WHO Committee instead.
                                                         </div>
                                                     </div>
                                                 </div>
@@ -820,17 +816,17 @@ const RegistrationForm = () => {
                                         </div>
                                         
                                         {/* Committee Information */}
-                                        <div className="mt-6 bg-blue-50 border-2 border-blue-200 rounded-xl p-4">
+                                        {/* <div className="mt-6 bg-blue-50 border-2 border-blue-200 rounded-xl p-4">
                                             <div className="flex items-start gap-3">
                                                 <Info className="w-5 h-5 text-blue-600 flex-shrink-0 mt-0.5" />
                                                 <div>
-                                                    <p className="text-blue-800 font-semibold mb-1">Committee Assignment Process</p>
+                                                    <p className="text-blue-800 font-semibold mb-1">Available Registration Options</p>
                                                     <p className="text-blue-700 text-sm">
-                                                        WHO: Single delegation. Great Assembly: Team of 2. Committee assignments will be confirmed after registration. Team details for Great Assembly will be collected later in the WhatsApp group.
+                                                        <strong>WHO Committee:</strong> Single delegation - Registration is open. <strong>Great Assembly:</strong> Registration is closed as all slots have been filled.
                                                     </p>
                                                 </div>
                                             </div>
-                                        </div>
+                                        </div> */}
                                         </>
                                     )}
                                     {/* CONDITIONAL: International Press Options */}
