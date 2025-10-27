@@ -272,7 +272,7 @@ const Hero = () => {
               <div className="absolute inset-0 bg-gradient-to-r from-white/0 via-white/10 to-white/20 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
               <span className="relative z-10 flex items-center justify-center gap-3">
                 <BookOpen className="w-6 h-6 group-hover:rotate-12 transition-transform duration-300" />
-                <span>View Available Options</span>
+                <span>Learn More</span>
               </span>
             </motion.button>
 
