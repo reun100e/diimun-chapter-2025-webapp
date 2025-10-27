@@ -259,20 +259,20 @@ const Hero = () => {
               <div className="absolute inset-0 bg-gradient-to-r from-emerald-400 via-teal-400 to-cyan-400 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
               <span className="relative z-10 flex items-center justify-center gap-3">
                 <Target className="w-6 h-6 group-hover:rotate-12 transition-transform duration-300" />
-                <span>Register for WHO / IPC</span>
+                <span>Register Now</span>
               </span>
               <div className="absolute inset-0 rounded-2xl bg-gradient-to-r from-white/0 via-white/10 to-white/0 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700"></div>
             </motion.button>
             <motion.button
               whileHover={{ scale: 1.05, y: -3 }}
               whileTap={{ scale: 0.95 }}
-              onClick={() => smoothScrollTo('#highlights', 100)}
+              onClick={() => smoothScrollTo('#details', 100)}
               className="group relative overflow-hidden border-2 border-white/30 text-pearl-100 hover:text-white font-semibold py-4 px-10 rounded-2xl transition-all duration-500 transform hover:scale-105 shadow-lg hover:shadow-white/10 text-lg min-w-[280px] backdrop-blur-sm"
             >
               <div className="absolute inset-0 bg-gradient-to-r from-white/0 via-white/10 to-white/20 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
               <span className="relative z-10 flex items-center justify-center gap-3">
                 <BookOpen className="w-6 h-6 group-hover:rotate-12 transition-transform duration-300" />
-                <span>Learn More</span>
+                <span>Event Guidelines</span>
               </span>
             </motion.button>
 

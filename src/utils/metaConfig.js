@@ -47,11 +47,11 @@ export const META_CONFIG = {
     keywords: 'Great Homoeopathic Assembly, homoeopathy debate, medical assembly, committee guidelines, homoeopathic medicine'
   },
   'ipc-guidelines': {
-    title: 'International Press Corps Guidelines - DIIMUN 2025',
-    description: 'Complete guide for International Press Corps members at DIIMUN 2025. Learn about essay writing, photography requirements, submission deadlines, and evaluation criteria.',
+    title: 'IPC Guidelines: Essay & Photography Competitions | DIIMUN Esperanza 4.0',
+    description: 'Join our Essay Competition (₹1,000 prize) or Photography Competition (₹1,000 prize) at DIIMUN 2025. No MUN experience needed - perfect for homoeo students! Complete guidelines for reporters and photojournalists.',
     image: '/images/IPC.webp',
     url: `${BASE_URL}/ipc-guidelines`,
-    keywords: 'International Press Corps, IPC guidelines, MUN journalism, press corps, photography, essay writing'
+    keywords: 'Essay Competition, Photography Competition, IPC guidelines, DIIMUN Esperanza 4.0, homoeopathy students, journalism, press corps'
   },
   'ipc-submission': {
     title: 'IPC Submission Portal - DIIMUN 2025 | Submit Your Work',

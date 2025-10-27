@@ -670,18 +670,6 @@ const RegistrationForm = () => {
                             </p>
                         </div>
                         <div className="p-8 grid md:grid-cols-2 gap-6">
-                            {/* Delegate Path */}
-                            <div
-                                onClick={() => handlePathChange('delegate')}
-                                className={`cursor-pointer rounded-2xl border-4 p-6 text-center transition-all duration-300 hover:scale-[1.02] ${registrationPath === 'delegate'
-                                        ? 'border-blue-500 bg-gradient-to-r from-blue-50 to-indigo-50 scale-105 shadow-2xl ring-4 ring-blue-100'
-                                        : 'border-gray-200 hover:border-blue-300 hover:bg-gradient-to-r hover:from-gray-50 hover:to-blue-50'
-                                    }`}
-                            >
-                                <BsPerson className="w-12 h-12 mx-auto text-blue-500 mb-4" />
-                                <h3 className="text-xl font-bold text-gray-800">Register as a Delegate</h3>
-                                <p className="text-gray-600 mt-1">Participate in WHO Committee (Great Assembly registration closed).</p>
-                            </div>
                             {/* IP Path */}
                             <div
                                 onClick={() => handlePathChange('ip')}
@@ -693,6 +681,18 @@ const RegistrationForm = () => {
                                 <Camera className="w-12 h-12 mx-auto text-teal-500 mb-4" />
                                 <h3 className="text-xl font-bold text-gray-800">Join International Press</h3>
                                 <p className="text-gray-600 mt-1">Participate as a Photographer or Essayist.</p>
+                            </div>
+                            {/* Delegate Path */}
+                            <div
+                                onClick={() => handlePathChange('delegate')}
+                                className={`cursor-pointer rounded-2xl border-4 p-6 text-center transition-all duration-300 hover:scale-[1.02] ${registrationPath === 'delegate'
+                                        ? 'border-blue-500 bg-gradient-to-r from-blue-50 to-indigo-50 scale-105 shadow-2xl ring-4 ring-blue-100'
+                                        : 'border-gray-200 hover:border-blue-300 hover:bg-gradient-to-r hover:from-gray-50 hover:to-blue-50'
+                                    }`}
+                            >
+                                <BsPerson className="w-12 h-12 mx-auto text-blue-500 mb-4" />
+                                <h3 className="text-xl font-bold text-gray-800">Register as a Delegate</h3>
+                                <p className="text-gray-600 mt-1">Participate in WHO Committee (Great Assembly registration closed).</p>
                             </div>
                         </div>
                     </div>

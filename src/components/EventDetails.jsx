@@ -36,6 +36,54 @@ const EventDetails = () => {
           className="mb-16"
         >
           <div className="grid md:grid-cols-3 gap-6">
+
+            {/* IPC */}
+            <motion.div
+              whileHover={{ y: -8, scale: 1.02 }}
+              className="group cursor-pointer relative overflow-hidden rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-500"
+              onClick={() => window.location.href = '/ipc-guidelines'}
+            >
+              {/* Background Image */}
+              <div className="absolute inset-0 opacity-15 group-hover:opacity-20 transition-opacity duration-500">
+                <img 
+                  src={ASSETS.ipcImage} 
+                  alt="IPC Background" 
+                  className="w-full h-full object-cover"
+                />
+              </div>
+
+              {/* Gradient Overlay */}
+              <div className="absolute inset-0 bg-gradient-to-br from-purple-900/80 via-purple-800/70 to-purple-900/80 group-hover:from-purple-900/60 group-hover:via-purple-800/50 group-hover:to-purple-900/60 transition-all duration-500"></div>
+
+              {/* Content */}
+              <div className="relative z-10 p-6 text-white min-h-[220px] flex flex-col justify-between">
+                <div>
+                  <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-semibold mb-4 bg-purple-600/90 backdrop-blur-sm">
+                    <FileText className="w-3 h-3" />
+                    Media Committee
+                  </div>
+                  <h4 className="text-xl font-bold mb-2 group-hover:text-white transition-colors">International Press Corps</h4>
+                  <p className="text-gray-200 text-sm leading-relaxed mb-4">
+                    Media coverage & documentation
+                  </p>
+                </div>
+                
+                {/* Clear CTA Button */}
+                <motion.div
+                  whileHover={{ x: 5 }}
+                  className="mt-4 inline-flex items-center gap-2 text-sm font-semibold text-white bg-white/10 hover:bg-white/20 px-4 py-2 rounded-lg border border-white/20 transition-all duration-300"
+                >
+                  <span>View Guidelines</span>
+                  <motion.span
+                    animate={{ x: [0, 4, 0] }}
+                    transition={{ duration: 1.5, repeat: Infinity }}
+                  >
+                    →
+                  </motion.span>
+                </motion.div>
+              </div>
+            </motion.div>
+            
             {/* WHO Committee */}
             <motion.div
               whileHover={{ y: -8, scale: 1.02 }}
@@ -130,52 +178,6 @@ const EventDetails = () => {
               </div>
             </motion.div>
 
-            {/* IPC */}
-            <motion.div
-              whileHover={{ y: -8, scale: 1.02 }}
-              className="group cursor-pointer relative overflow-hidden rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-500"
-              onClick={() => window.location.href = '/ipc-guidelines'}
-            >
-              {/* Background Image */}
-              <div className="absolute inset-0 opacity-15 group-hover:opacity-20 transition-opacity duration-500">
-                <img 
-                  src={ASSETS.ipcImage} 
-                  alt="IPC Background" 
-                  className="w-full h-full object-cover"
-                />
-              </div>
-
-              {/* Gradient Overlay */}
-              <div className="absolute inset-0 bg-gradient-to-br from-purple-900/80 via-purple-800/70 to-purple-900/80 group-hover:from-purple-900/60 group-hover:via-purple-800/50 group-hover:to-purple-900/60 transition-all duration-500"></div>
-
-              {/* Content */}
-              <div className="relative z-10 p-6 text-white min-h-[220px] flex flex-col justify-between">
-                <div>
-                  <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-semibold mb-4 bg-purple-600/90 backdrop-blur-sm">
-                    <FileText className="w-3 h-3" />
-                    Media Committee
-                  </div>
-                  <h4 className="text-xl font-bold mb-2 group-hover:text-white transition-colors">International Press Corps</h4>
-                  <p className="text-gray-200 text-sm leading-relaxed mb-4">
-                    Media coverage & documentation
-                  </p>
-                </div>
-                
-                {/* Clear CTA Button */}
-                <motion.div
-                  whileHover={{ x: 5 }}
-                  className="mt-4 inline-flex items-center gap-2 text-sm font-semibold text-white bg-white/10 hover:bg-white/20 px-4 py-2 rounded-lg border border-white/20 transition-all duration-300"
-                >
-                  <span>View Guidelines</span>
-                  <motion.span
-                    animate={{ x: [0, 4, 0] }}
-                    transition={{ duration: 1.5, repeat: Infinity }}
-                  >
-                    →
-                  </motion.span>
-                </motion.div>
-              </div>
-            </motion.div>
           </div>
         </motion.div>
 
