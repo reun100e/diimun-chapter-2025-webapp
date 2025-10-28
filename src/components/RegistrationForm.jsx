@@ -692,7 +692,7 @@ const RegistrationForm = () => {
                             >
                                 <BsPerson className="w-12 h-12 mx-auto text-blue-500 mb-4" />
                                 <h3 className="text-xl font-bold text-gray-800">Register as a Delegate</h3>
-                                <p className="text-gray-600 mt-1">Participate in WHO Committee (Great Assembly registration closed).</p>
+                                <p className="text-gray-600 mt-1">Participate in The Great Homoeopathic Assembly (WHO registration closed).</p>
                             </div>
                         </div>
                     </div>
@@ -721,56 +721,14 @@ const RegistrationForm = () => {
                                     {registrationPath === 'delegate' && (
                                         <>
                                         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                                            {/* WHO Committee */}
+
+                                            {/* Assembly of Homoeopathy */}
                                             <div
-                                                onClick={() => handlePreferenceChange('WHO')}
-                                                className={`group cursor-pointer relative overflow-hidden rounded-3xl shadow-2xl hover:shadow-3xl transition-all duration-500 ${formData.committee_preference === 'WHO'
+                                                onClick={() => handlePreferenceChange('The Assembly of Homoeopathy')}
+                                                className={`group cursor-pointer relative overflow-hidden rounded-3xl shadow-2xl hover:shadow-3xl transition-all duration-500 ${formData.committee_preference === 'The Assembly of Homoeopathy'
                                                         ? 'ring-4 ring-green-400 scale-105 shadow-green-200'
                                                         : 'hover:scale-105'
                                                     }`}
-                                            >
-                                                {/* Background Image */}
-                                                <div className="absolute inset-0 opacity-15 group-hover:opacity-20 transition-opacity duration-500">
-                                                    <img 
-                                                        src={ASSETS.whoLogo}  
-                                                        alt="WHO Background" 
-                                                        className="w-full h-full object-cover filter"
-                                                    />
-                                                </div>
-
-                                                {/* Gradient Overlay */}
-                                                <div className={`absolute inset-0 bg-gradient-to-br opacity-80 group-hover:opacity-60 transition-all duration-500 ${
-                                                    formData.committee_preference === 'WHO'
-                                                        ? 'from-blue-900/80 via-blue-800/70 to-blue-900/80'
-                                                        : 'from-midnight-900/80 via-midnight-800/70 to-midnight-900/80 group-hover:from-midnight-900/60 group-hover:via-midnight-800/50 group-hover:to-midnight-900/60'
-                                                }`}></div>
-
-                                                {/* Content */}
-                                                <div className="relative z-10 p-8 text-white min-h-[50px] flex flex-col justify-between">
-                                                    {/* Header */}
-                                                    <div>
-                                                        {/* Committee Type Badge */}
-                                                        <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full text-sm font-semibold mb-6 bg-midnight-600/90 text-white backdrop-blur-sm">
-                                                            <Users className="w-4 h-4" />
-                                                            General Committee
-                                                        </div>
-
-                                                        {/* Title */}
-                                                        <h4 className="text-2xl font-bold mb-6 leading-tight group-hover:text-white transition-colors duration-300">
-                                                            World Health Organization (WHO)
-                                                        </h4>
-                                                    </div>
-
-                                                    {/* Footer */}
-                                                    <div className="border-t border-white/20 pt-4">
-                                                        <p className="text-gray-200 text-sm font-medium">Single Delegation</p>
-                                                    </div>
-                                                </div>
-                                            </div>
-
-                                            {/* Assembly of Homoeopathy - CLOSED */}
-                                            <div
-                                                className="group cursor-pointer relative overflow-hidden rounded-3xl shadow-2xl transition-all duration-500 opacity-60 cursor-not-allowed"
                                             >
                                                 {/* Background Image */}
                                                 <div className="absolute inset-0 opacity-15 group-hover:opacity-20 transition-opacity duration-500">
@@ -793,13 +751,13 @@ const RegistrationForm = () => {
                                                     {/* Header */}
                                                     <div>
                                                         {/* Committee Type Badge */}
-                                                        <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full text-sm font-semibold mb-6 bg-red-600/90 text-white backdrop-blur-sm">
+                                                        <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full text-sm font-semibold mb-6 bg-cognac-600/90 text-white backdrop-blur-sm">
                                                             <Award className="w-4 h-4" />
-                                                            Registration Closed
+                                                            Exclusive Committee
                                                         </div>
 
                                                         {/* Title */}
-                                                        <h4 className="text-2xl font-bold mb-6 leading-tight text-white">
+                                                        <h4 className="text-2xl font-bold mb-6 leading-tight group-hover:text-white transition-colors duration-300">
                                                             The Great Homoeopathic Assembly
                                                         </h4>
                                                     </div>
@@ -807,8 +765,49 @@ const RegistrationForm = () => {
                                                     {/* Footer */}
                                                     <div className="border-t border-white/20 pt-4">
                                                         <p className="text-gray-200 mb-2 text-sm font-medium">Team of 2</p>
+                                                        <div className="bg-yellow-100/20 border border-yellow-300/30 text-yellow-200 p-3 rounded-lg text-xs leading-relaxed">
+                                                            <strong>Note:</strong> Limited slots. Allotment on first come first serve basis. Excess registrations will be automatically allotted to other committees.
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            {/* WHO Committee - CLOSED */}
+                                            <div
+                                                className="group cursor-pointer relative overflow-hidden rounded-3xl shadow-2xl transition-all duration-500 opacity-60 cursor-not-allowed"
+                                            >
+                                                {/* Background Image */}
+                                                <div className="absolute inset-0 opacity-15 group-hover:opacity-20 transition-opacity duration-500">
+                                                    <img 
+                                                        src={ASSETS.whoLogo}  
+                                                        alt="WHO Background" 
+                                                        className="w-full h-full object-cover filter"
+                                                    />
+                                                </div>
+
+                                                {/* Gradient Overlay */}
+                                                <div className="absolute inset-0 bg-gradient-to-br opacity-80 from-midnight-900/80 via-midnight-800/70 to-midnight-900/80"></div>
+
+                                                {/* Content */}
+                                                <div className="relative z-10 p-8 text-white min-h-[50px] flex flex-col justify-between">
+                                                    {/* Header */}
+                                                    <div>
+                                                        {/* Committee Type Badge */}
+                                                        <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full text-sm font-semibold mb-6 bg-red-600/90 text-white backdrop-blur-sm">
+                                                            <Users className="w-4 h-4" />
+                                                            Registration Closed
+                                                        </div>
+
+                                                        {/* Title */}
+                                                        <h4 className="text-2xl font-bold mb-6 leading-tight text-white">
+                                                            World Health Organization (WHO)
+                                                        </h4>
+                                                    </div>
+
+                                                    {/* Footer */}
+                                                    <div className="border-t border-white/20 pt-4">
+                                                        <p className="text-gray-200 text-sm font-medium mb-2">Single Delegation</p>
                                                         <div className="bg-red-100/20 border border-red-900/30 text-red-900 p-3 rounded-lg text-xs leading-relaxed">
-                                                            <strong>Registration Closed:</strong> All slots for The Great Homoeopathic Assembly have been filled. Please select WHO Committee instead.
+                                                            <strong>Registration Closed:</strong> All slots for WHO Committee have been filled. Please select The Great Homoeopathic Assembly instead.
                                                         </div>
                                                     </div>
                                                 </div>

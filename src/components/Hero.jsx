@@ -236,9 +236,9 @@ const Hero = () => {
               </div>
               <span className="text-gold-300/60 hidden sm:inline">•</span>
               <div className="flex items-center gap-2">
-                <span className="font-medium text-green-300/90">WHO & IPC registrations open</span>
+                <span className="font-medium text-green-300/90">Great Assembly & IPC registrations open</span>
                 <span className="text-gold-300/60">•</span>
-                <span className="font-medium text-red-300/90">Great Assembly closed</span>
+                <span className="font-medium text-red-300/90">WHO closed</span>
               </div>
             </motion.div>
           </motion.div>
