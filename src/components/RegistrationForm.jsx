@@ -26,7 +26,7 @@ const RegistrationForm = () => {
         college: '',
         year: '',
         committee_preference: '', // This will now store the specific choice (WHO, Assembly, IP - Photography, IP - Essay)
-        hasRegisteredEsperanza: 'no' // Default to 'no' for Esperanza registration status
+        hasRegisteredEsperanza: 'bundle' // Default to 'bundle' for three-tier pricing: 'bundle' (₹647), 'standard' (₹499), 'discounted' (₹347)
     });
 
     // Debounce the form data. The effect will only run 1.5s after the user stops typing.
@@ -337,6 +337,12 @@ const RegistrationForm = () => {
         }
     };
 
+    // Helper function to check if two files are the same (by size and name)
+    const areFilesSame = (file1, file2) => {
+        if (!file1 || !file2) return false;
+        return file1.size === file2.size && file1.name === file2.name;
+    };
+
     // File upload handler for MUN payment
     const handleMunFileChange = (e) => {
         const file = e.target.files[0];
@@ -350,6 +356,13 @@ const RegistrationForm = () => {
 
         if (file.size > 10 * 1024 * 1024) {
             setGlobalError('File size must be less than 10MB');
+            return;
+        }
+
+        // Check if this is the same file as Esperanza payment (for Rs 347 case)
+        if (esperanzaPaymentPhoto && areFilesSame(file, esperanzaPaymentPhoto)) {
+            setGlobalError('⚠️ You cannot upload the same screenshot twice! Please upload different screenshots - one for DIIMUN payment (₹347) and one for Esperanza payment.');
+            e.target.value = ''; // Reset input
             return;
         }
 
@@ -374,6 +387,13 @@ const RegistrationForm = () => {
 
         if (file.size > 10 * 1024 * 1024) {
             setGlobalError('File size must be less than 10MB');
+            return;
+        }
+
+        // Check if this is the same file as MUN payment (for Rs 347 case)
+        if (munPaymentPhoto && areFilesSame(file, munPaymentPhoto)) {
+            setGlobalError('⚠️ You cannot upload the same screenshot twice! Please upload different screenshots - one for DIIMUN payment (₹347) and one for Esperanza payment.');
+            e.target.value = ''; // Reset input
             return;
         }
 
@@ -405,8 +425,8 @@ const RegistrationForm = () => {
         // Check MUN payment screenshot
         if (!munPaymentPhoto) return false;
         
-        // Check Esperanza payment screenshot if required
-        if (formData.hasRegisteredEsperanza === 'yes' && !esperanzaPaymentPhoto) return false;
+        // Check Esperanza payment screenshot if required (only for discounted option)
+        if (formData.hasRegisteredEsperanza === 'discounted' && !esperanzaPaymentPhoto) return false;
         
         return true;
     };
@@ -421,7 +441,7 @@ const RegistrationForm = () => {
         if (!formData.year || formData.year.trim() === '') return 'Enter Personal Details';
         if (formData.year !== 'Doctor / Practitioner' && (!formData.college || formData.college.trim() === '')) return 'Enter Personal Details';
         if (!munPaymentPhoto) return 'Upload Payment Screenshot';
-        if (formData.hasRegisteredEsperanza === 'yes' && !esperanzaPaymentPhoto) return 'Upload Esperanza Screenshot';
+        if (formData.hasRegisteredEsperanza === 'discounted' && !esperanzaPaymentPhoto) return 'Upload Esperanza Screenshot';
         return 'Complete Registration';
     };
 
@@ -511,8 +531,8 @@ const RegistrationForm = () => {
             return false;
         }
 
-        // Validate Esperanza payment screenshot (required only if user has registered for Esperanza)
-        if (formData.hasRegisteredEsperanza === 'yes' && !esperanzaPaymentPhoto) {
+        // Validate Esperanza payment screenshot (required only for discounted option)
+        if (formData.hasRegisteredEsperanza === 'discounted' && !esperanzaPaymentPhoto) {
             setGlobalError('Please upload your Esperanza payment screenshot for verification in Step 5');
             setTimeout(() => {
                 const step5 = document.querySelector('[data-step="5"]');
@@ -587,7 +607,9 @@ const RegistrationForm = () => {
                     has_registered_esperanza: formData.hasRegisteredEsperanza,
                     mun_payment_photo_url: munUrlData.publicUrl,
                     esperanza_payment_photo_url: esperanzaUrlData?.publicUrl || null,
-                    registration_amount: formData.hasRegisteredEsperanza === 'yes' ? 347 : 499,
+                    registration_amount: formData.hasRegisteredEsperanza === 'bundle' ? 647 : 
+                                        formData.hasRegisteredEsperanza === 'standard' ? 499 : 
+                                        347,
                     status: 'Completed' // Mark as completed on final submission
                 })
                 .eq('email', formData.email); // Find the row by email to update
@@ -680,19 +702,15 @@ const RegistrationForm = () => {
                             >
                                 <Camera className="w-12 h-12 mx-auto text-teal-500 mb-4" />
                                 <h3 className="text-xl font-bold text-gray-800">Join International Press</h3>
-                                <p className="text-gray-600 mt-1">Participate as a Photographer or Essayist.</p>
+                                <p className="text-gray-600 mt-1">Participate as a Photographer or Article Writer.</p>
                             </div>
-                            {/* Delegate Path */}
+                            {/* Delegate Path - CLOSED */}
                             <div
-                                onClick={() => handlePathChange('delegate')}
-                                className={`cursor-pointer rounded-2xl border-4 p-6 text-center transition-all duration-300 hover:scale-[1.02] ${registrationPath === 'delegate'
-                                        ? 'border-blue-500 bg-gradient-to-r from-blue-50 to-indigo-50 scale-105 shadow-2xl ring-4 ring-blue-100'
-                                        : 'border-gray-200 hover:border-blue-300 hover:bg-gradient-to-r hover:from-gray-50 hover:to-blue-50'
-                                    }`}
+                                className="cursor-not-allowed rounded-2xl border-4 p-6 text-center transition-all duration-300 opacity-60 border-gray-300"
                             >
-                                <BsPerson className="w-12 h-12 mx-auto text-blue-500 mb-4" />
-                                <h3 className="text-xl font-bold text-gray-800">Register as a Delegate</h3>
-                                <p className="text-gray-600 mt-1">Participate in The Great Homoeopathic Assembly (WHO registration closed).</p>
+                                <BsPerson className="w-12 h-12 mx-auto text-gray-400 mb-4" />
+                                <h3 className="text-xl font-bold text-gray-600">Register as a Delegate</h3>
+                                <p className="text-gray-500 mt-1">All delegate committees are closed.</p>
                             </div>
                         </div>
                     </div>
@@ -722,13 +740,9 @@ const RegistrationForm = () => {
                                         <>
                                         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
 
-                                            {/* Assembly of Homoeopathy */}
+                                            {/* Assembly of Homoeopathy - CLOSED */}
                                             <div
-                                                onClick={() => handlePreferenceChange('The Assembly of Homoeopathy')}
-                                                className={`group cursor-pointer relative overflow-hidden rounded-3xl shadow-2xl hover:shadow-3xl transition-all duration-500 ${formData.committee_preference === 'The Assembly of Homoeopathy'
-                                                        ? 'ring-4 ring-green-400 scale-105 shadow-green-200'
-                                                        : 'hover:scale-105'
-                                                    }`}
+                                                className="group cursor-pointer relative overflow-hidden rounded-3xl shadow-2xl transition-all duration-500 opacity-60 cursor-not-allowed"
                                             >
                                                 {/* Background Image */}
                                                 <div className="absolute inset-0 opacity-15 group-hover:opacity-20 transition-opacity duration-500">
@@ -740,24 +754,20 @@ const RegistrationForm = () => {
                                                 </div>
 
                                                 {/* Gradient Overlay */}
-                                                <div className={`absolute inset-0 bg-gradient-to-br opacity-80 group-hover:opacity-60 transition-all duration-500 ${
-                                                    formData.committee_preference === 'The Assembly of Homoeopathy'
-                                                        ? 'from-cognac-900/80 via-cognac-800/70 to-cognac-900/80'
-                                                        : 'from-cognac-900/80 via-cognac-800/70 to-cognac-900/80 group-hover:from-cognac-900/60 group-hover:via-cognac-800/50 group-hover:to-cognac-900/60'
-                                                }`}></div>
+                                                <div className="absolute inset-0 bg-gradient-to-br opacity-80 from-cognac-900/80 via-cognac-800/70 to-cognac-900/80"></div>
 
                                                 {/* Content */}
                                                 <div className="relative z-10 p-8 text-white min-h-[300px] flex flex-col justify-between">
                                                     {/* Header */}
                                                     <div>
                                                         {/* Committee Type Badge */}
-                                                        <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full text-sm font-semibold mb-6 bg-cognac-600/90 text-white backdrop-blur-sm">
+                                                        <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full text-sm font-semibold mb-6 bg-red-600/90 text-white backdrop-blur-sm">
                                                             <Award className="w-4 h-4" />
-                                                            Exclusive Committee
+                                                            Registration Closed
                                                         </div>
 
                                                         {/* Title */}
-                                                        <h4 className="text-2xl font-bold mb-6 leading-tight group-hover:text-white transition-colors duration-300">
+                                                        <h4 className="text-2xl font-bold mb-6 leading-tight text-white">
                                                             The Great Homoeopathic Assembly
                                                         </h4>
                                                     </div>
@@ -765,8 +775,8 @@ const RegistrationForm = () => {
                                                     {/* Footer */}
                                                     <div className="border-t border-white/20 pt-4">
                                                         <p className="text-gray-200 mb-2 text-sm font-medium">Team of 2</p>
-                                                        <div className="bg-yellow-100/20 border border-yellow-300/30 text-yellow-200 p-3 rounded-lg text-xs leading-relaxed">
-                                                            <strong>Note:</strong> Limited slots. Allotment on first come first serve basis. Excess registrations will be automatically allotted to other committees.
+                                                        <div className="bg-red-100/20 border border-red-900/30 text-red-900 p-3 rounded-lg text-xs leading-relaxed">
+                                                            <strong>Registration Closed:</strong> All slots for The Great Homoeopathic Assembly have been filled.
                                                         </div>
                                                     </div>
                                                 </div>
@@ -807,7 +817,7 @@ const RegistrationForm = () => {
                                                     <div className="border-t border-white/20 pt-4">
                                                         <p className="text-gray-200 text-sm font-medium mb-2">Single Delegation</p>
                                                         <div className="bg-red-100/20 border border-red-900/30 text-red-900 p-3 rounded-lg text-xs leading-relaxed">
-                                                            <strong>Registration Closed:</strong> All slots for WHO Committee have been filled. Please select The Great Homoeopathic Assembly instead.
+                                                            <strong>Registration Closed:</strong> All slots for WHO Committee have been filled.
                                                         </div>
                                                     </div>
                                                 </div>
@@ -858,7 +868,7 @@ const RegistrationForm = () => {
                                                     <FileText className="w-6 h-6" />
                                                 </div>
                                                 <div>
-                                                    <h4 className="text-lg font-bold text-gray-800">International Press - Essayist</h4>
+                                                    <h4 className="text-lg font-bold text-gray-800">International Press - Article Writer</h4>
                                                     <p className="text-gray-600 font-medium">Individual Participation</p>
                                                     <p className="text-sm text-gray-500 mt-1">Report on the proceedings and debates. Award for Best Writeup (₹1000).</p>
                                                 </div>
@@ -1115,36 +1125,157 @@ const RegistrationForm = () => {
                                 </div>
 
                                 <div className="p-8">
-                                    {/* Esperanza Discount Option - Subtle */}
-                                    <div className="mb-4 text-center">
-                                        <div className="inline-flex items-center gap-2 text-gray-500 text-sm">
-                                            <input
-                                                type="checkbox"
-                                                id="esperanzaDiscount"
-                                                checked={formData.hasRegisteredEsperanza === 'yes'}
-                                                onChange={(e) => {
-                                                    setFormData(prev => ({ 
-                                                        ...prev, 
-                                                        hasRegisteredEsperanza: e.target.checked ? 'yes' : 'no' 
-                                                    }));
-                                                    setGlobalError('');
-                                                }}
-                                                className="w-4 h-4 text-green-600 border-gray-300 rounded focus:ring-green-500"
-                                            />
-                                            <label htmlFor="esperanzaDiscount" className="cursor-pointer">
-                                                Registered for Esperanza 4.0? 
-                                                <span className="text-green-600 font-medium"> Get ₹152 off</span>
-                                            </label>
+                                    {/* Payment Options - Three Tier */}
+                                    <div className="mb-6 space-y-4">
+                                        {/* OPTION 1: Bundle Offer (Default & Prominent) */}
+                                        <div 
+                                            onClick={() => {
+                                                setFormData(prev => ({ ...prev, hasRegisteredEsperanza: 'bundle' }));
+                                                setGlobalError('');
+                                                setTimeout(() => {
+                                                    document.getElementById('payment-card')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                                                }, 100);
+                                            }}
+                                            className={`cursor-pointer relative overflow-hidden rounded-xl border-4 transition-all duration-300 ${
+                                                formData.hasRegisteredEsperanza === 'bundle' 
+                                                    ? 'border-yellow-400 bg-gradient-to-r from-yellow-50 to-orange-50 scale-105 shadow-2xl ring-4 ring-yellow-200' 
+                                                    : 'border-gray-200 bg-white hover:border-yellow-300 hover:bg-gradient-to-r hover:from-yellow-50 hover:to-orange-50'
+                                            }`}
+                                        >
+                                            <div className="p-5">
+                                                <div className="flex items-start gap-3">
+                                                    <div className={`w-5 h-5 border-2 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5 ${
+                                                        formData.hasRegisteredEsperanza === 'bundle'
+                                                            ? 'border-yellow-600 bg-yellow-600'
+                                                            : 'border-gray-400'
+                                                    }`}>
+                                                        {formData.hasRegisteredEsperanza === 'bundle' && (
+                                                            <CheckCircle className="w-4 h-4 text-white" />
+                                                        )}
+                                                    </div>
+                                                    <div className="flex-1">
+                                                        <div className="flex items-center gap-2 mb-1">
+                                                            <span className="font-bold text-gray-900 text-lg">Bundle Offer - ₹647</span>
+                                                            <span className="bg-gradient-to-r from-yellow-500 to-orange-500 text-white text-xs font-bold px-2 py-1 rounded-full">RECOMMENDED</span>
+                                                            <span className="bg-green-600 text-white text-xs font-bold px-2 py-1 rounded-full">SAVE ₹352</span>
+                                                        </div>
+                                                        <p className="text-sm text-gray-700 leading-relaxed">
+                                                            Register for <strong>DIIMUN 2025 + Esperanza National Conference</strong> together! Get both certificates. (₹1149 if registered separately)
+                                                        </p>
+                                                        <p className="text-xs text-red-400 mt-1 font-medium">Upload 1 screenshot of ₹647 payment</p>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        {/* OPTION 2: Standard DIIMUN Only */}
+                                        <div 
+                                            onClick={() => {
+                                                setFormData(prev => ({ ...prev, hasRegisteredEsperanza: 'standard' }));
+                                                setGlobalError('');
+                                                setTimeout(() => {
+                                                    document.getElementById('payment-card')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                                                }, 100);
+                                            }}
+                                            className={`cursor-pointer relative overflow-hidden rounded-xl border-2 transition-all duration-300 ${
+                                                formData.hasRegisteredEsperanza === 'standard' 
+                                                    ? 'border-blue-500 bg-gradient-to-r from-blue-50 to-indigo-50 scale-105 shadow-2xl ring-2 ring-blue-200' 
+                                                    : 'border-gray-200 bg-white hover:border-blue-300 hover:bg-gradient-to-r hover:from-blue-50 hover:to-indigo-50'
+                                            }`}
+                                        >
+                                            <div className="p-5">
+                                                <div className="flex items-start gap-3">
+                                                    <div className={`w-5 h-5 border-2 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5 ${
+                                                        formData.hasRegisteredEsperanza === 'standard'
+                                                            ? 'border-blue-600 bg-blue-600'
+                                                            : 'border-gray-400'
+                                                    }`}>
+                                                        {formData.hasRegisteredEsperanza === 'standard' && (
+                                                            <CheckCircle className="w-4 h-4 text-white" />
+                                                        )}
+                                                    </div>
+                                                    <div className="flex-1">
+                                                        <div className="flex items-center gap-2 mb-1">
+                                                            <span className="font-bold text-gray-800">DIIMUN Only - ₹499</span>
+                                                        </div>
+                                                        <p className="text-sm text-gray-700">
+                                                            Register for <strong>DIIMUN 2025</strong> only. Get DIIMUN certificate.
+                                                        </p>
+                                                        <p className="text-xs text-red-400 mt-1 font-medium">Upload 1 screenshot of ₹499 payment</p>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        {/* OPTION 3: Already Registered Esperanza (Hard to Select) */}
+                                        <div 
+                                            onClick={() => {
+                                                setFormData(prev => ({ ...prev, hasRegisteredEsperanza: 'discounted' }));
+                                                setGlobalError('');
+                                                setTimeout(() => {
+                                                    document.getElementById('payment-card')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                                                }, 100);
+                                            }}
+                                            className={`cursor-pointer relative overflow-hidden rounded-xl border-2 transition-all duration-300 opacity-90 ${
+                                                formData.hasRegisteredEsperanza === 'discounted' 
+                                                    ? 'border-purple-500 bg-gradient-to-r from-purple-50 to-pink-50 scale-105 shadow-lg ring-2 ring-purple-200' 
+                                                    : 'border-gray-200 bg-gray-50 hover:border-purple-300 hover:bg-gradient-to-r hover:from-purple-50 hover:to-pink-50'
+                                            }`}
+                                        >
+                                            <div className="p-4">
+                                                <div className="flex items-start gap-3">
+                                                    <div className={`w-5 h-5 border-2 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5 ${
+                                                        formData.hasRegisteredEsperanza === 'discounted'
+                                                            ? 'border-purple-600 bg-purple-600'
+                                                            : 'border-gray-400'
+                                                    }`}>
+                                                        {formData.hasRegisteredEsperanza === 'discounted' && (
+                                                            <CheckCircle className="w-4 h-4 text-white" />
+                                                        )}
+                                                    </div>
+                                                    <div className="flex-1">
+                                                        <div className="flex items-center gap-2 mb-1">
+                                                            <span className="font-bold text-gray-700">Already Registered Esperanza - ₹347</span>
+                                                            <span className="bg-gray-400 text-white text-xs font-bold px-2 py-0.5 rounded-full">DISCOUNT</span>
+                                                        </div>
+                                                        <p className="text-sm text-gray-700">
+                                                            I have <strong>already registered</strong> for Esperanza separately. Register for DIIMUN at discounted price.
+                                                        </p>
+                                                        <p className="text-xs text-red-400 mt-1 font-medium">Upload 2 screenshots: ₹347 DIIMUN + Esperanza payment to get discount</p>
+                                                    </div>
+                                                </div>
+                                            </div>
                                         </div>
                                     </div>
 
                                     {/* Payment Card */}
-                                    <div className="bg-gradient-to-br from-blue-50 to-indigo-50 border-2 border-blue-200 rounded-2xl p-6 mb-8">
+                                    <div id="payment-card" className="bg-gradient-to-br from-blue-50 to-indigo-50 border-2 border-blue-200 rounded-2xl p-6 mb-8">
                                         <div className="text-center">
-                                            <div className="text-4xl font-bold text-gray-800 mb-2">₹{formData.hasRegisteredEsperanza === 'yes' ? '347' : '499'}</div>
-                                            <p className="text-gray-600 mb-6">
-                                                {formData.hasRegisteredEsperanza === 'yes' ? 'DIIMUN 2025 Registration (Esperanza Special Offer)' : 'DIIMUN 2025 Registration'}
+                                            <div className="text-4xl font-bold text-gray-800 mb-2">
+                                                ₹{
+                                                    formData.hasRegisteredEsperanza === 'bundle' ? '647' :
+                                                    formData.hasRegisteredEsperanza === 'standard' ? '499' :
+                                                    '347'
+                                                }
+                                            </div>
+                                            <p className="text-gray-600 mb-4">
+                                                {
+                                                    formData.hasRegisteredEsperanza === 'bundle' ? 'DIIMUN 2025 + Esperanza Conference Bundle' :
+                                                    formData.hasRegisteredEsperanza === 'standard' ? 'DIIMUN 2025 Registration' :
+                                                    'DIIMUN 2025 Registration (Esperanza Discount)'
+                                                }
                                             </p>
+
+                                            {/* Payment Amount Warning */}
+                                            <div className="bg-amber-50 border border-amber-200 rounded-lg p-3 mb-6">
+                                                <p className="text-amber-700 text-xs text-center">
+                                                    ⚠️ Pay <strong>exactly ₹{
+                                                        formData.hasRegisteredEsperanza === 'bundle' ? '647' :
+                                                        formData.hasRegisteredEsperanza === 'standard' ? '499' :
+                                                        '347'
+                                                    }</strong>. Payment and screenshots will be manually verified.
+                                                </p>
+                                            </div>
 
                                             {/* ====== UNIVERSAL PAYMENT UI ====== */}
                                             <div className="space-y-6">
@@ -1188,7 +1319,11 @@ const RegistrationForm = () => {
                                                     ) : (
                                                         <>
                                                             <Copy className="w-5 h-5" />
-                                                            <span>Copy UPI ID & Pay ₹{formData.hasRegisteredEsperanza === 'yes' ? '347' : '499'}</span>
+                                                            <span>Copy UPI ID & Pay ₹{
+                                                                formData.hasRegisteredEsperanza === 'bundle' ? '647' :
+                                                                formData.hasRegisteredEsperanza === 'standard' ? '499' :
+                                                                '347'
+                                                            }</span>
                                                         </>
                                                     )}
                                                 </button>
@@ -1221,6 +1356,27 @@ const RegistrationForm = () => {
                                 </div>
 
                                 <div className="p-8">
+                                    {/* Concise Warning Banner */}
+                                    <div className="bg-gradient-to-r from-amber-50 to-orange-50 border-2 border-amber-300 rounded-xl p-4 mb-6">
+                                        <div className="flex items-start gap-3">
+                                            <AlertCircle className="w-5 h-5 text-amber-600 flex-shrink-0 mt-0.5" />
+                                            <div className="flex-1">
+                                                <p className="text-amber-800 font-bold text-sm mb-2">
+                                                    ⚠️ Registration is NOT complete until you receive a confirmation email
+                                                </p>
+                                                <p className="text-amber-700 text-xs mb-2">
+                                                    Upload screenshot showing <strong>exactly ₹{
+                                                        formData.hasRegisteredEsperanza === 'bundle' ? '647' :
+                                                        formData.hasRegisteredEsperanza === 'standard' ? '499' :
+                                                        '347'
+                                                    }</strong> payment. {formData.hasRegisteredEsperanza === 'discounted' && 'Upload TWO DIFFERENT screenshots - DIIMUN (₹347) + Esperanza payment. '}Wrong amounts or duplicate screenshots will result in rejection.
+                                                </p>
+                                                <p className="text-amber-700 text-xs">
+                                                    📧 Confirmation email will be sent to <strong>{formData.email || 'your email'}</strong> after verification.
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </div>
                                     {/* Upload Section */}
                                     <div className="bg-gradient-to-r from-gray-50 to-blue-50 rounded-2xl p-6">
 
@@ -1267,7 +1423,13 @@ const RegistrationForm = () => {
                                                                 <Upload className="w-8 h-8 text-blue-600" />
                                                             </div>
                                                             <div>
-                                                                <p className="font-semibold text-gray-800 text-lg">Upload MUN Payment Screenshot</p>
+                                                                <p className="font-semibold text-gray-800 text-lg">
+                                                                    Upload DIIMUN Payment Screenshot {
+                                                                        formData.hasRegisteredEsperanza === 'discounted' ? '(₹347)' :
+                                                                        formData.hasRegisteredEsperanza === 'standard' ? '(₹499)' :
+                                                                        ''
+                                                                    }
+                                                                </p>
                                                                 <p className="text-gray-600 mt-1">PNG, JPG up to 10MB</p>
                                                             </div>
                                                         </div>
@@ -1276,8 +1438,8 @@ const RegistrationForm = () => {
                                             )}
                                         </div>
 
-                                        {/* Esperanza Payment Upload - Only show if user has registered for Esperanza */}
-                                        {formData.hasRegisteredEsperanza === 'yes' && (
+                                        {/* Esperanza Payment Upload - Only show for discounted (already registered) */}
+                                        {formData.hasRegisteredEsperanza === 'discounted' && (
                                             <div className="mb-6">
                                                 {esperanzaPhotoPreview ? (
                                                     <div className="space-y-4">
@@ -1320,8 +1482,17 @@ const RegistrationForm = () => {
                                                                     <Upload className="w-8 h-8 text-green-600" />
                                                                 </div>
                                                                 <div>
-                                                                    <p className="font-semibold text-gray-800 text-lg">Upload Esperanza Payment Screenshot</p>
+                                                                    <p className="font-semibold text-gray-800 text-lg">
+                                                                        {formData.hasRegisteredEsperanza === 'bundle' 
+                                                                            ? 'Upload Bundle Payment Screenshot (₹647)' 
+                                                                            : 'Upload Esperanza Payment Screenshot'}
+                                                                    </p>
                                                                     <p className="text-gray-600 mt-1">PNG, JPG up to 10MB</p>
+                                                                    {formData.hasRegisteredEsperanza === 'discounted' && (
+                                                                        <p className="text-amber-600 text-xs mt-2">
+                                                                            Donot upload the same screenshot as DIIMUN screenshot
+                                                                        </p>
+                                                                    )}
                                                                 </div>
                                                             </div>
                                                         </label>
@@ -1354,7 +1525,7 @@ const RegistrationForm = () => {
                                             ) : (
                                                 <>
                                                     <CheckCircle className="w-5 h-5" />
-                                                    Complete Registration
+                                                    Submit for Verification
                                                 </>
                                             )}
                                         </button>
@@ -1375,14 +1546,14 @@ const RegistrationForm = () => {
                                                             {(!formData.year || formData.year.trim() === '') && <li>• Select your year of study</li>}
                                                             {(formData.year !== 'Doctor / Practitioner' && (!formData.college || formData.college.trim() === '')) && <li>• Enter your college/institution</li>}
                                                             {!munPaymentPhoto && <li>• Upload MUN payment screenshot</li>}
-                                                            {formData.hasRegisteredEsperanza === 'yes' && !esperanzaPaymentPhoto && <li>• Upload Esperanza payment screenshot</li>}
+                                                            {formData.hasRegisteredEsperanza === 'discounted' && !esperanzaPaymentPhoto && <li>• Upload Esperanza payment screenshot</li>}
                                                         </ul>
                                                     </div>
                                                 </div>
                                             </div>
                                         )}
 
-                                        <p className="text-center text-xs text-gray-400/50 mt-4">
+                                        <p className="text-center text-xs text-gray-400/50 mt-6">
                                             By registering, you agree to our{' '}
                                             <a 
                                                 href="/terms" 
@@ -1416,7 +1587,7 @@ const RegistrationForm = () => {
                                             <li>✓ Choose your committee or IP role</li>
                                             <li>✓ Fill in personal details (name, email, WhatsApp, college, year)</li>
                                             <li>✓ Complete payment and upload screenshot</li>
-                                            {formData.hasRegisteredEsperanza === 'yes' && (
+                                            {formData.hasRegisteredEsperanza === 'discounted' && (
                                                 <li>✓ Upload Esperanza payment screenshot</li>
                                             )}
                                         </ul>
