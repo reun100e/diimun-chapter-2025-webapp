@@ -9,9 +9,14 @@ import {
   Image as ImageIcon,
   Shield,
   X,
-  ArrowLeft
+  ArrowLeft,
+  Clock
 } from 'lucide-react'
 import { supabase } from '../../supabaseClient'
+
+// Portal timing constants (November 4, 2025)
+const PORTAL_OPEN_DATE = new Date('2025-11-04T12:00:00+05:30') // 12pm IST on Nov 4, 2025
+const PORTAL_CLOSE_DATE = new Date('2025-11-04T16:00:00+05:30') // 4pm IST on Nov 4, 2025
 
 const IPCSubmission = () => {
   // State management
@@ -22,6 +27,15 @@ const IPCSubmission = () => {
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [error, setError] = useState('')
   const [validationError, setValidationError] = useState('')
+  
+  // Countdown timer state
+  const [timeLeft, setTimeLeft] = useState({
+    days: 0,
+    hours: 0,
+    minutes: 0,
+    seconds: 0
+  })
+  const [portalStatus, setPortalStatus] = useState('before-open') // 'before-open', 'open', 'closed'
   
   // Photo submission state
   const [photo1, setPhoto1] = useState(null)
@@ -44,6 +58,44 @@ const IPCSubmission = () => {
   const MAX_CAPTION_LENGTH = 250 // Maximum characters for photo captions
   const ALLOWED_IMAGE_TYPES = ['image/jpeg', 'image/jpg', 'image/png', 'image/heic', 'image/heif']
   const ALLOWED_PDF_TYPE = 'application/pdf'
+
+  // Countdown timer effect
+  useEffect(() => {
+    const calculateTimeLeft = () => {
+      const now = new Date().getTime()
+      const openTime = PORTAL_OPEN_DATE.getTime()
+      const closeTime = PORTAL_CLOSE_DATE.getTime()
+
+      if (now < openTime) {
+        // Before portal opens - countdown to opening
+        setPortalStatus('before-open')
+        const difference = openTime - now
+        const days = Math.floor(difference / (1000 * 60 * 60 * 24))
+        const hours = Math.floor((difference % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60))
+        const minutes = Math.floor((difference % (1000 * 60 * 60)) / (1000 * 60))
+        const seconds = Math.floor((difference % (1000 * 60)) / 1000)
+        setTimeLeft({ days, hours, minutes, seconds })
+      } else if (now >= openTime && now < closeTime) {
+        // Portal is open - countdown to closing
+        setPortalStatus('open')
+        const difference = closeTime - now
+        const days = Math.floor(difference / (1000 * 60 * 60 * 24))
+        const hours = Math.floor((difference % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60))
+        const minutes = Math.floor((difference % (1000 * 60 * 60)) / (1000 * 60))
+        const seconds = Math.floor((difference % (1000 * 60)) / 1000)
+        setTimeLeft({ days, hours, minutes, seconds })
+      } else {
+        // Portal is closed
+        setPortalStatus('closed')
+        setTimeLeft({ days: 0, hours: 0, minutes: 0, seconds: 0 })
+      }
+    }
+
+    calculateTimeLeft()
+    const timer = setInterval(calculateTimeLeft, 1000)
+
+    return () => clearInterval(timer)
+  }, [])
 
   // Scroll to show navbar on page load
   useEffect(() => {
@@ -86,6 +138,17 @@ const IPCSubmission = () => {
   // Handle IPC code verification
   const handleCodeVerification = async (e) => {
     e.preventDefault()
+    
+    // Check if portal is open
+    if (portalStatus !== 'open') {
+      if (portalStatus === 'before-open') {
+        setValidationError('The submission portal is not yet open. Please wait until 12:00 PM on November 4th, 2025.')
+      } else {
+        setValidationError('The submission portal has closed. Submissions were only accepted between 12:00 PM and 4:00 PM on November 4th, 2025.')
+      }
+      return
+    }
+    
     setValidationError('')
     setIsValidating(true)
 
@@ -223,6 +286,12 @@ const IPCSubmission = () => {
       return
     }
 
+    // Check if portal is still open
+    if (portalStatus !== 'open') {
+      setError('The submission portal has closed. Please try again during the submission window.')
+      return
+    }
+
     setIsSubmitting(true)
     setError('')
 
@@ -276,6 +345,12 @@ const IPCSubmission = () => {
     
     if (!essayPdf) {
       setError('Please upload your essay PDF')
+      return
+    }
+
+    // Check if portal is still open
+    if (portalStatus !== 'open') {
+      setError('The submission portal has closed. Please try again during the submission window.')
       return
     }
 
@@ -368,6 +443,84 @@ const IPCSubmission = () => {
           </p>
         </motion.div>
 
+        {/* Countdown Timer */}
+        <motion.div
+          initial={{ opacity: 0, y: -10 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="mb-8"
+        >
+          <div className="card p-6">
+            <div className="flex flex-col md:flex-row items-center justify-between gap-4">
+              <div className="flex items-center gap-3">
+                <div className={`p-2 rounded-lg ${
+                  portalStatus === 'open' 
+                    ? 'bg-emerald-100 text-emerald-600' 
+                    : portalStatus === 'before-open'
+                    ? 'bg-blue-100 text-blue-600'
+                    : 'bg-red-100 text-red-600'
+                }`}>
+                  <Clock className="w-5 h-5" />
+                </div>
+                <div>
+                  <p className={`text-sm font-semibold ${
+                    portalStatus === 'open'
+                      ? 'text-emerald-700'
+                      : portalStatus === 'before-open'
+                      ? 'text-blue-700'
+                      : 'text-red-700'
+                  }`}>
+                    {portalStatus === 'open' 
+                      ? 'Portal Closes In'
+                      : portalStatus === 'before-open'
+                      ? 'Portal Opens In'
+                      : 'Portal Closed'}
+                  </p>
+                  <p className="text-xs text-slate-500">
+                    {portalStatus === 'open'
+                      ? 'Submissions close at 4:00 PM'
+                      : portalStatus === 'before-open'
+                      ? 'Submissions open at 12:00 PM on Nov 4'
+                      : 'Submission window has ended'}
+                  </p>
+                </div>
+              </div>
+              
+              {portalStatus !== 'closed' && (
+                <div className="flex items-center gap-3 md:gap-4">
+                  {timeLeft.days > 0 && (
+                    <div className="text-center">
+                      <div className="text-2xl md:text-3xl font-bold text-slate-800 tabular-nums">
+                        {timeLeft.days.toString().padStart(2, '0')}
+                      </div>
+                      <div className="text-xs text-slate-500 font-medium">Days</div>
+                    </div>
+                  )}
+                  <div className="text-center">
+                    <div className="text-2xl md:text-3xl font-bold text-slate-800 tabular-nums">
+                      {timeLeft.hours.toString().padStart(2, '0')}
+                    </div>
+                    <div className="text-xs text-slate-500 font-medium">Hours</div>
+                  </div>
+                  <div className="text-slate-400 text-xl font-bold">:</div>
+                  <div className="text-center">
+                    <div className="text-2xl md:text-3xl font-bold text-slate-800 tabular-nums">
+                      {timeLeft.minutes.toString().padStart(2, '0')}
+                    </div>
+                    <div className="text-xs text-slate-500 font-medium">Minutes</div>
+                  </div>
+                  <div className="text-slate-400 text-xl font-bold">:</div>
+                  <div className="text-center">
+                    <div className="text-2xl md:text-3xl font-bold text-slate-800 tabular-nums">
+                      {timeLeft.seconds.toString().padStart(2, '0')}
+                    </div>
+                    <div className="text-xs text-slate-500 font-medium">Seconds</div>
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+        </motion.div>
+
         <AnimatePresence mode="wait">
           {/* Step 1: Code Entry */}
           {currentStep === 'code-entry' && (
@@ -396,9 +549,13 @@ const IPCSubmission = () => {
                       setIpcCode(e.target.value)
                       setValidationError('')
                     }}
-                    placeholder="Enter your IPC Code"
-                    className="w-full px-6 py-4 text-lg border-2 border-slate-200 rounded-xl focus:border-indigo-500 focus:ring-4 focus:ring-indigo-100 transition-all duration-300 text-center font-semibold tracking-wider"
-                    disabled={isValidating}
+                    placeholder={portalStatus === 'open' ? "Enter your IPC Code" : portalStatus === 'before-open' ? "Portal not yet open" : "Portal closed"}
+                    className={`w-full px-6 py-4 text-lg border-2 rounded-xl transition-all duration-300 text-center font-semibold tracking-wider ${
+                      portalStatus === 'open'
+                        ? 'border-slate-200 focus:border-indigo-500 focus:ring-4 focus:ring-indigo-100'
+                        : 'border-slate-300 bg-slate-100 cursor-not-allowed opacity-60'
+                    }`}
+                    disabled={isValidating || portalStatus !== 'open'}
                     required
                   />
                 </div>
@@ -416,7 +573,7 @@ const IPCSubmission = () => {
 
                 <button
                   type="submit"
-                  disabled={isValidating || !ipcCode.trim()}
+                  disabled={isValidating || !ipcCode.trim() || portalStatus !== 'open'}
                   className="w-full bg-gradient-to-r from-indigo-600 to-blue-600 hover:from-indigo-700 hover:to-blue-700 text-white font-semibold py-4 px-8 rounded-xl transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none flex items-center justify-center gap-3"
                 >
                   {isValidating ? (
@@ -424,6 +581,8 @@ const IPCSubmission = () => {
                       <Loader2 className="w-5 h-5 animate-spin" />
                       Verifying...
                     </>
+                  ) : portalStatus !== 'open' ? (
+                    portalStatus === 'before-open' ? 'Portal Not Yet Open' : 'Portal Closed'
                   ) : (
                     'Verify Code & Proceed'
                   )}
@@ -442,7 +601,7 @@ const IPCSubmission = () => {
             >
               {/* Header with IPC Code */}
               <div className="card p-6 mb-6">
-                <div className="flex items-center justify-between">
+                <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
                   <div>
                     <p className="text-sm text-slate-600 mb-1">Submission for</p>
                     <h3 className="text-2xl font-bold text-slate-800">
@@ -452,13 +611,24 @@ const IPCSubmission = () => {
                       Category: {submissionType === 'photography' ? 'Photography' : 'Essay'}
                     </p>
                   </div>
-                  <button
-                    onClick={resetForm}
-                    className="flex items-center gap-2 text-slate-600 hover:text-slate-800 transition-colors"
-                  >
-                    <ArrowLeft className="w-5 h-5" />
-                    <span className="hidden sm:inline">Change Code</span>
-                  </button>
+                  <div className="flex items-center gap-4">
+                    {/* Countdown on submission form */}
+                    {portalStatus === 'open' && (
+                      <div className="hidden sm:flex items-center gap-2 px-3 py-1.5 bg-emerald-50 border border-emerald-200 rounded-lg">
+                        <Clock className="w-4 h-4 text-emerald-600" />
+                        <span className="text-xs font-semibold text-emerald-700 tabular-nums">
+                          {timeLeft.hours}h {timeLeft.minutes}m left
+                        </span>
+                      </div>
+                    )}
+                    <button
+                      onClick={resetForm}
+                      className="flex items-center gap-2 text-slate-600 hover:text-slate-800 transition-colors"
+                    >
+                      <ArrowLeft className="w-5 h-5" />
+                      <span className="hidden sm:inline">Change Code</span>
+                    </button>
+                  </div>
                 </div>
               </div>
 
@@ -666,7 +836,7 @@ const IPCSubmission = () => {
 
                   <button
                     type="submit"
-                    disabled={isSubmitting || !photo1}
+                    disabled={isSubmitting || !photo1 || portalStatus !== 'open'}
                     className="w-full bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white font-semibold py-4 px-8 rounded-xl transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none flex items-center justify-center gap-3"
                   >
                     {isSubmitting ? (
@@ -795,7 +965,7 @@ const IPCSubmission = () => {
 
                   <button
                     type="submit"
-                    disabled={isSubmitting || !essayPdf}
+                    disabled={isSubmitting || !essayPdf || portalStatus !== 'open'}
                     className="w-full bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white font-semibold py-4 px-8 rounded-xl transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none flex items-center justify-center gap-3"
                   >
                     {isSubmitting ? (

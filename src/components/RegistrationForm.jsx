@@ -7,7 +7,7 @@ import {
     CheckCircle, AlertCircle, Loader, Copy, Check,
     Star, Info, ChevronDown, ChevronUp, Users, Shield, Mic, Camera, FileText, Award
 } from 'lucide-react';
-import { ASSETS } from '../utils/constants'
+import { ASSETS, SPOT_REGISTRATION } from '../utils/constants'
 import { smoothScrollTo } from '../animations/parallax';
 import { BsPerson } from 'react-icons/bs';
 
@@ -18,6 +18,11 @@ const RegistrationForm = () => {
     // NEW: State to manage the primary choice path ('delegate' or 'ip')
     const [registrationPath, setRegistrationPath] = useState('');
 
+    // State to track TGAH slot availability
+    const [tgahSlotsAvailable, setTgahSlotsAvailable] = useState(true);
+    const [tgahSlotCount, setTgahSlotCount] = useState(0);
+    const [checkingSlots, setCheckingSlots] = useState(false);
+
     // Form state
     const [formData, setFormData] = useState({
         name: '',
@@ -25,8 +30,8 @@ const RegistrationForm = () => {
         email: '',
         college: '',
         year: '',
-        committee_preference: '', // This will now store the specific choice (WHO, Assembly, IP - Photography, IP - Essay)
-        hasRegisteredEsperanza: 'bundle' // Default to 'bundle' for three-tier pricing: 'bundle' (₹647), 'standard' (₹499), 'discounted' (₹347)
+        committee_preference: '', // This will now store the specific choice (TGAH, IP - Photography, IP - Essay)
+        hasRegisteredEsperanza: 'spot' // Default to 'spot' for spot registration pricing: 'spot' (₹649)
     });
 
     // Debounce the form data. The effect will only run 1.5s after the user stops typing.
@@ -75,6 +80,54 @@ const RegistrationForm = () => {
             setIsIOS(true);
         }
     }, []);
+
+    // Check TGAH slot availability on component mount and when TGAH is selected
+    useEffect(() => {
+        const checkTgahSlots = async () => {
+            if (!SPOT_REGISTRATION.tgahSpotRegistrationOpen) {
+                setTgahSlotsAvailable(false);
+                return;
+            }
+
+            setCheckingSlots(true);
+            try {
+                // Count completed registrations for TGAH
+                const { count, error } = await supabase
+                    .from('registrations')
+                    .select('id', { count: 'exact', head: true })
+                    .eq('committee_preference', 'TGAH')
+                    .eq('status', 'Completed');
+
+                if (error) throw error;
+
+                const currentCount = count || 0;
+                setTgahSlotCount(currentCount);
+                
+                // Check if slots are still available (1 slot = 2 registrations)
+                const available = currentCount < SPOT_REGISTRATION.tgahSlotCapacity;
+                setTgahSlotsAvailable(available);
+
+                // If slot is full, we can optionally close registration
+                if (!available && SPOT_REGISTRATION.tgahSpotRegistrationOpen) {
+                    console.warn('TGAH slot is full. Consider closing spot registration.');
+                }
+            } catch (error) {
+                console.error('Error checking TGAH slots:', error);
+                // On error, assume slots are available to not block registration
+                setTgahSlotsAvailable(true);
+            } finally {
+                setCheckingSlots(false);
+            }
+        };
+
+        // Check slots on mount
+        checkTgahSlots();
+
+        // Also check when TGAH is selected
+        if (formData.committee_preference === 'TGAH') {
+            checkTgahSlots();
+        }
+    }, [formData.committee_preference]);
 
     // Scroll to registration section when success state changes
     useEffect(() => {
@@ -594,6 +647,16 @@ const RegistrationForm = () => {
                 esperanzaUrlData = esperanzaUrl;
             }
 
+            // Calculate registration amount
+            let registrationAmount;
+            if (formData.committee_preference === 'TGAH' || formData.committee_preference === 'IP - Photography' || formData.committee_preference === 'IP - Essay') {
+                registrationAmount = SPOT_REGISTRATION.spotRegistrationFee;
+            } else {
+                registrationAmount = formData.hasRegisteredEsperanza === 'bundle' ? 647 : 
+                                    formData.hasRegisteredEsperanza === 'standard' ? 499 : 
+                                    347;
+            }
+
             // UPDATE the final record with the photo URLs and 'Completed' status
             const { error: updateError } = await supabase
                 .from('registrations')
@@ -607,9 +670,7 @@ const RegistrationForm = () => {
                     has_registered_esperanza: formData.hasRegisteredEsperanza,
                     mun_payment_photo_url: munUrlData.publicUrl,
                     esperanza_payment_photo_url: esperanzaUrlData?.publicUrl || null,
-                    registration_amount: formData.hasRegisteredEsperanza === 'bundle' ? 647 : 
-                                        formData.hasRegisteredEsperanza === 'standard' ? 499 : 
-                                        347,
+                    registration_amount: registrationAmount,
                     status: 'Completed' // Mark as completed on final submission
                 })
                 .eq('email', formData.email); // Find the row by email to update
@@ -641,7 +702,27 @@ const RegistrationForm = () => {
                         <div className="space-y-2 text-blue-700">
                             <p>• Payment verification (24-48 hours)</p>
                             <p>• Confirmation email with event details</p>
-                            <p>• WhatsApp updates on your number</p>
+                            {(formData.committee_preference === 'TGAH') && (
+                                <p className="font-semibold text-blue-800 mt-3">
+                                    ⚠️ Important: After payment verification, you must <strong>call or meet {SPOT_REGISTRATION.contactPerson} in person</strong> to be added to the Assembly on-spot.
+                                    <br />
+                                    <a href={`tel:${SPOT_REGISTRATION.contactNumber}`} className="underline font-bold mt-1 inline-block">
+                                        Contact: {SPOT_REGISTRATION.contactNumber}
+                                    </a>
+                                </p>
+                            )}
+                            {(formData.committee_preference === 'IP - Photography' || formData.committee_preference === 'IP - Essay') && (
+                                <p className="font-semibold text-blue-800 mt-3">
+                                    ⚠️ Important: After payment verification, you must <strong>call or meet {SPOT_REGISTRATION.contactPerson} in person</strong> to get your IPC code.
+                                    <br />
+                                    <a href={`tel:${SPOT_REGISTRATION.contactNumber}`} className="underline font-bold mt-1 inline-block">
+                                        Contact: {SPOT_REGISTRATION.contactNumber}
+                                    </a>
+                                </p>
+                            )}
+                            {!(formData.committee_preference === 'TGAH' || formData.committee_preference === 'IP - Photography' || formData.committee_preference === 'IP - Essay') && (
+                                <p>• WhatsApp updates on your number</p>
+                            )}
                         </div>
                     </div>
                     <button
@@ -704,13 +785,17 @@ const RegistrationForm = () => {
                                 <h3 className="text-xl font-bold text-gray-800">Join International Press</h3>
                                 <p className="text-gray-600 mt-1">Participate as a Photographer or Article Writer.</p>
                             </div>
-                            {/* Delegate Path - CLOSED */}
+                            {/* Delegate Path - ENABLED FOR SPOT REGISTRATION */}
                             <div
-                                className="cursor-not-allowed rounded-2xl border-4 p-6 text-center transition-all duration-300 opacity-60 border-gray-300"
+                                onClick={() => handlePathChange('delegate')}
+                                className={`cursor-pointer rounded-2xl border-4 p-6 text-center transition-all duration-300 hover:scale-[1.02] ${registrationPath === 'delegate'
+                                        ? 'border-blue-500 bg-gradient-to-r from-blue-50 to-indigo-50 scale-105 shadow-2xl ring-4 ring-blue-100'
+                                        : 'border-gray-200 hover:border-blue-300 hover:bg-gradient-to-r hover:from-gray-50 hover:to-blue-50'
+                                    }`}
                             >
-                                <BsPerson className="w-12 h-12 mx-auto text-gray-400 mb-4" />
-                                <h3 className="text-xl font-bold text-gray-600">Register as a Delegate</h3>
-                                <p className="text-gray-500 mt-1">All delegate committees are closed.</p>
+                                <BsPerson className="w-12 h-12 mx-auto text-blue-500 mb-4" />
+                                <h3 className="text-xl font-bold text-gray-800">Register as a Delegate</h3>
+                                <p className="text-gray-600 mt-1">Participate in The Great Assembly of Homoeopaths.</p>
                             </div>
                         </div>
                     </div>
@@ -738,104 +823,137 @@ const RegistrationForm = () => {
                                     {/* CONDITIONAL: Delegate Options */}
                                     {registrationPath === 'delegate' && (
                                         <>
-                                        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-
-                                            {/* Assembly of Homoeopathy - CLOSED */}
-                                            <div
-                                                className="group cursor-pointer relative overflow-hidden rounded-3xl shadow-2xl transition-all duration-500 opacity-60 cursor-not-allowed"
-                                            >
-                                                {/* Background Image */}
-                                                <div className="absolute inset-0 opacity-15 group-hover:opacity-20 transition-opacity duration-500">
-                                                    <img 
-                                                        src={ASSETS.greatAssemblyImage} 
-                                                        alt="Great Homoeopathic Assembly Background" 
-                                                        className="w-full h-full object-cover filter"
-                                                    />
-                                                </div>
-
-                                                {/* Gradient Overlay */}
-                                                <div className="absolute inset-0 bg-gradient-to-br opacity-80 from-cognac-900/80 via-cognac-800/70 to-cognac-900/80"></div>
-
-                                                {/* Content */}
-                                                <div className="relative z-10 p-8 text-white min-h-[300px] flex flex-col justify-between">
-                                                    {/* Header */}
-                                                    <div>
-                                                        {/* Committee Type Badge */}
-                                                        <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full text-sm font-semibold mb-6 bg-red-600/90 text-white backdrop-blur-sm">
-                                                            <Award className="w-4 h-4" />
-                                                            Registration Closed
-                                                        </div>
-
-                                                        {/* Title */}
-                                                        <h4 className="text-2xl font-bold mb-6 leading-tight text-white">
-                                                            The Great Homoeopathic Assembly
-                                                        </h4>
+                                        <div className="grid grid-cols-1 gap-6">
+                                            {/* Great Assembly of Homoeopaths - SPOT REGISTRATION */}
+                                            {SPOT_REGISTRATION.tgahSpotRegistrationOpen && tgahSlotsAvailable ? (
+                                                <div
+                                                    onClick={() => handlePreferenceChange('TGAH')}
+                                                    className={`group cursor-pointer relative overflow-hidden rounded-3xl shadow-2xl transition-all duration-500 ${
+                                                        formData.committee_preference === 'TGAH'
+                                                            ? 'ring-4 ring-cognac-300 scale-105'
+                                                            : 'hover:scale-[1.02]'
+                                                    }`}
+                                                >
+                                                    {/* Background Image */}
+                                                    <div className="absolute inset-0 opacity-15 group-hover:opacity-20 transition-opacity duration-500">
+                                                        <img 
+                                                            src={ASSETS.greatAssemblyImage} 
+                                                            alt="Great Homoeopathic Assembly Background" 
+                                                            className="w-full h-full object-cover filter"
+                                                        />
                                                     </div>
 
-                                                    {/* Footer */}
-                                                    <div className="border-t border-white/20 pt-4">
-                                                        <p className="text-gray-200 mb-2 text-sm font-medium">Team of 2</p>
-                                                        <div className="bg-red-100/20 border border-red-900/30 text-red-900 p-3 rounded-lg text-xs leading-relaxed">
-                                                            <strong>Registration Closed:</strong> All slots for The Great Homoeopathic Assembly have been filled.
+                                                    {/* Gradient Overlay */}
+                                                    <div className="absolute inset-0 bg-gradient-to-br opacity-80 from-cognac-900/80 via-cognac-800/70 to-cognac-900/80"></div>
+
+                                                    {/* Content */}
+                                                    <div className="relative z-10 p-8 text-white min-h-[300px] flex flex-col justify-between">
+                                                        {/* Header */}
+                                                        <div>
+                                                            {/* Committee Type Badge */}
+                                                            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full text-sm font-semibold mb-6 bg-green-600/90 text-white backdrop-blur-sm">
+                                                                <Award className="w-4 h-4" />
+                                                                Spot Registration Open
+                                                            </div>
+
+                                                            {/* Title */}
+                                                            <h4 className="text-2xl font-bold mb-4 leading-tight text-white">
+                                                                The Great Assembly of Homoeopaths
+                                                            </h4>
+                                                            
+                                                            {/* Pioneer Info */}
+                                                            <div className="bg-white/20 border border-white/30 rounded-lg p-3 mb-4 backdrop-blur-sm">
+                                                                <p className="text-sm font-semibold mb-1">Pioneer/Stalwart:</p>
+                                                                <p className="text-lg font-bold">{SPOT_REGISTRATION.tgahPioneer}</p>
+                                                                <p className="text-xs mt-1 text-gray-200">Pre-selected for spot registration</p>
+                                                            </div>
+                                                            
+                                                            {checkingSlots && (
+                                                                <div className="flex items-center gap-2 text-sm text-gray-300 mb-2">
+                                                                    <Loader className="w-4 h-4 animate-spin" />
+                                                                    Checking availability...
+                                                                </div>
+                                                            )}
+                                                            
+                                                            {!checkingSlots && (
+                                                                <p className="text-sm text-gray-200 mb-2">
+                                                                    {tgahSlotCount === 0 
+                                                                        ? 'Available spots: 2 registrations remaining'
+                                                                        : `${SPOT_REGISTRATION.tgahSlotCapacity - tgahSlotCount} registration(s) remaining`
+                                                                    }
+                                                                </p>
+                                                            )}
                                                         </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            {/* WHO Committee - CLOSED */}
-                                            <div
-                                                className="group cursor-pointer relative overflow-hidden rounded-3xl shadow-2xl transition-all duration-500 opacity-60 cursor-not-allowed"
-                                            >
-                                                {/* Background Image */}
-                                                <div className="absolute inset-0 opacity-15 group-hover:opacity-20 transition-opacity duration-500">
-                                                    <img 
-                                                        src={ASSETS.whoLogo}  
-                                                        alt="WHO Background" 
-                                                        className="w-full h-full object-cover filter"
-                                                    />
-                                                </div>
 
-                                                {/* Gradient Overlay */}
-                                                <div className="absolute inset-0 bg-gradient-to-br opacity-80 from-midnight-900/80 via-midnight-800/70 to-midnight-900/80"></div>
-
-                                                {/* Content */}
-                                                <div className="relative z-10 p-8 text-white min-h-[50px] flex flex-col justify-between">
-                                                    {/* Header */}
-                                                    <div>
-                                                        {/* Committee Type Badge */}
-                                                        <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full text-sm font-semibold mb-6 bg-red-600/90 text-white backdrop-blur-sm">
-                                                            <Users className="w-4 h-4" />
-                                                            Registration Closed
-                                                        </div>
-
-                                                        {/* Title */}
-                                                        <h4 className="text-2xl font-bold mb-6 leading-tight text-white">
-                                                            World Health Organization (WHO)
-                                                        </h4>
-                                                    </div>
-
-                                                    {/* Footer */}
-                                                    <div className="border-t border-white/20 pt-4">
-                                                        <p className="text-gray-200 text-sm font-medium mb-2">Single Delegation</p>
-                                                        <div className="bg-red-100/20 border border-red-900/30 text-red-900 p-3 rounded-lg text-xs leading-relaxed">
-                                                            <strong>Registration Closed:</strong> All slots for WHO Committee have been filled.
+                                                        {/* Footer */}
+                                                        <div className="border-t border-white/20 pt-4">
+                                                            <p className="text-gray-200 mb-2 text-sm font-medium">Individual or Team Participation</p>
+                                                            <p className="text-xs text-gray-300 leading-relaxed">
+                                                                You must register individually. Each person pays ₹649. Team formation happens on-spot.
+                                                            </p>
                                                         </div>
                                                     </div>
                                                 </div>
-                                            </div>
+                                            ) : (
+                                                /* TGAH Closed */
+                                                <div className="group cursor-not-allowed relative overflow-hidden rounded-3xl shadow-2xl transition-all duration-500 opacity-60">
+                                                    {/* Background Image */}
+                                                    <div className="absolute inset-0 opacity-15 group-hover:opacity-20 transition-opacity duration-500">
+                                                        <img 
+                                                            src={ASSETS.greatAssemblyImage} 
+                                                            alt="Great Homoeopathic Assembly Background" 
+                                                            className="w-full h-full object-cover filter"
+                                                        />
+                                                    </div>
+
+                                                    {/* Gradient Overlay */}
+                                                    <div className="absolute inset-0 bg-gradient-to-br opacity-80 from-cognac-900/80 via-cognac-800/70 to-cognac-900/80"></div>
+
+                                                    {/* Content */}
+                                                    <div className="relative z-10 p-8 text-white min-h-[300px] flex flex-col justify-between">
+                                                        {/* Header */}
+                                                        <div>
+                                                            {/* Committee Type Badge */}
+                                                            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full text-sm font-semibold mb-6 bg-red-600/90 text-white backdrop-blur-sm">
+                                                                <Award className="w-4 h-4" />
+                                                                Spot Registration Closed
+                                                            </div>
+
+                                                            {/* Title */}
+                                                            <h4 className="text-2xl font-bold mb-6 leading-tight text-white">
+                                                                The Great Assembly of Homoeopaths
+                                                            </h4>
+                                                        </div>
+
+                                                        {/* Footer */}
+                                                        <div className="border-t border-white/20 pt-4">
+                                                            <p className="text-gray-200 mb-2 text-sm font-medium">Team of 2</p>
+                                                            <div className="bg-red-100/20 border border-red-900/30 text-red-900 p-3 rounded-lg text-xs leading-relaxed">
+                                                                <strong>Spot Registration Closed:</strong> {tgahSlotCount >= SPOT_REGISTRATION.tgahSlotCapacity 
+                                                                    ? 'All spots have been filled.'
+                                                                    : 'Spot registration has been closed by administrator.'
+                                                                }
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            )}
                                         </div>
                                         
-                                        {/* Committee Information */}
-                                        {/* <div className="mt-6 bg-blue-50 border-2 border-blue-200 rounded-xl p-4">
-                                            <div className="flex items-start gap-3">
-                                                <Info className="w-5 h-5 text-blue-600 flex-shrink-0 mt-0.5" />
-                                                <div>
-                                                    <p className="text-blue-800 font-semibold mb-1">Available Registration Options</p>
-                                                    <p className="text-blue-700 text-sm">
-                                                        <strong>WHO Committee:</strong> Single delegation - Registration is open. <strong>Great Assembly:</strong> Registration is closed as all slots have been filled.
-                                                    </p>
+                                        {/* Important Notice */}
+                                        {SPOT_REGISTRATION.tgahSpotRegistrationOpen && tgahSlotsAvailable && (
+                                            <div className="mt-6 bg-amber-50 border-2 border-amber-200 rounded-xl p-4">
+                                                <div className="flex items-start gap-3">
+                                                    <Info className="w-5 h-5 text-amber-600 flex-shrink-0 mt-0.5" />
+                                                    <div>
+                                                        <p className="text-amber-800 font-semibold mb-1">Important: Spot Registration Process</p>
+                                                        <p className="text-amber-700 text-sm">
+                                                            After successful registration and payment verification, you must <strong>call or meet {SPOT_REGISTRATION.contactPerson} in person</strong> to be added to the Assembly on-spot. Contact: <a href={`tel:${SPOT_REGISTRATION.contactNumber}`} className="underline font-semibold">{SPOT_REGISTRATION.contactNumber}</a>
+                                                        </p>
+                                                    </div>
                                                 </div>
                                             </div>
-                                        </div> */}
+                                        )}
                                         </>
                                     )}
                                     {/* CONDITIONAL: International Press Options */}
@@ -880,6 +998,22 @@ const RegistrationForm = () => {
                                                         <p className="text-blue-800 font-semibold mb-1">Want to do both Photography and Essay?</p>
                                                         <p className="text-blue-700 text-sm">
                                                             Complete this registration for one role, then submit a new form for the other role. Each role requires separate registration.
+                                                        </p>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            
+                                            {/* Important Notice for IPC Spot Registration */}
+                                            <div className="mt-4 bg-amber-50 border-2 border-amber-200 rounded-xl p-4">
+                                                <div className="flex items-start gap-3">
+                                                    <Info className="w-5 h-5 text-amber-600 flex-shrink-0 mt-0.5" />
+                                                    <div>
+                                                        <p className="text-amber-800 font-semibold mb-1">Important: Spot Registration Process</p>
+                                                        <p className="text-amber-700 text-sm">
+                                                            After successful registration and payment verification, you must <strong>call or meet {SPOT_REGISTRATION.contactPerson} in person</strong> to get your IPC code. Contact: <a href={`tel:${SPOT_REGISTRATION.contactNumber}`} className="underline font-semibold">{SPOT_REGISTRATION.contactNumber}</a>
+                                                        </p>
+                                                        <p className="text-amber-700 text-xs mt-2">
+                                                            Both Article Writing and Photography are available for spot registration.
                                                         </p>
                                                     </div>
                                                 </div>
@@ -1125,141 +1259,55 @@ const RegistrationForm = () => {
                                 </div>
 
                                 <div className="p-8">
-                                    {/* Payment Options - Three Tier */}
-                                    <div className="mb-6 space-y-4">
-                                        {/* OPTION 1: Bundle Offer (Default & Prominent) */}
-                                        <div 
-                                            onClick={() => {
-                                                setFormData(prev => ({ ...prev, hasRegisteredEsperanza: 'bundle' }));
-                                                setGlobalError('');
-                                                setTimeout(() => {
-                                                    document.getElementById('payment-card')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                                                }, 100);
-                                            }}
-                                            className={`cursor-pointer relative overflow-hidden rounded-xl border-4 transition-all duration-300 ${
-                                                formData.hasRegisteredEsperanza === 'bundle' 
-                                                    ? 'border-yellow-400 bg-gradient-to-r from-yellow-50 to-orange-50 scale-105 shadow-2xl ring-4 ring-yellow-200' 
-                                                    : 'border-gray-200 bg-white hover:border-yellow-300 hover:bg-gradient-to-r hover:from-yellow-50 hover:to-orange-50'
-                                            }`}
-                                        >
-                                            <div className="p-5">
+                                    {/* Payment Options - Spot Registration Only */}
+                                    {(formData.committee_preference === 'TGAH' || formData.committee_preference === 'IP - Photography' || formData.committee_preference === 'IP - Essay') ? (
+                                        /* Spot Registration Fee */
+                                        <div className="mb-6">
+                                            <div className="bg-gradient-to-r from-green-50 to-emerald-50 border-2 border-green-300 rounded-xl p-5">
                                                 <div className="flex items-start gap-3">
-                                                    <div className={`w-5 h-5 border-2 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5 ${
-                                                        formData.hasRegisteredEsperanza === 'bundle'
-                                                            ? 'border-yellow-600 bg-yellow-600'
-                                                            : 'border-gray-400'
-                                                    }`}>
-                                                        {formData.hasRegisteredEsperanza === 'bundle' && (
-                                                            <CheckCircle className="w-4 h-4 text-white" />
-                                                        )}
+                                                    <div className="w-5 h-5 border-2 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5 border-green-600 bg-green-600">
+                                                        <CheckCircle className="w-4 h-4 text-white" />
                                                     </div>
                                                     <div className="flex-1">
-                                                        <div className="flex items-center gap-2 mb-1">
-                                                            <span className="font-bold text-gray-900 text-lg">Bundle Offer - ₹647</span>
-                                                            <span className="bg-gradient-to-r from-yellow-500 to-orange-500 text-white text-xs font-bold px-2 py-1 rounded-full">RECOMMENDED</span>
-                                                            <span className="bg-green-600 text-white text-xs font-bold px-2 py-1 rounded-full">SAVE ₹352</span>
+                                                        <div className="flex items-center gap-2 mb-2">
+                                                            <span className="font-bold text-gray-900 text-xl">Spot Registration Fee - ₹{SPOT_REGISTRATION.spotRegistrationFee}</span>
+                                                            <span className="bg-green-600 text-white text-xs font-bold px-2 py-1 rounded-full">SPOT REGISTRATION</span>
                                                         </div>
                                                         <p className="text-sm text-gray-700 leading-relaxed">
-                                                            Register for <strong>DIIMUN 2025 + Esperanza National Conference</strong> together! Get both certificates. (₹1149 if registered separately)
+                                                            This is a spot registration. Fee is ₹{SPOT_REGISTRATION.spotRegistrationFee} per person.
+                                                            {formData.committee_preference === 'TGAH' && ' Register individually. Team formation happens on-spot.'}
+                                                            {(formData.committee_preference === 'IP - Photography' || formData.committee_preference === 'IP - Essay') && ' Both Article Writing and Photography are available.'}
                                                         </p>
-                                                        <p className="text-xs text-red-400 mt-1 font-medium">Upload 1 screenshot of ₹647 payment</p>
+                                                        <p className="text-xs text-red-600 mt-2 font-medium">Upload 1 screenshot of ₹{SPOT_REGISTRATION.spotRegistrationFee} payment</p>
                                                     </div>
                                                 </div>
                                             </div>
                                         </div>
-
-                                        {/* OPTION 2: Standard DIIMUN Only */}
-                                        <div 
-                                            onClick={() => {
-                                                setFormData(prev => ({ ...prev, hasRegisteredEsperanza: 'standard' }));
-                                                setGlobalError('');
-                                                setTimeout(() => {
-                                                    document.getElementById('payment-card')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                                                }, 100);
-                                            }}
-                                            className={`cursor-pointer relative overflow-hidden rounded-xl border-2 transition-all duration-300 ${
-                                                formData.hasRegisteredEsperanza === 'standard' 
-                                                    ? 'border-blue-500 bg-gradient-to-r from-blue-50 to-indigo-50 scale-105 shadow-2xl ring-2 ring-blue-200' 
-                                                    : 'border-gray-200 bg-white hover:border-blue-300 hover:bg-gradient-to-r hover:from-blue-50 hover:to-indigo-50'
-                                            }`}
-                                        >
-                                            <div className="p-5">
-                                                <div className="flex items-start gap-3">
-                                                    <div className={`w-5 h-5 border-2 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5 ${
-                                                        formData.hasRegisteredEsperanza === 'standard'
-                                                            ? 'border-blue-600 bg-blue-600'
-                                                            : 'border-gray-400'
-                                                    }`}>
-                                                        {formData.hasRegisteredEsperanza === 'standard' && (
-                                                            <CheckCircle className="w-4 h-4 text-white" />
-                                                        )}
-                                                    </div>
-                                                    <div className="flex-1">
-                                                        <div className="flex items-center gap-2 mb-1">
-                                                            <span className="font-bold text-gray-800">DIIMUN Only - ₹499</span>
-                                                        </div>
-                                                        <p className="text-sm text-gray-700">
-                                                            Register for <strong>DIIMUN 2025</strong> only. Get DIIMUN certificate.
-                                                        </p>
-                                                        <p className="text-xs text-red-400 mt-1 font-medium">Upload 1 screenshot of ₹499 payment</p>
-                                                    </div>
-                                                </div>
+                                    ) : (
+                                        /* Legacy Payment Options - For reference (shouldn't appear for spot registrations) */
+                                        <div className="mb-6 space-y-4 opacity-50 pointer-events-none">
+                                            <div className="text-center text-gray-500 text-sm">
+                                                Payment options will appear after selecting your committee/role
                                             </div>
                                         </div>
-
-                                        {/* OPTION 3: Already Registered Esperanza (Hard to Select) */}
-                                        <div 
-                                            onClick={() => {
-                                                setFormData(prev => ({ ...prev, hasRegisteredEsperanza: 'discounted' }));
-                                                setGlobalError('');
-                                                setTimeout(() => {
-                                                    document.getElementById('payment-card')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                                                }, 100);
-                                            }}
-                                            className={`cursor-pointer relative overflow-hidden rounded-xl border-2 transition-all duration-300 opacity-90 ${
-                                                formData.hasRegisteredEsperanza === 'discounted' 
-                                                    ? 'border-purple-500 bg-gradient-to-r from-purple-50 to-pink-50 scale-105 shadow-lg ring-2 ring-purple-200' 
-                                                    : 'border-gray-200 bg-gray-50 hover:border-purple-300 hover:bg-gradient-to-r hover:from-purple-50 hover:to-pink-50'
-                                            }`}
-                                        >
-                                            <div className="p-4">
-                                                <div className="flex items-start gap-3">
-                                                    <div className={`w-5 h-5 border-2 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5 ${
-                                                        formData.hasRegisteredEsperanza === 'discounted'
-                                                            ? 'border-purple-600 bg-purple-600'
-                                                            : 'border-gray-400'
-                                                    }`}>
-                                                        {formData.hasRegisteredEsperanza === 'discounted' && (
-                                                            <CheckCircle className="w-4 h-4 text-white" />
-                                                        )}
-                                                    </div>
-                                                    <div className="flex-1">
-                                                        <div className="flex items-center gap-2 mb-1">
-                                                            <span className="font-bold text-gray-700">Already Registered Esperanza - ₹347</span>
-                                                            <span className="bg-gray-400 text-white text-xs font-bold px-2 py-0.5 rounded-full">DISCOUNT</span>
-                                                        </div>
-                                                        <p className="text-sm text-gray-700">
-                                                            I have <strong>already registered</strong> for Esperanza separately. Register for DIIMUN at discounted price.
-                                                        </p>
-                                                        <p className="text-xs text-red-400 mt-1 font-medium">Upload 2 screenshots: ₹347 DIIMUN + Esperanza payment to get discount</p>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
+                                    )}
 
                                     {/* Payment Card */}
                                     <div id="payment-card" className="bg-gradient-to-br from-blue-50 to-indigo-50 border-2 border-blue-200 rounded-2xl p-6 mb-8">
                                         <div className="text-center">
                                             <div className="text-4xl font-bold text-gray-800 mb-2">
                                                 ₹{
-                                                    formData.hasRegisteredEsperanza === 'bundle' ? '647' :
-                                                    formData.hasRegisteredEsperanza === 'standard' ? '499' :
-                                                    '347'
+                                                    (formData.committee_preference === 'TGAH' || formData.committee_preference === 'IP - Photography' || formData.committee_preference === 'IP - Essay')
+                                                        ? SPOT_REGISTRATION.spotRegistrationFee
+                                                        : formData.hasRegisteredEsperanza === 'bundle' ? '647' :
+                                                        formData.hasRegisteredEsperanza === 'standard' ? '499' :
+                                                        '347'
                                                 }
                                             </div>
                                             <p className="text-gray-600 mb-4">
                                                 {
+                                                    formData.committee_preference === 'TGAH' ? 'Great Assembly of Homoeopaths - Spot Registration' :
+                                                    (formData.committee_preference === 'IP - Photography' || formData.committee_preference === 'IP - Essay') ? 'International Press Corps - Spot Registration' :
                                                     formData.hasRegisteredEsperanza === 'bundle' ? 'DIIMUN 2025 + Esperanza Conference Bundle' :
                                                     formData.hasRegisteredEsperanza === 'standard' ? 'DIIMUN 2025 Registration' :
                                                     'DIIMUN 2025 Registration (Esperanza Discount)'
@@ -1270,9 +1318,11 @@ const RegistrationForm = () => {
                                             <div className="bg-amber-50 border border-amber-200 rounded-lg p-3 mb-6">
                                                 <p className="text-amber-700 text-xs text-center">
                                                     ⚠️ Pay <strong>exactly ₹{
-                                                        formData.hasRegisteredEsperanza === 'bundle' ? '647' :
-                                                        formData.hasRegisteredEsperanza === 'standard' ? '499' :
-                                                        '347'
+                                                        (formData.committee_preference === 'TGAH' || formData.committee_preference === 'IP - Photography' || formData.committee_preference === 'IP - Essay')
+                                                            ? SPOT_REGISTRATION.spotRegistrationFee
+                                                            : formData.hasRegisteredEsperanza === 'bundle' ? '647' :
+                                                            formData.hasRegisteredEsperanza === 'standard' ? '499' :
+                                                            '347'
                                                     }</strong>. Payment and screenshots will be manually verified.
                                                 </p>
                                             </div>
@@ -1320,9 +1370,11 @@ const RegistrationForm = () => {
                                                         <>
                                                             <Copy className="w-5 h-5" />
                                                             <span>Copy UPI ID & Pay ₹{
-                                                                formData.hasRegisteredEsperanza === 'bundle' ? '647' :
-                                                                formData.hasRegisteredEsperanza === 'standard' ? '499' :
-                                                                '347'
+                                                                (formData.committee_preference === 'TGAH' || formData.committee_preference === 'IP - Photography' || formData.committee_preference === 'IP - Essay')
+                                                                    ? SPOT_REGISTRATION.spotRegistrationFee
+                                                                    : formData.hasRegisteredEsperanza === 'bundle' ? '647' :
+                                                                    formData.hasRegisteredEsperanza === 'standard' ? '499' :
+                                                                    '347'
                                                             }</span>
                                                         </>
                                                     )}
@@ -1366,9 +1418,11 @@ const RegistrationForm = () => {
                                                 </p>
                                                 <p className="text-amber-700 text-xs mb-2">
                                                     Upload screenshot showing <strong>exactly ₹{
-                                                        formData.hasRegisteredEsperanza === 'bundle' ? '647' :
-                                                        formData.hasRegisteredEsperanza === 'standard' ? '499' :
-                                                        '347'
+                                                        (formData.committee_preference === 'TGAH' || formData.committee_preference === 'IP - Photography' || formData.committee_preference === 'IP - Essay')
+                                                            ? SPOT_REGISTRATION.spotRegistrationFee
+                                                            : formData.hasRegisteredEsperanza === 'bundle' ? '647' :
+                                                            formData.hasRegisteredEsperanza === 'standard' ? '499' :
+                                                            '347'
                                                     }</strong> payment. {formData.hasRegisteredEsperanza === 'discounted' && 'Upload TWO DIFFERENT screenshots - DIIMUN (₹347) + Esperanza payment. '}Wrong amounts or duplicate screenshots will result in rejection.
                                                 </p>
                                                 <p className="text-amber-700 text-xs">
@@ -1424,10 +1478,12 @@ const RegistrationForm = () => {
                                                             </div>
                                                             <div>
                                                                 <p className="font-semibold text-gray-800 text-lg">
-                                                                    Upload DIIMUN Payment Screenshot {
-                                                                        formData.hasRegisteredEsperanza === 'discounted' ? '(₹347)' :
-                                                                        formData.hasRegisteredEsperanza === 'standard' ? '(₹499)' :
-                                                                        ''
+                                                                    Upload Payment Screenshot {
+                                                                        (formData.committee_preference === 'TGAH' || formData.committee_preference === 'IP - Photography' || formData.committee_preference === 'IP - Essay')
+                                                                            ? `(₹${SPOT_REGISTRATION.spotRegistrationFee})`
+                                                                            : formData.hasRegisteredEsperanza === 'discounted' ? '(₹347)' :
+                                                                            formData.hasRegisteredEsperanza === 'standard' ? '(₹499)' :
+                                                                            ''
                                                                     }
                                                                 </p>
                                                                 <p className="text-gray-600 mt-1">PNG, JPG up to 10MB</p>

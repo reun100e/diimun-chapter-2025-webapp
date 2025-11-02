@@ -215,6 +215,18 @@ export const HIGHLIGHTS = [
   },
 ]
 
+// Spot Registration Configuration
+export const SPOT_REGISTRATION = {
+  // Set to false to close Great Assembly spot registration
+  // Web developer can easily toggle this to close registration after verifying applicants
+  tgahSpotRegistrationOpen: true,
+  tgahSlotCapacity: 2, // 1 slot = 2 registrations
+  tgahPioneer: 'Dr. CM Boger', // Pre-selected pioneer for spot registration
+  spotRegistrationFee: 649, // Rs 649 per person for spot registration
+  contactPerson: 'Dr. Aghosh',
+  contactNumber: '+919400076226'
+}
+
 // Animation Variants
 export const ANIMATION_VARIANTS = {
   fadeInUp: {

@@ -229,16 +229,13 @@ const Hero = () => {
             >
               <div className="flex items-center gap-2">
                 <Clock className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-gold-400/80" />
-                <CountdownTimer 
-                  targetDate="2025-11-03T17:00:00+05:30"
-                  compact={true}
-                />
+                <span className="font-medium text-orange-300/90">Event starts in 1 day</span>
               </div>
               <span className="text-gold-300/60 hidden sm:inline">•</span>
               <div className="flex items-center gap-2">
-                <span className="font-medium text-green-300/90">IPC registrations open</span>
+                <span className="font-medium text-green-300/90">Spot Registrations Open</span>
                 <span className="text-gold-300/60">•</span>
-                <span className="font-medium text-red-300/90">WHO & Great Assembly closed</span>
+                <span className="font-medium text-green-300/90">IPC & TGAH available</span>
               </div>
             </motion.div>
           </motion.div>
