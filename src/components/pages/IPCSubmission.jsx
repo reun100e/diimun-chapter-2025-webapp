@@ -16,7 +16,7 @@ import { supabase } from '../../supabaseClient'
 
 // Portal timing constants (November 4, 2025)
 const PORTAL_OPEN_DATE = new Date('2025-11-04T12:00:00+05:30') // 12pm IST on Nov 4, 2025
-const PORTAL_CLOSE_DATE = new Date('2025-11-04T16:00:00+05:30') // 4pm IST on Nov 4, 2025
+const PORTAL_CLOSE_DATE = new Date('2025-11-04T16:30:00+05:30') // 4:30pm IST on Nov 4, 2025
 
 const IPCSubmission = () => {
   // State management
